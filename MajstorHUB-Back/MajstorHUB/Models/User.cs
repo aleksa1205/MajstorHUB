@@ -23,7 +23,7 @@ namespace MajstorHUB.Models
         [BsonElement("datum_kreiranja")]
         public DateTime DatumKreiranjaNaloga { get; set; } = DateTime.Now;
 
-        [BsonElement("NovacNaSajtu")]
+        [BsonElement("novac_na_sajtu")]
         public double NovacNaSajtu { get; set; } = 0;
     }
 }

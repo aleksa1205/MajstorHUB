@@ -1,5 +1,7 @@
 ﻿using MajstorHUB.Models;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using System.ComponentModel;
 
 namespace MajstorHUB.Services
 {
@@ -7,7 +9,7 @@ namespace MajstorHUB.Services
     {
         private readonly IMongoCollection<Korisnik> _korisnici;
 
-        public KorisnikService(DatabaseSettings settings, IMongoClient mongoClient)
+        public KorisnikService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
         {
             var db = mongoClient.GetDatabase(settings.DatabaseName);
             _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
@@ -40,6 +42,20 @@ namespace MajstorHUB.Services
         {
             await _korisnici.DeleteOneAsync(korisnik => korisnik.Id == id);
             return;
+        }
+
+        //Proveriti da li treba da bude asinhrona
+        public bool Exists(string jmbg)
+        {
+            var tmpKorisnik = _korisnici.Find(korisnik => korisnik.JMBG == jmbg).FirstOrDefaultAsync();
+            if (tmpKorisnik != null) 
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
