@@ -61,6 +61,6 @@ namespace MajstorHUB.Controllers
             _korisnikService.Delete(id);
             return Ok($"Korisnik sa ID-em {id} je uspesno obrisan!\n");
         }
-
+        //EXISTS
     }
 }

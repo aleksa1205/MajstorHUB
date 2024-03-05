@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Models
 {
-    public class DatabaseSettings
+    public class MajstorHUBDatabaseSettings
     {
         public string ConnectionString { get; set; } = null!;
         public string DatabaseName { get; set; } = null!;

@@ -11,5 +11,6 @@ namespace MajstorHUB.Services
         Task<Korisnik> Create(Korisnik korisnik);
         void Update(string id, Korisnik korisnik);
         void Delete(string id);
+        bool Exists(string jmbg);
     }
 }

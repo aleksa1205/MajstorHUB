@@ -7,7 +7,7 @@ namespace MajstorHUB.Services
     {
         private readonly IMongoCollection<Firma> _firme;
 
-        public FirmaService(DatabaseSettings settings, IMongoClient mongoClient)
+        public FirmaService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
         {
             var db = mongoClient.GetDatabase(settings.DatabaseName);
             _firme = db.GetCollection<Firma>(settings.FirmeCollectionName);
