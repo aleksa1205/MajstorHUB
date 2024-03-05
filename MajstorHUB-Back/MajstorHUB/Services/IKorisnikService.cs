@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MajstorHUB.Services
 {
@@ -7,10 +8,10 @@ namespace MajstorHUB.Services
         //Moze da se doda Get metoda za celu listu korisnika
         //Moze da se doda Get metoda za pretragu korisnika po jmbg-u
         //Task<List<Korisnik>> Get();
+        Task<List<Korisnik>> Get();
         Task<Korisnik> Get(string id);
         Task<Korisnik> Create(Korisnik korisnik);
-        void Update(string id, Korisnik korisnik);
-        void Delete(string id);
-        bool Exists(string jmbg);
+        Task Update(string id, Korisnik korisnik);
+        Task Delete(string id);
     }
 }
