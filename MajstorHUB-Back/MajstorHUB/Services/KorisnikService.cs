@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Models;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using System.ComponentModel;
@@ -21,6 +22,11 @@ namespace MajstorHUB.Services
         //    return await _korisnici.FindAsync(korisnik => true).ToList();
         //}
 
+        public async Task<List<Korisnik>> Get()
+        {
+            return await _korisnici.Find(korisnik => true).ToListAsync();
+        }
+
         public async Task<Korisnik> Get(string id)
         {
             return await _korisnici.Find(korisnik => korisnik.Id == id).FirstOrDefaultAsync();
@@ -32,16 +38,22 @@ namespace MajstorHUB.Services
             return korisnik;
         }
 
-        public async void Update(string id, Korisnik korisnik)
+        public async Task Update(string id, Korisnik korisnik)
         {
-            await _korisnici.ReplaceOneAsync(korisnik => korisnik.Id == id, korisnik);
-            return;
+            var filter = Builders<Korisnik>.Filter.Eq(korisnik=>korisnik.Id, id);
+            var update = Builders<Korisnik>.Update
+                .Set("email", korisnik.Email)
+                .Set("adresa", korisnik.Adresa)
+                .Set("broj_telefona", korisnik.BrojTelefona)
+                .Set("ime", korisnik.Ime)
+                .Set("prezime", korisnik.Prezime)
+                .Set("datum_rodjenja", korisnik.DatumRodjenja);
+            await _korisnici.UpdateOneAsync(filter, update);
         }
 
-        public async void Delete(string id)
+        public async Task Delete(string id)
         {
             await _korisnici.DeleteOneAsync(korisnik => korisnik.Id == id);
-            return;
         }
 
         //Proveriti da li treba da bude asinhrona
