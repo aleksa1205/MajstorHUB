@@ -1,8 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-using System.ComponentModel.DataAnnotations;
-namespace MajstorHUB.Models;
-
+﻿namespace MajstorHUB.Models;
 
 public class Korisnik : User
 {
