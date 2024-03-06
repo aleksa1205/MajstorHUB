@@ -1,10 +1,10 @@
-﻿namespace MajstorHUB.Models
+﻿namespace MajstorHUB.Models;
+
+public enum Struka
 {
-    public enum Struka
-    {
-        Keramika,
-        Moleraj,
-        Fasada,
-        Alkoholicar
-    }
+    Keramika,
+    Moleraj,
+    Fasada,
+    Alkoholicar
 }
+
