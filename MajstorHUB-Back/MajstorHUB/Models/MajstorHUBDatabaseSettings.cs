@@ -8,4 +8,5 @@ public class MajstorHUBDatabaseSettings
     //Collection Korisnici i Firme u MongoDB
     public string KorisniciCollectionName { get; set; } = null!;
     public string FirmeCollectionName { get; set; } = null!;
+    public string MajstorCollectionName { get; set; } = null!;
 }

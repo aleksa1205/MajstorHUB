@@ -11,7 +11,26 @@ public class FirmaController : ControllerBase
         this._firmaService = firmeService;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetAll")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> GetAll()
+    {
+        try
+        {
+            var firme = await _firmaService.GetAll();
+            if (firme == null)
+                return NotFound("Nijedna firma ne postoji u bazi!\n");
+            return Ok(firme);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -19,7 +38,7 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            var firma = await _firmaService.Get(id);
+            var firma = await _firmaService.GetById(id);
             if (firma == null)
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
             return Ok(firma);
@@ -51,26 +70,7 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> GetAll()
-    {
-        try
-        {
-            var firme = await _firmaService.GetAll();
-            if (firme == null)
-                return NotFound("Nijedna firma ne postoji u bazi!\\n");
-            return Ok(firme);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [HttpPost]
+    [HttpPost("Add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Post([FromBody] Firma firma)
@@ -86,7 +86,8 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPut("{id}")]
+    //dodat await kod update
+    [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -94,12 +95,12 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            var postojecaFirma = await _firmaService.Get(id);
+            var postojecaFirma = await _firmaService.GetById(id);
             if (postojecaFirma == null)
             {
                 return NotFound($"Firma sa ID-em {id} ne posotji!\n");
             }
-            _firmaService.Update(id, firma);
+            await _firmaService.Update(id, firma);
             return Ok($"Firma sa ID-em {id} je uspesno azurirana!\n");
         }
         catch (Exception e)
@@ -108,19 +109,21 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
+    //dodati sa await kod delete
+    [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string id)
     {
         try
         {
-            var postojecaFirma = await _firmaService.Get(id);
+            var postojecaFirma = await _firmaService.GetById(id);
             if (postojecaFirma == null)
             {
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
             }
-            _firmaService.Delete(id);
+            await _firmaService.Delete(id);
             return Ok($"Firma sa ID-em {id} je uspesno obrisana!\n");
         }
         catch (Exception e)

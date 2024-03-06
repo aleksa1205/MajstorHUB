@@ -21,7 +21,7 @@ public class KorisnikService : IKorisnikService
         return await _korisnici.Find(korisnik => true).ToListAsync();
     }
 
-    public async Task<Korisnik> Get(string id)
+    public async Task<Korisnik> GetById(string id)
     {
         return await _korisnici.Find(korisnik => korisnik.Id == id).FirstOrDefaultAsync();
     }

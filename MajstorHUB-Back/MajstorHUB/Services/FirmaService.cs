@@ -11,7 +11,12 @@ public class FirmaService : IFirmaService
         _firme = db.GetCollection<Firma>(settings.FirmeCollectionName);
     }
 
-    public async Task<Firma> Get(string id)
+    public async Task<List<Firma>> GetAll()
+    {
+        return await _firme.Find(firma => true).ToListAsync();
+    }
+
+    public async Task<Firma> GetById(string id)
     {
         return await _firme.Find(firma => firma.Id == id).FirstOrDefaultAsync();
     }
@@ -21,26 +26,26 @@ public class FirmaService : IFirmaService
         return await _firme.Find(firma => firma.PIB == pib).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Firma>> GetAll()
-    {
-        return await _firme.Find(firma => true).ToListAsync();
-    }
-
-    public async Task<Firma> Create(Firma firma)
+    //Task<Firma> zamenjeno sa Task
+    public async Task Create(Firma firma)
     {
         await _firme.InsertOneAsync(firma);
-        return firma;
     }
 
-    public async void Update(string id, Firma firma)
+    public async Task Update(string id, Firma firma)
     {
-        await _firme.ReplaceOneAsync(firma => firma.Id == id, firma);
-        return;
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Set("email", firma.Email)
+            .Set("adresa", firma.Adresa)
+            .Set("broj_telefona", firma.BrojTelefona)
+            .Set("naziv", firma.Naziv)
+            .Set("struke", firma.Struke);
+        await _firme.UpdateOneAsync(filter, update);
     }
 
-    public async void Delete(string id)
+    public async Task Delete(string id)
     {
         await _firme.DeleteOneAsync(firma => firma.Id == id);
-        return;
     }
 }

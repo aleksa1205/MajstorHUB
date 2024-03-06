@@ -11,10 +11,10 @@ public class KorisnikController : ControllerBase
         this._korisnikService = korisnikService;
     }
 
-    [HttpGet]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetAll()
     {
         try
@@ -32,7 +32,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -40,7 +40,7 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var korisnik = await _korisnikService.Get(id);
+            var korisnik = await _korisnikService.GetById(id);
             if (korisnik == null)
             {
                 //Ne stampa ovo ovde
@@ -56,8 +56,8 @@ public class KorisnikController : ControllerBase
 
     // Izgleda da mora ovde da se doda GetByJmbg jer se javlja konflikt sa f-jom Get(int id)
     [HttpGet("GetByJmbg/{jmbg}")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> GetByJmbg(string jmbg)
     {
@@ -76,7 +76,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [HttpPost]
+    [HttpPost("Add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> Post([FromBody] Korisnik korisnik)
@@ -94,7 +94,7 @@ public class KorisnikController : ControllerBase
 
     // Ne znam da li je pametno da koristimo ovu funkciju jer ne znamo kako kroz frontend da je pozovemo
     // verovatno mora da se napravi json objekat koji pretstavlja korisnika pa on da se prosledi ali otom potom
-    [HttpPut("{id}")]
+    [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -102,7 +102,7 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var postojeciKorisnik = await _korisnikService.Get(id);
+            var postojeciKorisnik = await _korisnikService.GetById(id);
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
@@ -116,7 +116,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -124,7 +124,7 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var postojeciKorisnik = await _korisnikService.Get(id);
+            var postojeciKorisnik = await _korisnikService.GetById(id);
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");

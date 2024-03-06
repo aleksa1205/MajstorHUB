@@ -2,10 +2,10 @@
 
 public interface IFirmaService
 {
-    Task<Firma> GetByPib(string pib);
-    Task<Firma> Get(string id);
     Task<List<Firma>> GetAll();
-    Task<Firma> Create(Firma firma);
-    void Update(string id, Firma firma);
-    void Delete(string id);
+    Task<Firma> GetById(string id);
+    Task<Firma> GetByPib(string pib);
+    Task Create(Firma firma);
+    Task Update(string id, Firma firma);
+    Task Delete(string id);
 }
