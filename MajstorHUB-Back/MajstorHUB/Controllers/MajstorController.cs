@@ -107,6 +107,8 @@ public class MajstorController : ControllerBase
     {
         try
         {
+            majstor.Password = BCrypt.Net.BCrypt.HashPassword(majstor.Password);
+
             if ((await _majstorService.GetByJmbg(majstor.JMBG)) != null)
                 return BadRequest($"Majstor sa JMBG-om {majstor.JMBG} vec postoji!\n");
             if ((await _majstorService.GetByEmail(majstor.Email)) != null)
@@ -118,6 +120,28 @@ public class MajstorController : ControllerBase
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Login(string email, string password)
+    {
+        try
+        {
+            var majstor = await _majstorService.GetByEmail(email);
+            if (majstor is null)
+                return BadRequest("Majstor sa zadatim Email-om ne postoji");
+
+            var tmp = BCrypt.Net.BCrypt.Verify(password, majstor.Password);
+            return Ok(tmp);
+
+            //generisanje tokena...
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 

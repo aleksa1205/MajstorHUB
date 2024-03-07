@@ -6,3 +6,5 @@ global using MajstorHUB.Models;
 global using MongoDB.Driver;
 global using MajstorHUB.Services;
 global using Microsoft.AspNetCore.Mvc;
+global using BCrypt.Net;
+global using Utlity;

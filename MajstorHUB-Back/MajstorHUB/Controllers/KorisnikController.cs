@@ -103,6 +103,8 @@ public class KorisnikController : ControllerBase
     {
         try
         {
+            korisnik.Password = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
+
             if ((await _korisnikService.GetByJmbg(korisnik.JMBG)) != null)
                 return BadRequest($"Korisnik sa JMBG-om {korisnik.JMBG} vec postoji!\n");
             if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)
@@ -110,6 +112,28 @@ public class KorisnikController : ControllerBase
 
             await _korisnikService.Create(korisnik);
             return Ok($"Dodat je korisnik sa ID-em {korisnik.Id}!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Login(string email, string password)
+    {
+        try
+        {
+            var korisnik = await _korisnikService.GetByEmail(email);
+            if (korisnik is null)
+                return BadRequest("Korisnik sa zadatim Email-om ne postoji");
+
+            var tmp = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
+            return Ok(tmp);
+
+            //generisanje tokena...
         }
         catch (Exception e)
         {

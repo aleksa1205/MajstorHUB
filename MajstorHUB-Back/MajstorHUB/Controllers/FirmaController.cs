@@ -1,6 +1,4 @@
-﻿using Utlity;
-
-namespace MajstorHUB.Controllers;
+﻿namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -83,7 +81,7 @@ public class FirmaController : ControllerBase
             if (!Utility.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
 
             var firma = await _firmaService.GetByEmail(email);
-            if (firma == null)
+            if (firma is null)
                 return NotFound($"Firma sa Email-om {email} ne postoji!\n");
             return Ok(firma);
         }
@@ -100,6 +98,8 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            firma.Password = BCrypt.Net.BCrypt.HashPassword(firma.Password);
+
             if ((await _firmaService.GetByPib(firma.PIB)) != null)
                 return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
             if ((await _firmaService.GetByEmail(firma.Email)) != null)
@@ -107,6 +107,29 @@ public class FirmaController : ControllerBase
 
             await _firmaService.Create(firma);
             return Ok($"Uspesno dodata firma sa ID-em {firma.Id}!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    // Mora da bude post jer ce da generise token kasnije
+    [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Login(string email, string password)
+    {
+        try
+        {
+            var firma = await _firmaService.GetByEmail(email);
+            if (firma == null)
+                return BadRequest("Firma sa zadatim Email-om ne postoji");
+
+            var tmp = BCrypt.Net.BCrypt.Verify(password, firma.Password);
+            return Ok(tmp);
+
+            //generisanje tokena...
         }
         catch (Exception e)
         {
