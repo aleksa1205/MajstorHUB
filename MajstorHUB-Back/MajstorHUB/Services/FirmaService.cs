@@ -20,6 +20,11 @@ public class FirmaService : IFirmaService
         return await _firme.Find(firma => firma.Id == id).FirstOrDefaultAsync();
     }
 
+    public async Task<Firma> GetByEmail(string email)
+    {
+        return await _firme.Find(firma => firma.Email == email).FirstOrDefaultAsync();
+    }
+
     public async Task<Firma> GetByPib(string pib)
     {
         return await _firme.Find(firma => firma.PIB == pib).FirstOrDefaultAsync();

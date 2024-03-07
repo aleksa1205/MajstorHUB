@@ -8,7 +8,7 @@ public abstract class User
     public string? Id { get; set; }
 
     [BsonElement("email")]
-    [EmailAddress(ErrorMessage = "Invalid Email Address")]
+    [EmailAddress(ErrorMessage = "Format Email-a pogresan")]
     public required string Email { get; set; }
 
     [BsonElement("adresa")]

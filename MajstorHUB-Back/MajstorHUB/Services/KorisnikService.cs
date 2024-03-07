@@ -31,6 +31,11 @@ public class KorisnikService : IKorisnikService
         return await _korisnici.Find(korisnik => korisnik.JMBG == jmbg).FirstOrDefaultAsync();
     }
 
+    public async Task<Korisnik> GetByEmail(string email)
+    {
+        return await _korisnici.Find(korisnik => korisnik.Email == email).FirstOrDefaultAsync();
+    }
+
     public async Task Create(Korisnik korisnik)
     {
         await _korisnici.InsertOneAsync(korisnik);

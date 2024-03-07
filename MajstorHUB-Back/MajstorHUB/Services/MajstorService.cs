@@ -25,6 +25,11 @@ public class MajstorService : IMajstorService
         return await _majstori.Find(majstor => majstor.JMBG == jmbg).FirstOrDefaultAsync();
     }
 
+    public async Task<Majstor> GetByEmail(string email)
+    {
+        return await _majstori.Find(majstor => majstor.Email == email).FirstOrDefaultAsync();
+    }
+
     public async Task Create(Majstor majstor)
     {
         await _majstori.InsertOneAsync(majstor);

@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Controllers;
+﻿using Utlity;
+
+namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -57,11 +59,32 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            if (pib.Length != 8 || !pib.All(Char.IsNumber)) return BadRequest("Pib mora sadrzati 8 broja!\n");
+            if (!Utility.IsValidPib(pib)) return BadRequest("Pib mora sadrzati 8 broja!\n");
 
             var firma = await _firmaService.GetByPib(pib);
             if (firma == null)
                 return NotFound($"Firma sa PIB-om {pib} ne postoji!\n");
+            return Ok(firma);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByEmail/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> GetByEmail(string email)
+    {
+        try
+        {
+            if (!Utility.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
+
+            var firma = await _firmaService.GetByEmail(email);
+            if (firma == null)
+                return NotFound($"Firma sa Email-om {email} ne postoji!\n");
             return Ok(firma);
         }
         catch (Exception e)
@@ -77,6 +100,11 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            if ((await _firmaService.GetByPib(firma.PIB)) != null)
+                return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
+            if ((await _firmaService.GetByEmail(firma.Email)) != null)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
             await _firmaService.Create(firma);
             return Ok($"Uspesno dodata firma sa ID-em {firma.Id}!\n");
         }
@@ -95,6 +123,11 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            if ((await _firmaService.GetByPib(firma.PIB)) != null)
+                return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
+            if ((await _firmaService.GetByEmail(firma.Email)) != null)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
             var postojecaFirma = await _firmaService.GetById(id);
             if (postojecaFirma == null)
             {
