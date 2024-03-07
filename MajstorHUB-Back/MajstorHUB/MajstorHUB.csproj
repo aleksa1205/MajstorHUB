@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="TestZaLogin\" />
+    <Folder Include="Utility\" />
   </ItemGroup>
 
 </Project>
