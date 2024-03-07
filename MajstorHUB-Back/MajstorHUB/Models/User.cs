@@ -11,6 +11,9 @@ public abstract class User
     [EmailAddress(ErrorMessage = "Format Email-a pogresan")]
     public required string Email { get; set; }
 
+    [BsonElement("password")]
+    public required string Password { get; set; }
+
     [BsonElement("adresa")]
     public string? Adresa { get; set; }
 
