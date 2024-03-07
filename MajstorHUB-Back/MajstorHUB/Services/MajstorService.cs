@@ -1,5 +1,4 @@
-﻿using MajstorHUB.Models;
-namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services;
 
 public class MajstorService : IMajstorService
 {
@@ -8,7 +7,7 @@ public class MajstorService : IMajstorService
     public MajstorService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
-        _majstori = db.GetCollection<Majstor>(settings.MajstorCollectionName);
+        _majstori = db.GetCollection<Majstor>(settings.MajstoriCollectionName);
     }
 
     public async Task<List<Majstor>> GetAll()

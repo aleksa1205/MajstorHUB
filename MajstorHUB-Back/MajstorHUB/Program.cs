@@ -18,6 +18,7 @@ builder.Services.AddSingleton(sp=>sp.GetRequiredService<IOptions<MajstorHUBDatab
 builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configuration.GetValue<string>("MajstorHUBDatabaseSettings:ConnectionString")));
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IFirmaService, FirmaService>();
+builder.Services.AddScoped<IMajstorService,MajstorService>();
 
 
 var app = builder.Build();

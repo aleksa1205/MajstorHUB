@@ -40,12 +40,12 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            var postojeciMajstor =  await _majstorService.GetById(id);
-            if (postojeciMajstor == null)
+            var majstor =  await _majstorService.GetById(id);
+            if (majstor == null)
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
-            return Ok(postojeciMajstor);
+            return Ok(majstor);
         }
         catch(Exception ex)
         {
@@ -62,12 +62,12 @@ public class MajstorController : ControllerBase
         try
         {
             if (jmbg.Length != 13 || !jmbg.All(Char.IsNumber)) return BadRequest("JMBG mora da sadrzi 13 broja.\n");
-            var postojeciMajstor = await _majstorService.GetByJmbg(jmbg);
-            if (postojeciMajstor == null) 
+            var majstor = await _majstorService.GetByJmbg(jmbg);
+            if (majstor == null) 
             {
                 return NotFound($"Majstor sa JMBG-om {jmbg} ne postoji!\n");
             }
-            return Ok(postojeciMajstor);
+            return Ok(majstor);
         }
         catch(Exception ex)
         {
@@ -99,8 +99,8 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            var postojecaFirma = await _majstorService.GetById(id);
-            if (postojecaFirma == null)
+            var postojeciMajstor = await _majstorService.GetById(id);
+            if (postojeciMajstor == null)
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
