@@ -4,7 +4,6 @@ public enum Struka
 {
     Keramika,
     Moleraj,
-    Fasada,
-    Alkoholicar
+    Fasada
 }
 

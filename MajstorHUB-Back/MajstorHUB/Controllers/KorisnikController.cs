@@ -1,6 +1,4 @@
-﻿using MajstorHUB.Authorization;
-using Microsoft.AspNetCore.Authorization;
-using Utlity;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace MajstorHUB.Controllers;
 
@@ -8,14 +6,13 @@ namespace MajstorHUB.Controllers;
 [Route("[controller]")]
 public class KorisnikController : ControllerBase
 {
-
     private readonly IKorisnikService _korisnikService;
-    private readonly IConfiguration _configuration;
+    private IConfiguration _configuration;
 
     public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
     {
-        this._korisnikService = korisnikService;
-        this._configuration = configuration;
+        _korisnikService = korisnikService;
+        _configuration = configuration;
     }
 
     [HttpGet("GetAll")]
@@ -49,10 +46,7 @@ public class KorisnikController : ControllerBase
         {
             var korisnik = await _korisnikService.GetById(id);
             if (korisnik == null)
-            {
-                //Ne stampa ovo ovde
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
-            }
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -69,10 +63,11 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsValidJmbg(jmbg)) return BadRequest("JMBG mora sadrzati 13 broja!\n");
-
+            if (!UtilityCheck.IsValidJmbg(jmbg)) 
+                return BadRequest("JMBG mora sadrzati 13 broja!\n");
             var korisnik = await _korisnikService.GetByJmbg(jmbg);
-            if (korisnik == null) return NotFound($"Korisnik sa JMBG-om {jmbg} ne postoji!\n");
+            if (korisnik == null) 
+                return NotFound($"Korisnik sa JMBG-om {jmbg} ne postoji!\n");
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -83,16 +78,18 @@ public class KorisnikController : ControllerBase
 
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetByEmail(string email)
     {
         try
         {
-            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("Pogresan format email-a!");
+            if (!UtilityCheck.IsValidEmail(email)) 
+                return BadRequest("Pogresan format email-a!");
 
             var korisnik = await _korisnikService.GetByEmail(email);
-            if (korisnik == null) return NotFound($"Korisnik sa Email-om {email} ne postoji!\n");
+            if (korisnik == null) 
+                return NotFound($"Korisnik sa Email-om {email} ne postoji!\n");
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -120,6 +117,7 @@ public class KorisnikController : ControllerBase
         }
         catch (Exception e)
         {
+
             return BadRequest(e.Message);
         }
     }
@@ -133,14 +131,18 @@ public class KorisnikController : ControllerBase
         {
             var korisnik = await _korisnikService.GetByEmail(email);
             if (korisnik is null)
-                return BadRequest("Korisnik sa zadatim Email-om ne postoji");
+                return BadRequest("Korisnik sa zadatim Email-om ne postoji!\n");
 
-            if (!BCrypt.Net.BCrypt.Verify(password, korisnik.Password))
-                return BadRequest("Pogresna sifra");
-
-            var token = new JwtProvider(_configuration).Generate(korisnik);
-
-            return Ok(token);
+            var hashPassword = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
+            if (hashPassword)
+            {
+                var token = new JwtProvider(_configuration).Generate(korisnik);
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest("Pogresna sifra!\n");
+            }
         }
         catch (Exception e)
         {
@@ -150,8 +152,8 @@ public class KorisnikController : ControllerBase
 
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Put(string id, [FromBody] Korisnik korisnik)
     {
         try
@@ -162,7 +164,6 @@ public class KorisnikController : ControllerBase
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
             var postojeciKorisnik = await _korisnikService.GetById(id);
-            
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
@@ -179,8 +180,8 @@ public class KorisnikController : ControllerBase
     [Authorize]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string id)
     {
         try
