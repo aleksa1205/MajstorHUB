@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <Compile Remove="TestZaLogin\**" />
     <Content Remove="TestZaLogin\**" />
     <EmbeddedResource Remove="TestZaLogin\**" />
@@ -19,12 +18,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <Folder Include="TestZaLogin\" />
-    <Folder Include="Utility\" />
   </ItemGroup>
 
   <ItemGroup>
