@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Authorization;
 
-public  class JwtProvider
+public class JwtProvider
 {
     private readonly JwtOptions _options;
 

@@ -1,9 +1,5 @@
-﻿using MajstorHUB.Models;
-using MajstorHUB.Services;
-using Microsoft.AspNetCore.Mvc;
 ﻿using MajstorHUB.Authorization;
 using Utlity;
-
 
 namespace MajstorHUB.Controllers;
 
@@ -13,10 +9,12 @@ public class KorisnikController : ControllerBase
 {
 
     private readonly IKorisnikService _korisnikService;
+    private readonly IConfiguration configuration;
 
-    public KorisnikController(IKorisnikService korisnikService)
+    public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
     {
         this._korisnikService = korisnikService;
+        this.configuration = configuration;
     }
     private readonly IKorisnikService _korisnikService;
     private IConfiguration configuration;
@@ -148,16 +146,13 @@ public class KorisnikController : ControllerBase
             JwtOptions jwtOptions = new JwtOptions();
 
             var myconfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
-            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value;
-            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value;
+            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value!;
+            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value!;
+            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value!;
 
             var jwtprov = new JwtProvider(jwtOptions);
             var token = jwtprov.Generate(korisnik);
             return Ok(token);
-            
-
-
             //generisanje tokena...
         }
         catch (Exception e)
