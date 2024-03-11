@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-<<<<<<< Updated upstream
-=======
+
     <Compile Remove="TestZaLogin\**" />
     <Content Remove="TestZaLogin\**" />
     <EmbeddedResource Remove="TestZaLogin\**" />
@@ -18,16 +17,12 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
->>>>>>> Stashed changes
     <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
-<<<<<<< Updated upstream
-=======
   <ItemGroup>
     <Folder Include="Utility\" />
   </ItemGroup>
 
->>>>>>> Stashed changes
 </Project>

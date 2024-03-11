@@ -1,37 +1,50 @@
-﻿using MajstorHUB.Services;
-using MajstorHUB.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿namespace MajstorHUB.Controllers;
 
-namespace MajstorHUB.Controllers
+[ApiController]
+[Route("[controller]")]
+public class FirmaController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class FirmaController : ControllerBase
+    private readonly IFirmaService _firmaService;
+
+    public FirmaController(IFirmaService firmeService)
     {
-        private readonly IFirmaService _firmaService;
+        this._firmaService = firmeService;
+    }
 
-        public FirmaController(IFirmaService firmeService)
+    [HttpGet("GetAll")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> GetAll()
+    {
+        try
         {
-            this._firmaService = firmeService;
+            var firme = await _firmaService.GetAll();
+            if (firme == null)
+                return NotFound("Nijedna firma ne postoji u bazi!\n");
+            return Ok(firme);
         }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Firma>> Get(String id)
+        catch (Exception e)
         {
-            var firma = _firmaService.Get(id);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByID/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Get(string id)
+    {
+        try
+        {
+            var firma = await _firmaService.GetById(id);
             if (firma == null)
-            {
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
-            }
-            return await firma;
+            return Ok(firma);
         }
-
-        [HttpPost]
-        public async Task<ActionResult<Firma>> Post([FromBody] Firma firma)
+        catch (Exception e)
         {
-<<<<<<< Updated upstream
-=======
             return BadRequest(e.Message);
         }
     }
@@ -92,37 +105,86 @@ namespace MajstorHUB.Controllers
             if ((await _firmaService.GetByEmail(firma.Email)) != null)
                 return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
 
->>>>>>> Stashed changes
             await _firmaService.Create(firma);
-            return firma;
+            return Ok($"Uspesno dodata firma sa ID-em {firma.Id}!\n");
         }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult Put(String id, [FromBody] Firma firma)
+        catch (Exception e)
         {
-            var postojecaFirma = _firmaService.Get(id);
+            return BadRequest(e.Message);
+        }
+    }
+
+    // Mora da bude post jer ce da generise token kasnije
+    [HttpPost("Login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Login(string email, string password)
+    {
+        try
+        {
+            var firma = await _firmaService.GetByEmail(email);
+            if (firma == null)
+                return BadRequest("Firma sa zadatim Email-om ne postoji");
+
+            var tmp = BCrypt.Net.BCrypt.Verify(password, firma.Password);
+            return Ok(tmp);
+
+            //generisanje tokena...
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    //dodat await kod update
+    [HttpPut("Update/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Put(String id, [FromBody] Firma firma)
+    {
+        try
+        {
+            if ((await _firmaService.GetByPib(firma.PIB)) != null)
+                return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
+            if ((await _firmaService.GetByEmail(firma.Email)) != null)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
+            var postojecaFirma = await _firmaService.GetById(id);
             if (postojecaFirma == null)
             {
                 return NotFound($"Firma sa ID-em {id} ne posotji!\n");
             }
-            _firmaService.Update(id, firma);
+            await _firmaService.Update(id, firma);
             return Ok($"Firma sa ID-em {id} je uspesno azurirana!\n");
         }
-
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult Delete(string id)
+        catch (Exception e)
         {
-            var postojecaFirma = _firmaService.Get(id);
+            return BadRequest(e.Message);
+        }
+    }
+
+    //dodati sa await kod delete
+    [HttpDelete("Delete/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Delete(string id)
+    {
+        try
+        {
+            var postojecaFirma = await _firmaService.GetById(id);
             if (postojecaFirma == null)
             {
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
             }
-            _firmaService.Delete(id);
+            await _firmaService.Delete(id);
             return Ok($"Firma sa ID-em {id} je uspesno obrisana!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

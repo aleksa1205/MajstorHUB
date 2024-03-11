@@ -1,21 +1,14 @@
-<<<<<<< Updated upstream
-﻿using MajstorHUB.Models;
-using MajstorHUB.Services;
-using Microsoft.AspNetCore.Mvc;
-=======
 ﻿using MajstorHUB.Authorization;
 using Utlity;
->>>>>>> Stashed changes
+﻿using MajstorHUB.Authorization;
+using Utlity;
 
-namespace MajstorHUB.Controllers
+namespace MajstorHUB.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class KorisnikController : ControllerBase
 {
-<<<<<<< Updated upstream
-    [ApiController]
-    [Route("[controller]")]
-    public class KorisnikController : ControllerBase
-    {
-        private readonly IKorisnikService _korisnikService;
-=======
     private readonly IKorisnikService _korisnikService;
     private IConfiguration configuration;
 
@@ -24,44 +17,55 @@ namespace MajstorHUB.Controllers
         this._korisnikService = korisnikService;
         this.configuration = configuration;
     }
->>>>>>> Stashed changes
 
-        public KorisnikController(IKorisnikService korisnikService)
-        {
-            this._korisnikService = korisnikService;
-        }
+    private readonly IKorisnikService _korisnikService;
+    private readonly IConfiguration configuration;
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<Korisnik>>> Get()
+    public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
+    {
+        this._korisnikService = korisnikService;
+        this.configuration = configuration;
+    }
+
+    [HttpGet("GetAll")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetAll()
+    {
+        try
         {
-            var listaKorisnika = await _korisnikService.Get();
-            if(listaKorisnika== null)
+            var listaKorisnika = await _korisnikService.GetAll();
+            if (listaKorisnika == null)
             {
                 return NotFound($"Ne postoji nijedan korisnik u bazi!\n");
             }
-            return listaKorisnika;
+            return Ok(listaKorisnika);
         }
-
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Korisnik>> Get(string id)
+        catch (Exception e)
         {
-            var korisnik = await _korisnikService.Get(id);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByID/{id}")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Get(string id)
+    {
+        try
+        {
+            var korisnik = await _korisnikService.GetById(id);
             if (korisnik == null)
             {
                 //Ne stampa ovo ovde
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
-            return korisnik;
+            return Ok(korisnik);
         }
-
-        [HttpPost]
-        public async Task<ActionResult<Korisnik>> Post([FromBody] Korisnik korisnik)
+        catch (Exception e)
         {
-<<<<<<< Updated upstream
-=======
             return BadRequest(e.Message);
         }
     }
@@ -120,19 +124,12 @@ namespace MajstorHUB.Controllers
             if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
->>>>>>> Stashed changes
             await _korisnikService.Create(korisnik);
             return Ok($"Dodat je korisnik sa ID-em {korisnik.Id}!\n");
         }
-
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Put(string id, [FromBody] Korisnik korisnik)
+        catch (Exception e)
         {
-<<<<<<< Updated upstream
-            var postojeciKorisnik = await _korisnikService.Get(id);
-=======
+
             return BadRequest(e.Message);
         }
     }
@@ -152,16 +149,13 @@ namespace MajstorHUB.Controllers
             JwtOptions jwtOptions = new JwtOptions();
 
             var myconfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
-            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value;
-            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value;
+            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value!;
+            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value!;
+            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value!;
 
             var jwtprov = new JwtProvider(jwtOptions);
             var token = jwtprov.Generate(korisnik);
             return Ok(token);
-            
-
-
             //generisanje tokena...
         }
         catch (Exception e)
@@ -184,7 +178,6 @@ namespace MajstorHUB.Controllers
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
             var postojeciKorisnik = await _korisnikService.GetById(id);
->>>>>>> Stashed changes
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
@@ -192,19 +185,31 @@ namespace MajstorHUB.Controllers
             await _korisnikService.Update(id, korisnik);
             return Ok($"Korisnik sa ID-em {id} je uspesno azuriran!\n");
         }
-
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> Delete(string id)
+        catch (Exception e)
         {
-            var postojeciKorisnik = await _korisnikService.Get(id);
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete("Delete/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Delete(string id)
+    {
+        try
+        {
+            var postojeciKorisnik = await _korisnikService.GetById(id);
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
             await _korisnikService.Delete(id);
             return Ok($"Korisnik sa ID-em {id} je uspesno obrisan!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

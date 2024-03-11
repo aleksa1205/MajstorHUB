@@ -1,13 +1,12 @@
-﻿using MajstorHUB.Models;
-using Microsoft.AspNetCore.Mvc;
-
-namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services;
 
 public interface IFirmaService
 {
-    //Moze se dodati Get metoda za pib firme kao i get metoda koja vraca sve firme
-    Task<Firma> Get(string id);
-    Task<Firma> Create(Firma firma);
-    void Update(string id, Firma firma);
-    void Delete(string id);
+    Task<List<Firma>> GetAll();
+    Task<Firma> GetById(string id);
+    Task<Firma> GetByPib(string pib);
+    Task<Firma> GetByEmail(string email);
+    Task Create(Firma firma);
+    Task Update(string id, Firma firma);
+    Task Delete(string id);
 }
