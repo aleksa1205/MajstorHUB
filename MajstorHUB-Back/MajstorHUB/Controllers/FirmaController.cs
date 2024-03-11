@@ -5,16 +5,18 @@
 public class FirmaController : ControllerBase
 {
     private readonly IFirmaService _firmaService;
+    private IConfiguration _configuration;
 
-    public FirmaController(IFirmaService firmeService)
+    public FirmaController(IFirmaService firmeService, IConfiguration configuration)
     {
         this._firmaService = firmeService;
+        this._configuration = configuration;
     }
 
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetAll()
     {
         try
@@ -32,8 +34,8 @@ public class FirmaController : ControllerBase
 
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Get(string id)
     {
         try
@@ -51,17 +53,16 @@ public class FirmaController : ControllerBase
 
     [HttpGet("GetByPib/{pib}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetByPib(string pib)
     {
         try
         {
             if (!UtilityCheck.IsValidPib(pib)) return BadRequest("Pib mora sadrzati 8 broja!\n");
-
             var firma = await _firmaService.GetByPib(pib);
             if (firma == null)
-                return NotFound($"Firma sa PIB-om {pib} ne postoji!\n");
+                return NotFound($"Firma sa zadatim PIB-om {pib} ne postoji!\n");
             return Ok(firma);
         }
         catch (Exception e)
@@ -72,16 +73,15 @@ public class FirmaController : ControllerBase
 
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetByEmail(string email)
     {
         try
         {
             if (!UtilityCheck.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
-
             var firma = await _firmaService.GetByEmail(email);
-            if (firma is null)
+            if (firma == null)
                 return NotFound($"Firma sa Email-om {email} ne postoji!\n");
             return Ok(firma);
         }
@@ -114,7 +114,6 @@ public class FirmaController : ControllerBase
         }
     }
 
-    // Mora da bude post jer ce da generise token kasnije
     [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -124,12 +123,18 @@ public class FirmaController : ControllerBase
         {
             var firma = await _firmaService.GetByEmail(email);
             if (firma == null)
-                return BadRequest("Firma sa zadatim Email-om ne postoji");
+                return BadRequest("Firma sa zadatim Email-om ne postoji!\n");
 
-            var tmp = BCrypt.Net.BCrypt.Verify(password, firma.Password);
-            return Ok(tmp);
-
-            //generisanje tokena...
+            var hashPassword = BCrypt.Net.BCrypt.Verify(password, firma.Password);
+            if (hashPassword)
+            {
+                var token = new JwtProvider(_configuration).Generate(firma);
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest("Pogresna sifra!\n");
+            }
         }
         catch (Exception e)
         {
@@ -137,11 +142,10 @@ public class FirmaController : ControllerBase
         }
     }
 
-    //dodat await kod update
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Put(String id, [FromBody] Firma firma)
     {
         try
@@ -165,7 +169,6 @@ public class FirmaController : ControllerBase
         }
     }
 
-    //dodati sa await kod delete
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

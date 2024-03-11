@@ -1,4 +1,4 @@
-﻿using Utlity;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace MajstorHUB.Controllers;
 
@@ -7,10 +7,12 @@ namespace MajstorHUB.Controllers;
 public class MajstorController : ControllerBase
 {
     private readonly IMajstorService _majstorService;
+    private IConfiguration _configuration;
 
-    public MajstorController(IMajstorService majstorService)
+    public MajstorController(IMajstorService majstorService, IConfiguration configuration)
     {
-        this._majstorService = majstorService;
+        _majstorService = majstorService;
+        _configuration = configuration;
     }
 
     [HttpGet("GetAll")]
@@ -63,17 +65,16 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            if(UtilityCheck.IsValidJmbg(jmbg)) return BadRequest("JMBG mora da sadrzi 13 broja.\n");
+            if(UtilityCheck.IsValidJmbg(jmbg)) 
+                return BadRequest("JMBG mora da sadrzi 13 broja.\n");
             var majstor = await _majstorService.GetByJmbg(jmbg);
             if (majstor == null) 
-            {
                 return NotFound($"Majstor sa JMBG-om {jmbg} ne postoji!\n");
-            }
             return Ok(majstor);
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(e.Message);
         }
     }
 
@@ -85,18 +86,17 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("Pogresan format email-a!\n");
+            if (!UtilityCheck.IsValidEmail(email)) 
+                return BadRequest("Pogresan format email-a!\n");
 
             var majstor = await _majstorService.GetByEmail(email);
-            if (majstor == null)
-            {
+            if (majstor == null) 
                 return NotFound($"Majstor sa Email-om {email} ne postoji!\n");
-            }
             return Ok(majstor);
         }
-        catch (Exception ex)
+        catch (Exception e)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(e.Message);
         }
     }
 
@@ -117,9 +117,9 @@ public class MajstorController : ControllerBase
             await _majstorService.Create(majstor);
             return Ok($"Uspesno dodat majstor sa ID-em {majstor.Id}!\n");
         }
-        catch(Exception ex)
+        catch(Exception e)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(e.Message);
         }
     }
 
@@ -133,11 +133,16 @@ public class MajstorController : ControllerBase
             var majstor = await _majstorService.GetByEmail(email);
             if (majstor is null)
                 return BadRequest("Majstor sa zadatim Email-om ne postoji");
-
-            var tmp = BCrypt.Net.BCrypt.Verify(password, majstor.Password);
-            return Ok(tmp);
-
-            //generisanje tokena...
+            var hashPasword = BCrypt.Net.BCrypt.Verify(password, majstor.Password);
+            if (hashPasword)
+            {
+                var token = new JwtProvider(_configuration).Generate(majstor);
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest("Pogresna sifra!\n");
+            }
         }
         catch (Exception e)
         {
@@ -160,9 +165,8 @@ public class MajstorController : ControllerBase
 
             var postojeciMajstor = await _majstorService.GetById(id);
             if (postojeciMajstor == null)
-            {
-                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
-            }
+                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");  
+
             await _majstorService.Update(id, majstor);
             return Ok($"Majstor sa ID-em {id} je uspesno azuriran!\n");
         }
@@ -182,11 +186,10 @@ public class MajstorController : ControllerBase
         {
             var postojecaFirma = await _majstorService.GetById(id);
             if (postojecaFirma == null)
-            {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
-            }
+
             await _majstorService.Delete(id);
-            return Ok($"Majstor sa ID-em {id} je uspesno obrisana!\n");
+            return Ok($"Majstor sa ID-em {id} je uspesno obrisan!\n");
         }
         catch(Exception ex)
         {

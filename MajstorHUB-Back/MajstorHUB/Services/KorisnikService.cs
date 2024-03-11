@@ -10,12 +10,6 @@ public class KorisnikService : IKorisnikService
         _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
     }
 
-    //Probaj da sredis bajo ako ocemo da bude async kako da uradimo ako skinemo async i bude normalna metoda sve radi kako treba
-    //public async Task<List<Korisnik>> Get()
-    //{
-    //    return await _korisnici.FindAsync(korisnik => true).ToList();
-    //}
-
     public async Task<List<Korisnik>> GetAll()
     {
         return await _korisnici.Find(korisnik => true).ToListAsync();
@@ -57,12 +51,5 @@ public class KorisnikService : IKorisnikService
     public async Task Delete(string id)
     {
         await _korisnici.DeleteOneAsync(korisnik => korisnik.Id == id);
-    }
-
-    //Proveriti da li treba da bude asinhrona
-    public bool Exists(string jmbg)
-    {
-        var tmpKorisnik = _korisnici.Find(korisnik => korisnik.JMBG == jmbg).FirstOrDefaultAsync();
-        return tmpKorisnik != null;
     }
 }

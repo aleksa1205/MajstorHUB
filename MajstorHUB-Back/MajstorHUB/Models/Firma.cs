@@ -1,4 +1,5 @@
 ﻿namespace MajstorHUB.Models;
+
 public class Firma : User
 {
     [BsonElement("pib")]

@@ -1,7 +1,4 @@
-﻿using MajstorHUB.Authorization;
-using Utlity;
-﻿using MajstorHUB.Authorization;
-using Utlity;
+﻿using Microsoft.AspNetCore.Authorization;
 
 namespace MajstorHUB.Controllers;
 
@@ -10,21 +7,12 @@ namespace MajstorHUB.Controllers;
 public class KorisnikController : ControllerBase
 {
     private readonly IKorisnikService _korisnikService;
-    private IConfiguration configuration;
+    private IConfiguration _configuration;
 
     public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
     {
-        this._korisnikService = korisnikService;
-        this.configuration = configuration;
-    }
-
-    private readonly IKorisnikService _korisnikService;
-    private readonly IConfiguration configuration;
-
-    public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
-    {
-        this._korisnikService = korisnikService;
-        this.configuration = configuration;
+        _korisnikService = korisnikService;
+        _configuration = configuration;
     }
 
     [HttpGet("GetAll")]
@@ -58,10 +46,7 @@ public class KorisnikController : ControllerBase
         {
             var korisnik = await _korisnikService.GetById(id);
             if (korisnik == null)
-            {
-                //Ne stampa ovo ovde
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
-            }
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -78,10 +63,11 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsValidJmbg(jmbg)) return BadRequest("JMBG mora sadrzati 13 broja!\n");
-
+            if (!UtilityCheck.IsValidJmbg(jmbg)) 
+                return BadRequest("JMBG mora sadrzati 13 broja!\n");
             var korisnik = await _korisnikService.GetByJmbg(jmbg);
-            if (korisnik == null) return NotFound($"Korisnik sa JMBG-om {jmbg} ne postoji!\n");
+            if (korisnik == null) 
+                return NotFound($"Korisnik sa JMBG-om {jmbg} ne postoji!\n");
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -92,16 +78,18 @@ public class KorisnikController : ControllerBase
 
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetByEmail(string email)
     {
         try
         {
-            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("Pogresan format email-a!");
+            if (!UtilityCheck.IsValidEmail(email)) 
+                return BadRequest("Pogresan format email-a!");
 
             var korisnik = await _korisnikService.GetByEmail(email);
-            if (korisnik == null) return NotFound($"Korisnik sa Email-om {email} ne postoji!\n");
+            if (korisnik == null) 
+                return NotFound($"Korisnik sa Email-om {email} ne postoji!\n");
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -143,20 +131,18 @@ public class KorisnikController : ControllerBase
         {
             var korisnik = await _korisnikService.GetByEmail(email);
             if (korisnik is null)
-                return BadRequest("Korisnik sa zadatim Email-om ne postoji");
+                return BadRequest("Korisnik sa zadatim Email-om ne postoji!\n");
 
             var hashPassword = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
-            JwtOptions jwtOptions = new JwtOptions();
-
-            var myconfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value!;
-            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value!;
-            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value!;
-
-            var jwtprov = new JwtProvider(jwtOptions);
-            var token = jwtprov.Generate(korisnik);
-            return Ok(token);
-            //generisanje tokena...
+            if (hashPassword)
+            {
+                var token = new JwtProvider(_configuration).Generate(korisnik);
+                return Ok(token);
+            }
+            else
+            {
+                return BadRequest("Pogresna sifra!\n");
+            }
         }
         catch (Exception e)
         {
@@ -166,8 +152,8 @@ public class KorisnikController : ControllerBase
 
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Put(string id, [FromBody] Korisnik korisnik)
     {
         try
@@ -191,10 +177,11 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(string id)
     {
         try

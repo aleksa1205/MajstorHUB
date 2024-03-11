@@ -14,13 +14,13 @@ public class JwtProvider
     {
         var claims = new Claim[]
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id),
+            new(JwtRegisteredClaimNames.Sub, user.Id!),
             new(JwtRegisteredClaimNames.Email, user.Email)
         };
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_options.SecretKey)),
+            Encoding.UTF8.GetBytes(_options.SecretKey)),
             SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(

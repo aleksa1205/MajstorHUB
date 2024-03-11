@@ -13,7 +13,6 @@ public abstract class User
 
     [BsonElement("password")]
     public required string Password { get; set; }
-
     [BsonElement("adresa")]
     public string? Adresa { get; set; }
 

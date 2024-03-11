@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace MajstorHUB.Authorization;
+﻿namespace MajstorHUB.Authorization;
 
 public class JwtOptions
 {
