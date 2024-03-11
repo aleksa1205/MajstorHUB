@@ -4,9 +4,9 @@ public class JwtProvider
 {
     private readonly JwtOptions _options;
 
-    public JwtProvider(JwtOptions options)
+    public JwtProvider(IConfiguration confing)
     {
-        _options = options;
+        _options = new JwtOptions(confing);
     }
 
 
