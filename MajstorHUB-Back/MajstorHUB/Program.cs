@@ -1,10 +1,24 @@
-using MajstorHUB.Models;
-using MajstorHUB.Services;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
-using System.Collections.Specialized;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = config["Jwt:Issuer"],
+        ValidAudience = config["Jwt:Audience"],
+        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"])),
+        ValidateIssuer=true,
+        ValidateAudience=true,
+        ValidateLifetime=true,
+        ValidateIssuerSigningKey=true
+    };
+});
+builder.Services.AddAuthorization();
+
+
 //Generise swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,6 +35,8 @@ builder.Services.AddScoped<IFirmaService, FirmaService>();
 
 
 var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI(options =>

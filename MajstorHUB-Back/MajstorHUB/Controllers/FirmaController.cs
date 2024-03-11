@@ -30,6 +30,69 @@ namespace MajstorHUB.Controllers
         [HttpPost]
         public async Task<ActionResult<Firma>> Post([FromBody] Firma firma)
         {
+<<<<<<< Updated upstream
+=======
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByPib/{pib}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> GetByPib(string pib)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidPib(pib)) return BadRequest("Pib mora sadrzati 8 broja!\n");
+
+            var firma = await _firmaService.GetByPib(pib);
+            if (firma == null)
+                return NotFound($"Firma sa PIB-om {pib} ne postoji!\n");
+            return Ok(firma);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("GetByEmail/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> GetByEmail(string email)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
+
+            var firma = await _firmaService.GetByEmail(email);
+            if (firma is null)
+                return NotFound($"Firma sa Email-om {email} ne postoji!\n");
+            return Ok(firma);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Add")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> Post([FromBody] Firma firma)
+    {
+        try
+        {
+            firma.Password = BCrypt.Net.BCrypt.HashPassword(firma.Password);
+
+            if ((await _firmaService.GetByPib(firma.PIB)) != null)
+                return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
+            if ((await _firmaService.GetByEmail(firma.Email)) != null)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
+>>>>>>> Stashed changes
             await _firmaService.Create(firma);
             return firma;
         }
