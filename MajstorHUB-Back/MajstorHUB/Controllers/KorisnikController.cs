@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Utlity;
 
 namespace MajstorHUB.Controllers;
@@ -7,13 +8,14 @@ namespace MajstorHUB.Controllers;
 [Route("[controller]")]
 public class KorisnikController : ControllerBase
 {
+
     private readonly IKorisnikService _korisnikService;
-    private readonly IConfiguration configuration;
+    private readonly IConfiguration _configuration;
 
     public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
     {
         this._korisnikService = korisnikService;
-        this.configuration = configuration;
+        this._configuration = configuration;
     }
 
     [HttpGet("GetAll")]
@@ -133,18 +135,12 @@ public class KorisnikController : ControllerBase
             if (korisnik is null)
                 return BadRequest("Korisnik sa zadatim Email-om ne postoji");
 
-            var hashPassword = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
-            JwtOptions jwtOptions = new JwtOptions();
+            if (!BCrypt.Net.BCrypt.Verify(password, korisnik.Password))
+                return BadRequest("Pogresna sifra");
 
-            var myconfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value!;
-            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value!;
-            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value!;
+            var token = new JwtProvider(_configuration).Generate(korisnik);
 
-            var jwtprov = new JwtProvider(jwtOptions);
-            var token = jwtprov.Generate(korisnik);
             return Ok(token);
-            //generisanje tokena...
         }
         catch (Exception e)
         {
@@ -166,6 +162,7 @@ public class KorisnikController : ControllerBase
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
             var postojeciKorisnik = await _korisnikService.GetById(id);
+            
             if (postojeciKorisnik == null)
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
@@ -179,6 +176,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

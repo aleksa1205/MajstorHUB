@@ -1,3 +1,5 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
@@ -17,7 +19,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.AddAuthorization();
 //Generise swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "JWT Authentication",
+        Description = "Enter JWT Bearer token **_only_**",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer", // must be lower case
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+    options.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {securityScheme, new string[] { }}
+    });
+});
 builder.Services.AddControllers();
 
 //Moguce izmene
@@ -32,9 +55,10 @@ builder.Services.AddScoped<IMajstorService,MajstorService>();
 
 
 var app = builder.Build();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
@@ -45,4 +69,5 @@ app.UseSwaggerUI(options =>
 
 //app.MapGet("/", () => "Hello World!");
 
+app.MapControllers();
 app.Run();
