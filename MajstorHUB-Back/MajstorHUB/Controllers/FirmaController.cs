@@ -57,7 +57,7 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            if (!Utility.IsValidPib(pib)) return BadRequest("Pib mora sadrzati 8 broja!\n");
+            if (!UtilityCheck.IsValidPib(pib)) return BadRequest("Pib mora sadrzati 8 broja!\n");
 
             var firma = await _firmaService.GetByPib(pib);
             if (firma == null)
@@ -78,7 +78,7 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            if (!Utility.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
+            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("\"Pogresan format email-a!\n");
 
             var firma = await _firmaService.GetByEmail(email);
             if (firma is null)

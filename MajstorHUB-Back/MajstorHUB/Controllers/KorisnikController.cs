@@ -1,4 +1,5 @@
-﻿using Utlity;
+﻿using MajstorHUB.Authorization;
+using Utlity;
 
 namespace MajstorHUB.Controllers;
 
@@ -7,10 +8,12 @@ namespace MajstorHUB.Controllers;
 public class KorisnikController : ControllerBase
 {
     private readonly IKorisnikService _korisnikService;
+    private readonly IConfiguration configuration;
 
-    public KorisnikController(IKorisnikService korisnikService)
+    public KorisnikController(IKorisnikService korisnikService, IConfiguration configuration)
     {
         this._korisnikService = korisnikService;
+        this.configuration = configuration;
     }
 
     [HttpGet("GetAll")]
@@ -64,7 +67,7 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            if (!Utility.IsValidJmbg(jmbg)) return BadRequest("JMBG mora sadrzati 13 broja!\n");
+            if (!UtilityCheck.IsValidJmbg(jmbg)) return BadRequest("JMBG mora sadrzati 13 broja!\n");
 
             var korisnik = await _korisnikService.GetByJmbg(jmbg);
             if (korisnik == null) return NotFound($"Korisnik sa JMBG-om {jmbg} ne postoji!\n");
@@ -84,7 +87,7 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            if (!Utility.IsValidEmail(email)) return BadRequest("Pogresan format email-a!");
+            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("Pogresan format email-a!");
 
             var korisnik = await _korisnikService.GetByEmail(email);
             if (korisnik == null) return NotFound($"Korisnik sa Email-om {email} ne postoji!\n");
@@ -130,9 +133,17 @@ public class KorisnikController : ControllerBase
             if (korisnik is null)
                 return BadRequest("Korisnik sa zadatim Email-om ne postoji");
 
-            var tmp = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
-            return Ok(tmp);
+            var hashPassword = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
+            JwtOptions jwtOptions = new JwtOptions();
 
+            var myconfig = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            jwtOptions.Issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value!;
+            jwtOptions.Audience = configuration.GetSection("Jwt").GetSection("Audience").Value!;
+            jwtOptions.SecretKey = configuration.GetSection("Jwt").GetSection("Key").Value!;
+
+            var jwtprov = new JwtProvider(jwtOptions);
+            var token = jwtprov.Generate(korisnik);
+            return Ok(token);
             //generisanje tokena...
         }
         catch (Exception e)

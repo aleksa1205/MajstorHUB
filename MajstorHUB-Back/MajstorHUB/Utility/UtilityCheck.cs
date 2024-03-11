@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 namespace Utlity;
 
-public class Utility
+public class UtilityCheck
 {
     // Proverava da je li validan email (ukrao sam od net hehe)
     public static bool IsValidEmail(string email)

@@ -63,7 +63,7 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            if(Utility.IsValidJmbg(jmbg)) return BadRequest("JMBG mora da sadrzi 13 broja.\n");
+            if(UtilityCheck.IsValidJmbg(jmbg)) return BadRequest("JMBG mora da sadrzi 13 broja.\n");
             var majstor = await _majstorService.GetByJmbg(jmbg);
             if (majstor == null) 
             {
@@ -85,7 +85,7 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            if (!Utility.IsValidEmail(email)) return BadRequest("Pogresan format email-a!\n");
+            if (!UtilityCheck.IsValidEmail(email)) return BadRequest("Pogresan format email-a!\n");
 
             var majstor = await _majstorService.GetByEmail(email);
             if (majstor == null)
