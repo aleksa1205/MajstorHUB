@@ -8,4 +8,5 @@ public class MajstorHUBDatabaseSettings
     public string FirmeCollectionName { get; set; } = null!;
     public string MajstoriCollectionName { get; set; } = null!;
     public string SifreCollectionName { get; set; } = null!;
+    public string OglasiCollectionName { get; set; } = null!;
 }

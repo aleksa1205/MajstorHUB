@@ -27,6 +27,7 @@ builder.Services.AddSingleton<IMongoClient>(s => new MongoClient(builder.Configu
 builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IFirmaService, FirmaService>();
 builder.Services.AddScoped<IMajstorService,MajstorService>();
+builder.Services.AddScoped<IOglasService, OglasService>();
 
 
 var app = builder.Build();

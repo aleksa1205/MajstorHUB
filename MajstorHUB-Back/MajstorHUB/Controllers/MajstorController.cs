@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace MajstorHUB.Controllers;
+﻿namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -23,12 +21,12 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            var listaMajstora= await _majstorService.GetAll();
-            if (listaMajstora == null)
+            var majstori= await _majstorService.GetAll();
+            if (majstori.Count == 0)
             {
                 return NotFound("Nijedan majstor ne postoji u bazi!\n");
             }
-            return Ok(listaMajstora);
+            return Ok(majstori);
         }
         catch(Exception ex)
         {

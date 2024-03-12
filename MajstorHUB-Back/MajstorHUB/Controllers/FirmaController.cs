@@ -22,7 +22,7 @@ public class FirmaController : ControllerBase
         try
         {
             var firme = await _firmaService.GetAll();
-            if (firme == null)
+            if (firme.Count == 0)
                 return NotFound("Nijedna firma ne postoji u bazi!\n");
             return Ok(firme);
         }
