@@ -9,7 +9,6 @@ public class JwtProvider
         _options = new JwtOptions(confing);
     }
 
-
     public string Generate(User user)
     {
         var claims = new Claim[]

@@ -23,12 +23,12 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var listaKorisnika = await _korisnikService.GetAll();
-            if (listaKorisnika == null)
+            var korisnici = await _korisnikService.GetAll();
+            if (korisnici.Count == 0)
             {
                 return NotFound($"Ne postoji nijedan korisnik u bazi!\n");
             }
-            return Ok(listaKorisnika);
+            return Ok(korisnici);
         }
         catch (Exception e)
         {

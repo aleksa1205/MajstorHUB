@@ -19,6 +19,7 @@ public abstract class User
     [BsonElement("broj_telefona")]
     public string? BrojTelefona { get; set; }
 
+    [JsonIgnore]
     [BsonElement("datum_kreiranja")]
     public DateTime DatumKreiranjaNaloga { get; set; } = DateTime.Now;
 
