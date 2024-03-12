@@ -11,11 +11,21 @@ public class JwtProvider
 
     public string Generate(User user)
     {
-        var claims = new Claim[]
+        var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Sub, user.Id!),
             new(JwtRegisteredClaimNames.Email, user.Email)
         };
+
+
+        // Hard kodirano je ovako, ako zatreba uradicemo na bolji nacin
+        if (user is Korisnik)
+            claims.Add(new("Role", Roles.Korisnik.ToString()));
+        else if (user is Majstor)
+            claims.Add(new("Role", Roles.Majstor.ToString()));
+        else if (user is Firma)
+            claims.Add(new("Role", Roles.Firma.ToString()));
+
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
