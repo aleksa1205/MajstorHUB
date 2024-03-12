@@ -18,6 +18,8 @@ public class JwtProvider
             new(JwtRegisteredClaimNames.Email, user.Email)
         };
 
+        //Console.WriteLine(user.GetType());
+
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_options.SecretKey)),

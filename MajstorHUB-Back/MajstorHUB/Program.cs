@@ -1,13 +1,18 @@
+using MajstorHUB.Swagger;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = config["Jwt:Issuer"],
         ValidAudience = config["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(config["Jwt:Key"]!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -18,6 +23,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddControllers();
 
 //Moguce izmene
@@ -30,8 +36,10 @@ builder.Services.AddScoped<IMajstorService,MajstorService>();
 
 
 var app = builder.Build();
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
