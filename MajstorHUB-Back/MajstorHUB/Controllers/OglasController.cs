@@ -1,7 +1,4 @@
-﻿using MongoDB.Driver.Core.Authentication;
-using System.Linq.Expressions;
-
-namespace MajstorHUB.Controllers;
+﻿namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]

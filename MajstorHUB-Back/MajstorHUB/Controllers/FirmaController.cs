@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace MajstorHUB.Controllers;
+﻿namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]

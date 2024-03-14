@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using System.Security.Claims;
-
-namespace MajstorHUB.Authorization;
+﻿namespace MajstorHUB.Authorization;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class RequiresClaimAttribute : Attribute, IAuthorizationFilter

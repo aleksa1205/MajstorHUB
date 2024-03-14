@@ -1,6 +1,3 @@
-using MajstorHUB.Swagger;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 

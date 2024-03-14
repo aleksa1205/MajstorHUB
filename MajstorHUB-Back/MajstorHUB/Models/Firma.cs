@@ -11,4 +11,8 @@ public class Firma : User
 
     [BsonElement("struke")]
     public required List<Struka> Struke { get; set; }
+
+    [BsonElement("zaradjeno_na_platformi")]
+    [JsonIgnore]
+    public double Zaradjeno { get; set; } = 0;
 }
