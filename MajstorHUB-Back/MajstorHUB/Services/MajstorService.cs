@@ -45,7 +45,9 @@ public class MajstorService : IMajstorService
             .Set("ime", majstor.Ime)
             .Set("prezime", majstor.Prezime)
             .Set("datum_rodjenja", majstor.DatumRodjenja)
-            .Set("struka", majstor.Struka);
+            .Set("struka", majstor.Struka)
+            .Set("iskustvo", majstor.Iskustvo)
+            .Set("cena_po_satu", majstor.CenaPoSatu);
         await _majstori.UpdateOneAsync(filter, update);
     }
 

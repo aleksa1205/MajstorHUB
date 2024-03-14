@@ -1,21 +1,17 @@
 ﻿namespace MajstorHUB.Models;
 
-public class Majstor : User
+public class Majstor : Korisnik
 {
-    [BsonElement("jmbg")]
-    [Length(13, 13, ErrorMessage = "JMBG mora imati 13 brojeva!")]
-    public required string JMBG { get; set; }
-
-    [BsonElement("ime")]
-    public required string Ime { get; set; }
-
-    [BsonElement("prezime")]
-    public required string Prezime { get; set; }
-
-    [BsonElement("datum_rodjenja")]
-    public DateTime? DatumRodjenja { get; set; }
-
     [BsonElement("struka")]
     public required Struka Struka { get; set; }
-}
 
+    [BsonElement("iskustvo")]
+    public required Iskustvo Iskustvo { get; set; } = Iskustvo.Nedefinisano;
+    
+    [BsonElement("cena_po_satu")]    
+    public double CenaPoSatu { get; set; }
+
+    [JsonIgnore]
+    [BsonElement("zaradjeno_na_platformi")]
+    public double Zaradjeno { get; set; } = 0;
+}
