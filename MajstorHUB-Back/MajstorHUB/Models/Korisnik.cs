@@ -2,8 +2,8 @@
 
 public class Korisnik : User
 {
-    [BsonElement("jmbg")]
     [Length(13, 13, ErrorMessage ="JMBG mora imati 13 brojeva!")]
+    [BsonElement("jmbg")]
     public required string JMBG { get; set; }
 
     [BsonElement("ime")]
@@ -14,4 +14,8 @@ public class Korisnik : User
 
     [BsonElement("datum_rodjenja")]
     public DateTime? DatumRodjenja { get; set; }
+
+    [JsonIgnore]
+    [BsonElement("potroseno_na_sajtu")]
+    public double Potroseno { get; set; } = 0;
 }
