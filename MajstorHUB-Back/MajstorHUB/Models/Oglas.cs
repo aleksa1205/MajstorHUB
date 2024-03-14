@@ -2,9 +2,9 @@
 
 public class Oglas
 {
+    [JsonIgnore]
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    [JsonIgnore]
     public string? Id { get; set; }
 
     [BsonElement("korisnik")]
@@ -22,7 +22,7 @@ public class Oglas
     [BsonElement("opis")]
     public required string Opis{ get; set; }
 
-    [BsonElement("datum_kreiranja")]
     [JsonIgnore]
+    [BsonElement("datum_kreiranja")]
     public DateTime DatumPostavljanja { get; set; } = DateTime.Now;
 }
