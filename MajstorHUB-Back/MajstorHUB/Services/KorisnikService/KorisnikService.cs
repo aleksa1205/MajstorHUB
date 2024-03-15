@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.KorisnikService;
 
 public class KorisnikService : IKorisnikService
 {
@@ -37,7 +37,7 @@ public class KorisnikService : IKorisnikService
 
     public async Task Update(string id, Korisnik korisnik)
     {
-        var filter = Builders<Korisnik>.Filter.Eq(korisnik=>korisnik.Id, id);
+        var filter = Builders<Korisnik>.Filter.Eq(korisnik => korisnik.Id, id);
         var update = Builders<Korisnik>.Update
             .Set("email", korisnik.Email)
             .Set("adresa", korisnik.Adresa)

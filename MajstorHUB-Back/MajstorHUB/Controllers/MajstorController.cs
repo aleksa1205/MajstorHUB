@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Controllers;
+﻿using MajstorHUB.Services.MajstorService;
+
+namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]

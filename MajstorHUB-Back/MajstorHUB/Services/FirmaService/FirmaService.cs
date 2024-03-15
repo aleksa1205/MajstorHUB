@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.FirmaService;
 
 public class FirmaService : IFirmaService
 {

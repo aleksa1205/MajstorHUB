@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.KorisnikService;
 
 public interface IKorisnikService
 {

@@ -19,5 +19,8 @@ global using Microsoft.IdentityModel.Tokens;
 
 global using MajstorHUB.Authorization;
 global using MajstorHUB.Models;
-global using MajstorHUB.Services;
+global using MajstorHUB.Services.FirmaService;
+global using MajstorHUB.Services.KorisnikService;
+global using MajstorHUB.Services.MajstorService;
+global using MajstorHUB.Services.OglasService;
 global using Utlity;
