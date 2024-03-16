@@ -6,6 +6,13 @@ public class JwtOptions
     public string Audience { get; set; }
     public string SecretKey { get; set; }
 
+    public JwtOptions()
+    {
+        Issuer = "";
+        Audience = "";
+        SecretKey = "";
+    }
+
     public JwtOptions(IConfiguration confing)
     {
         Issuer = confing.GetSection("Jwt").GetSection("Issuer").Value!;

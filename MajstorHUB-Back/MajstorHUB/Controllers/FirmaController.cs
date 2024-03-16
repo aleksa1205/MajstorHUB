@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Controllers;
+﻿using MajstorHUB.Authorization;
+
+namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -13,6 +15,7 @@ public class FirmaController : ControllerBase
         this._configuration = configuration;
     }
 
+    [Authorize]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,19 +125,94 @@ public class FirmaController : ControllerBase
         try
         {
             var firma = await _firmaService.GetByEmail(email);
-            if (firma == null)
+            if (firma is null)
                 return BadRequest("Firma sa zadatim Email-om ne postoji!\n");
 
             var hashPassword = BCrypt.Net.BCrypt.Verify(password, firma.Password);
-            if (hashPassword)
-            {
-                var token = new JwtProvider(_configuration).Generate(firma);
-                return Ok(token);
-            }
-            else
+            if (!hashPassword)
             {
                 return BadRequest("Pogresna sifra!\n");
             }
+
+            var token = new JwtProvider(_configuration).Generate(firma);
+
+            string refreshToken = RefreshProvider.GenerateRefreshToken();
+            DateTime expiry = DateTime.UtcNow.AddMinutes(1);
+
+            await _firmaService.UpdateRefreshToken(firma.Id!, refreshToken, expiry);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                RefreshToken = refreshToken
+            });
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshModel model)
+    {
+        try
+        {
+            var jwtProvider = new JwtProvider(_configuration);
+            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.AccessToken);
+
+            if (principal?.Identity?.Name is null)
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+
+            var firma = await _firmaService.GetByEmail(principal.Identity.Name);
+
+            if (firma is null ||
+                firma.RefreshToken != model.RefreshToken ||
+                firma.RefreshTokenExpiry < DateTime.UtcNow)
+                return Unauthorized();
+
+            var token = jwtProvider.Generate(firma);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = model.RefreshToken,
+                Expiration = token.ValidTo
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpDelete("Logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var email = HttpContext.User.Identity?.Name;
+
+            if (email is null)
+                return Unauthorized();
+
+            var firma = await _firmaService.GetByEmail(email);
+
+            if (firma is null)
+                return Unauthorized();
+
+            await _firmaService.DeleteRefreshToken(firma.Id!);
+
+            return Ok();
         }
         catch (Exception e)
         {

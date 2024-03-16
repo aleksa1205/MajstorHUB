@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.RecenzijaService;
 
 public interface IRecenzijaService
 {

@@ -52,4 +52,21 @@ public class FirmaService : IFirmaService
     {
         await _firme.DeleteOneAsync(firma => firma.Id == id);
     }
+
+    public async Task UpdateRefreshToken(string id, string refreshToken, DateTime expiry)
+    {
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Set("refresh_token", refreshToken)
+            .Set("refresh_token_expiry", expiry);
+        await _firme.UpdateOneAsync(filter, update);
+    }
+
+    public async Task DeleteRefreshToken(string id)
+    {
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Set("refresh_token", "");
+        await _firme.UpdateOneAsync(filter, update);
+    }
 }

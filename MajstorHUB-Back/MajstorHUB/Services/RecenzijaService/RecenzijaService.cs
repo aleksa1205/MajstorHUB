@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.RecenzijaService;
 
 public class RecenzijaService
 {
@@ -29,7 +29,7 @@ public class RecenzijaService
     {
         var filter = Builders<Recenzija>.Filter.Eq(recenzija => recenzija.Id, id);
         var update = Builders<Recenzija>.Update
-                    .Set("ocena",recenzija.Ocena)
+                    .Set("ocena", recenzija.Ocena)
                     .Set("opis", recenzija.Opis);
         await _recenzije.UpdateOneAsync(filter, update);
     }
