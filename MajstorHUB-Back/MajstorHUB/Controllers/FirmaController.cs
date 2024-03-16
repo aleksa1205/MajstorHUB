@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-
-namespace MajstorHUB.Controllers;
+﻿namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -19,7 +17,7 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         try
         {
@@ -38,7 +36,7 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Get(string id)
+    public async Task<IActionResult> Get(string id)
     {
         try
         {
@@ -57,7 +55,7 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetByPib(string pib)
+    public async Task<IActionResult> GetByPib(string pib)
     {
         try
         {
@@ -77,7 +75,7 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetByEmail(string email)
+    public async Task<IActionResult> GetByEmail(string email)
     {
         try
         {
@@ -96,7 +94,7 @@ public class FirmaController : ControllerBase
     [HttpPost("Add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Post([FromBody] Firma firma)
+    public async Task<IActionResult> Post([FromBody] Firma firma)
     {
         try
         {
@@ -116,10 +114,10 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPost("Login")]
+    [HttpPost("Login/{email}/{password}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login(string email, string password)
     {
         try
         {
@@ -144,11 +142,36 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [HttpPost("Prosek/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Average(string id)
+    {
+        try
+        {
+            var firma = await _firmaService.GetById(id);
+            if (firma is null)
+                return NotFound($"Firma za ID-em {id} ne postoji!\n");
+            if (firma.Recenzija.Count == 0)
+                return BadRequest("Firma nema nijednu recenziju!\n");
+            double avg = 0;
+            foreach (var element in firma.Recenzija)
+                avg += element.Ocena;
+            avg /= firma.Recenzija.Count;
+            return Ok(avg);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Put(String id, [FromBody] Firma firma)
+    public async Task<IActionResult> Put(String id, [FromBody] Firma firma)
     {
         try
         {
@@ -175,7 +198,7 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
         try
         {

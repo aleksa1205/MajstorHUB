@@ -19,7 +19,7 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         try
         {
@@ -40,7 +40,7 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetById(string id)
+    public async Task<IActionResult> GetById(string id)
     {
         try
         {
@@ -61,7 +61,7 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetByJmbg(string jmbg)
+    public async Task<IActionResult> GetByJmbg(string jmbg)
     {
         try
         {
@@ -82,7 +82,7 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> GetByEmail(string email)
+    public async Task<IActionResult> GetByEmail(string email)
     {
         try
         {
@@ -103,7 +103,7 @@ public class MajstorController : ControllerBase
     [HttpPost("Add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Post([FromBody] Majstor majstor)
+    public async Task<IActionResult> Post([FromBody] Majstor majstor)
     {
         try
         {
@@ -123,10 +123,10 @@ public class MajstorController : ControllerBase
         }
     }
 
-    [HttpPost("Login")]
+    [HttpPost("Login/{email}/{password}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Login(string email, string password)
+    public async Task<IActionResult> Login(string email, string password)
     {
         try
         {
@@ -150,11 +150,36 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [HttpPost("Prosek/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Average(string id)
+    {
+        try
+        {
+            var majstor = await _majstorService.GetById(id);
+            if (majstor is null)
+                return NotFound($"Majstor za ID-em {id} ne postoji!\n");
+            if (majstor.Recenzija.Count == 0)
+                return BadRequest("Majstor nema nijednu recenziju!\n");
+            double avg = 0;
+            foreach (var element in majstor.Recenzija)
+                avg += element.Ocena;
+            avg /= majstor.Recenzija.Count;
+            return Ok(avg);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Put(string id, [FromBody] Majstor majstor)
+    public async Task<IActionResult> Put(string id, [FromBody] Majstor majstor)
     {
         try
         {
@@ -180,7 +205,7 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
         try
         {
