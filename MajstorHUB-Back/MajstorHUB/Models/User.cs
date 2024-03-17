@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Models;
+﻿using System.ComponentModel;
+
+namespace MajstorHUB.Models;
 
 public abstract class User
 {
@@ -36,4 +38,8 @@ public abstract class User
 
     [BsonElement("opis")]
     public string? Opis { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    [BsonElement("refresh_token")]
+    public RefreshToken? RefreshToken { get; set; }
 }

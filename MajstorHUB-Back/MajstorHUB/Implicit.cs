@@ -22,8 +22,15 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.IdentityModel.Tokens;
 
+global using MajstorHUB.Requests;
 global using MajstorHUB.Authorization;
 global using MajstorHUB.Models;
-global using MajstorHUB.Services;
+global using MajstorHUB.Services.FirmaService;
+global using MajstorHUB.Services.KorisnikService;
+global using MajstorHUB.Services.MajstorService;
+global using MajstorHUB.Services.OglasService;
+global using MajstorHUB.Services.RecenzijaService;
 global using MajstorHUB.Swagger;
+
+global using MajstorHUB.Responses;
 global using Utlity;

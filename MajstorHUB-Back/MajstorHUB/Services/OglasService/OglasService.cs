@@ -1,12 +1,12 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.OglasService;
 
 public class OglasService : IOglasService
 {
     private readonly IMongoCollection<Oglas> _oglasi;
-    
+
     public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
-        var db=mongoClient.GetDatabase(settings.DatabaseName);
+        var db = mongoClient.GetDatabase(settings.DatabaseName);
         _oglasi = db.GetCollection<Oglas>(settings.OglasiCollectionName);
     }
 
@@ -22,7 +22,7 @@ public class OglasService : IOglasService
 
     public async Task<List<Oglas>> GetByKorisnik(string korisnikId)
     {
-        return await _oglasi.Find(oglasi=>oglasi.KorisnikId==korisnikId).ToListAsync();
+        return await _oglasi.Find(oglasi => oglasi.KorisnikId == korisnikId).ToListAsync();
     }
 
     public async Task Create(Oglas oglas)

@@ -13,7 +13,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
+        ValidateIssuerSigningKey = true,
+        // po defaultu je 5 minuta, znaci da tajmer za validiranje tokena kasni 5 minuta
+        // zbog testiranja je stavljen ovako
+        ClockSkew = TimeSpan.Zero 
     };
 });
 builder.Services.AddAuthorization();

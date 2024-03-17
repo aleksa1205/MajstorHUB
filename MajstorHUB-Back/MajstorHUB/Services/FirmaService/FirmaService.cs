@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.FirmaService;
 
 public class FirmaService : IFirmaService
 {
@@ -51,5 +51,23 @@ public class FirmaService : IFirmaService
     public async Task Delete(string id)
     {
         await _firme.DeleteOneAsync(firma => firma.Id == id);
+    }
+
+    public async Task UpdateRefreshToken(string id, RefreshToken token)
+    {
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Set("refresh_token", token);
+
+        await _firme.UpdateOneAsync(filter, update);
+    }
+
+    public async Task DeleteRefreshToken(string id)
+    {
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Unset("refresh_token");
+
+        await _firme.UpdateOneAsync(filter, update);
     }
 }

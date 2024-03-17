@@ -9,12 +9,14 @@ public class JwtProvider
         _options = new JwtOptions(confing);
     }
 
-    public string Generate(User user)
+    public JwtSecurityToken Generate(User user)
     {
         var claims = new List<Claim>
         {
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id!),
-            new(JwtRegisteredClaimNames.Email, user.Email)
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(ClaimTypes.Name, user.Email)
         };
 
         // Hard kodirano je ovako, ako zatreba uradicemo na bolji nacin
@@ -35,12 +37,35 @@ public class JwtProvider
             _options.Audience,
             claims,
             null,
-            DateTime.UtcNow.AddHours(1),
+            DateTime.UtcNow.Add(_options.JwtLifetime),
             signingCredentials);
 
-        string tokenValue = new JwtSecurityTokenHandler()
-            .WriteToken(token);
+        return token;
 
-        return tokenValue;
+        //string tokenValue = new JwtSecurityTokenHandler()
+        //    .WriteToken(token);
+
+        //return tokenValue;
+    }
+
+    // Proverava jwt token da li je validan
+    public ClaimsPrincipal? GetPrincipalFromExpiredToken (string? token)
+    {
+        var secret = _options.SecretKey ?? throw new InvalidOperationException("Tajni kljuc nije konfigurisan");
+
+        var validation = new TokenValidationParameters
+        {
+            // proverava da li je ovaj ko potpisuje token validan
+            ValidIssuer = _options.Issuer,
+            ValidAudience = _options.Audience,
+            // proverava da li je kljuc u redu
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
+            // BITNO
+            // Ako je istekao token nece da baci false kao proveru
+            // jer je nama svejedno istekao token pa zelimo da ga regenerisemo
+            ValidateLifetime = false
+        };
+
+        return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
     }
 }

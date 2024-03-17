@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Services;
+﻿namespace MajstorHUB.Services.KorisnikService;
 
 public interface IKorisnikService
 {
@@ -8,5 +8,7 @@ public interface IKorisnikService
     Task<Korisnik> GetByEmail(string email);
     Task Create(Korisnik korisnik);
     Task Update(string id, Korisnik korisnik);
+    Task UpdateRefreshToken(string id, RefreshToken token);
     Task Delete(string id);
+    Task DeleteRefreshToken(string id);
 }

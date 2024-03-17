@@ -1,4 +1,7 @@
-﻿namespace MajstorHUB.Controllers;
+﻿using MajstorHUB.Authorization;
+using System.Collections.Immutable;
+
+namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -13,6 +16,7 @@ public class FirmaController : ControllerBase
         this._configuration = configuration;
     }
 
+    [Authorize]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -91,10 +95,10 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPost("Add")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] Firma firma)
+    public async Task<IActionResult> Register([FromBody] Firma firma)
     {
         try
         {
@@ -121,20 +125,123 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Pogresna format email-a!");
+
             var firma = await _firmaService.GetByEmail(email);
-            if (firma == null)
+            if (firma is null)
                 return BadRequest("Firma sa zadatim Email-om ne postoji!\n");
 
             var hashPassword = BCrypt.Net.BCrypt.Verify(password, firma.Password);
-            if (hashPassword)
-            {
-                var token = new JwtProvider(_configuration).Generate(firma);
-                return Ok(token);
-            }
-            else
+
+            if (!hashPassword)
             {
                 return BadRequest("Pogresna sifra!\n");
             }
+
+            var token = new JwtProvider(_configuration).Generate(firma);
+
+            var refresh = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                Used = false,
+                JwtId = token.Id
+            };
+
+            await _firmaService.UpdateRefreshToken(firma.Id!, refresh);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                RefreshToken = refresh
+            });
+
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshModel model)
+    {
+        try
+        {
+            var jwtProvider = new JwtProvider(_configuration);
+            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
+
+            if (principal?.Identity?.Name is null)
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+
+            // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
+            // sekude od datuma 01.01.1970 00:00:00
+            JwtOptions options = new JwtOptions(_configuration);
+            var expiryDateUnix =
+                long.Parse(principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(expiryDateUnix);
+
+            if (expiryDateTimeUtc > DateTime.UtcNow)
+                return Unauthorized();
+
+            var firma = await _firmaService.GetByEmail(principal.Identity.Name);
+            var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+            if (firma is null ||
+                firma.RefreshToken?.JwtId != jwtId ||
+                firma.RefreshToken.TokenValue != model.RefreshToken ||
+                firma.RefreshToken.Expiry < DateTime.UtcNow ||
+                firma.RefreshToken.Used)
+                    return Unauthorized();
+
+            var newUsedToken = firma.RefreshToken;
+            //newUsedToken.Used = true; // kurcina nece moze ovako
+            await _firmaService.UpdateRefreshToken(firma.Id!, newUsedToken);
+
+            var token = jwtProvider.Generate(firma);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = newUsedToken,
+                Expiration = token.ValidTo
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Firma)]
+    [HttpDelete("Logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var email = HttpContext.User.Identity?.Name;
+
+            if (email is null)
+                return Unauthorized();
+
+            var firma = await _firmaService.GetByEmail(email);
+
+            if (firma is null)
+                return Unauthorized();
+
+            await _firmaService.DeleteRefreshToken(firma.Id!);
+
+            return Ok();
         }
         catch (Exception e)
         {

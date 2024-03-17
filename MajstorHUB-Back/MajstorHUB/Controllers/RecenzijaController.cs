@@ -1,6 +1,4 @@
-﻿using MajstorHUB.Models;
-
-namespace MajstorHUB.Controllers
+﻿namespace MajstorHUB.Controllers
 {
     [ApiController]
     [Route("[controller]")]
