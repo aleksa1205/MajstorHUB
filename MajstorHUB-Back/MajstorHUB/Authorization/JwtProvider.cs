@@ -4,11 +4,6 @@ public class JwtProvider
 {
     private readonly JwtOptions _options;
 
-    public JwtProvider()
-    {
-        _options = new JwtOptions();
-    }
-
     public JwtProvider(IConfiguration confing)
     {
         _options = new JwtOptions(confing);
@@ -18,6 +13,7 @@ public class JwtProvider
     {
         var claims = new List<Claim>
         {
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Sub, user.Id!),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(ClaimTypes.Name, user.Email)
@@ -41,7 +37,7 @@ public class JwtProvider
             _options.Audience,
             claims,
             null,
-            DateTime.UtcNow.AddSeconds(30),
+            DateTime.UtcNow.Add(_options.JwtLifetime),
             signingCredentials);
 
         return token;

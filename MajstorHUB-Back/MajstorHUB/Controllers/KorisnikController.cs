@@ -1,4 +1,7 @@
-﻿namespace MajstorHUB.Controllers;
+﻿using MajstorHUB.Models;
+using System.Runtime.Intrinsics.X86;
+
+namespace MajstorHUB.Controllers;
 
 [ApiController]
 [Route("[controller]")]
@@ -96,10 +99,10 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [HttpPost("Add")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] Korisnik korisnik)
+    public async Task<IActionResult> Register([FromBody] Korisnik korisnik)
     {
         try
         {
@@ -127,20 +130,122 @@ public class KorisnikController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Pogresna format email-a!");
+
             var korisnik = await _korisnikService.GetByEmail(email);
             if (korisnik is null)
                 return BadRequest("Korisnik sa zadatim Email-om ne postoji!\n");
 
             var hashPassword = BCrypt.Net.BCrypt.Verify(password, korisnik.Password);
-            if (hashPassword)
-            {
-                var token = new JwtProvider(_configuration).Generate(korisnik);
-                return Ok(token);
-            }
-            else
+
+            if (!hashPassword)
             {
                 return BadRequest("Pogresna sifra!\n");
             }
+
+            var token = new JwtProvider(_configuration).Generate(korisnik);
+
+            var refresh = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                Used = false,
+                JwtId = token.Id
+            };
+
+            await _korisnikService.UpdateRefreshToken(korisnik.Id!, refresh);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                RefreshToken = refresh
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshModel model)
+    {
+        try
+        {
+            var jwtProvider = new JwtProvider(_configuration);
+            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
+
+            if (principal?.Identity?.Name is null)
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+
+            // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
+            // sekude od datuma 01.01.1970 00:00:00
+            JwtOptions options = new JwtOptions(_configuration);
+            var expiryDateUnix =
+                long.Parse(principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(expiryDateUnix);
+
+            if (expiryDateTimeUtc > DateTime.UtcNow)
+                return Unauthorized();
+
+            var korisnik = await _korisnikService.GetByEmail(principal.Identity.Name);
+            var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+            if (korisnik is null ||
+                korisnik.RefreshToken?.JwtId != jwtId ||
+                korisnik.RefreshToken.TokenValue != model.RefreshToken ||
+                korisnik.RefreshToken.Expiry < DateTime.UtcNow ||
+                korisnik.RefreshToken.Used)
+                    return Unauthorized();
+
+            var newUsedToken = korisnik.RefreshToken;
+            //newUsedToken.Used = true; // kurcina nece moze ovako
+            await _korisnikService.UpdateRefreshToken(korisnik.Id!, newUsedToken);
+
+            var token = jwtProvider.Generate(korisnik);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = newUsedToken,
+                Expiration = token.ValidTo
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpDelete("Logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var email = HttpContext.User.Identity?.Name;
+
+            if (email is null)
+                return Unauthorized();
+
+            var firma = await _korisnikService.GetByEmail(email);
+
+            if (firma is null)
+                return Unauthorized();
+
+            await _korisnikService.DeleteRefreshToken(firma.Id!);
+
+            return Ok();
         }
         catch (Exception e)
         {

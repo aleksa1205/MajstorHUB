@@ -39,8 +39,7 @@ public abstract class User
     [BsonElement("opis")]
     public string? Opis { get; set; } = string.Empty;
 
+    [JsonIgnore]
     [BsonElement("refresh_token")]
-    public string? RefreshToken { get; set; }
-    [BsonElement("refresh_token_expiry")]
-    public DateTime RefreshTokenExpiry { get; set; }
+    public RefreshToken? RefreshToken { get; set; }
 }

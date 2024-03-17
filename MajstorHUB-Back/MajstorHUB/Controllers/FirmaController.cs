@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Authorization;
+using System.Collections.Immutable;
 
 namespace MajstorHUB.Controllers;
 
@@ -94,10 +95,10 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPost("Add")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] Firma firma)
+    public async Task<IActionResult> Register([FromBody] Firma firma)
     {
         try
         {
@@ -124,11 +125,15 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Pogresna format email-a!");
+
             var firma = await _firmaService.GetByEmail(email);
             if (firma is null)
                 return BadRequest("Firma sa zadatim Email-om ne postoji!\n");
 
             var hashPassword = BCrypt.Net.BCrypt.Verify(password, firma.Password);
+
             if (!hashPassword)
             {
                 return BadRequest("Pogresna sifra!\n");
@@ -136,16 +141,21 @@ public class FirmaController : ControllerBase
 
             var token = new JwtProvider(_configuration).Generate(firma);
 
-            string refreshToken = RefreshProvider.GenerateRefreshToken();
-            DateTime expiry = DateTime.UtcNow.AddMinutes(1);
+            var refresh = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                Used = false,
+                JwtId = token.Id
+            };
 
-            await _firmaService.UpdateRefreshToken(firma.Id!, refreshToken, expiry);
+            await _firmaService.UpdateRefreshToken(firma.Id!, refresh);
 
             return Ok(new LoginResponse
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                RefreshToken = refreshToken
+                RefreshToken = refresh
             });
 
         }
@@ -164,24 +174,42 @@ public class FirmaController : ControllerBase
         try
         {
             var jwtProvider = new JwtProvider(_configuration);
-            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.AccessToken);
+            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
                 return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
 
+            // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
+            // sekude od datuma 01.01.1970 00:00:00
+            JwtOptions options = new JwtOptions(_configuration);
+            var expiryDateUnix =
+                long.Parse(principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(expiryDateUnix);
+
+            if (expiryDateTimeUtc > DateTime.UtcNow)
+                return Unauthorized();
+
             var firma = await _firmaService.GetByEmail(principal.Identity.Name);
+            var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
             if (firma is null ||
-                firma.RefreshToken != model.RefreshToken ||
-                firma.RefreshTokenExpiry < DateTime.UtcNow)
-                return Unauthorized();
+                firma.RefreshToken?.JwtId != jwtId ||
+                firma.RefreshToken.TokenValue != model.RefreshToken ||
+                firma.RefreshToken.Expiry < DateTime.UtcNow ||
+                firma.RefreshToken.Used)
+                    return Unauthorized();
+
+            var newUsedToken = firma.RefreshToken;
+            //newUsedToken.Used = true; // kurcina nece moze ovako
+            await _firmaService.UpdateRefreshToken(firma.Id!, newUsedToken);
 
             var token = jwtProvider.Generate(firma);
 
             return Ok(new LoginResponse
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = model.RefreshToken,
+                RefreshToken = newUsedToken,
                 Expiration = token.ValidTo
             });
         }
@@ -192,6 +220,7 @@ public class FirmaController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(Roles.Firma)]
     [HttpDelete("Logout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

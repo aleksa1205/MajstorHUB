@@ -1,4 +1,7 @@
-﻿namespace MajstorHUB.Services.KorisnikService;
+﻿
+using MajstorHUB.Models;
+
+namespace MajstorHUB.Services.KorisnikService;
 
 public class KorisnikService : IKorisnikService
 {
@@ -51,5 +54,23 @@ public class KorisnikService : IKorisnikService
     public async Task Delete(string id)
     {
         await _korisnici.DeleteOneAsync(korisnik => korisnik.Id == id);
+    }
+
+    public async Task UpdateRefreshToken(string id, RefreshToken token)
+    {
+        var filter = Builders<Korisnik>.Filter.Eq(korisnik => korisnik.Id, id);
+        var update = Builders<Korisnik>.Update
+            .Set("refresh_token", token);
+
+        await _korisnici.UpdateOneAsync(filter, update);
+    }
+
+    public async Task DeleteRefreshToken(string id)
+    {
+        var filter = Builders<Korisnik>.Filter.Eq(k => k.Id, id);
+        var update = Builders<Korisnik>.Update
+            .Unset("refresh_token");
+
+        await _korisnici.UpdateOneAsync(filter, update);
     }
 }

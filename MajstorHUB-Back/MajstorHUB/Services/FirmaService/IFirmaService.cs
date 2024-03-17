@@ -8,9 +8,9 @@ public interface IFirmaService
     Task<Firma> GetByEmail(string email);
     Task Create(Firma firma);
     Task Update(string id, Firma firma);
-    // Moze samo i preko Update funkcije, ali reko da bude bezbednije da se korisnti posebna
+    // Moze samo i preko Update funkcije, ali reko da bude bezbednije da se koriste posebne
     // funkcija samo za refresh token
-    Task UpdateRefreshToken(string id, string refreshToken, DateTime expiry);
+    Task UpdateRefreshToken(string id, RefreshToken token);
     Task Delete(string id);
     Task DeleteRefreshToken(string id);
 }
