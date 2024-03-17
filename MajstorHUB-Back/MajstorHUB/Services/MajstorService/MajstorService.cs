@@ -1,4 +1,5 @@
-﻿namespace MajstorHUB.Services.MajstorService;
+﻿
+namespace MajstorHUB.Services.MajstorService;
 
 public class MajstorService : IMajstorService
 {
@@ -54,5 +55,23 @@ public class MajstorService : IMajstorService
     public async Task Delete(string id)
     {
         await _majstori.DeleteOneAsync(majstor => majstor.Id == id);
+    }
+
+    public async Task UpdateRefreshToken(string id, RefreshToken token)
+    {
+        var filter = Builders<Majstor>.Filter.Eq(majstor => majstor.Id, id);
+        var update = Builders<Majstor>.Update
+            .Set("refresh_token", token);
+
+        await _majstori.UpdateOneAsync(filter, update);
+    }
+
+    public async Task DeleteRefreshToken(string id)
+    {
+        var filter = Builders<Majstor>.Filter.Eq(majstor => majstor.Id, id);
+        var update = Builders<Majstor>.Update
+            .Unset("refresh_token");
+
+        await _majstori.UpdateOneAsync(filter, update);
     }
 }

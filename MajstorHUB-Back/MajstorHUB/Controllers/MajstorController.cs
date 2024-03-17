@@ -1,4 +1,5 @@
-﻿using MajstorHUB.Services.MajstorService;
+﻿using MajstorHUB.Models;
+using MajstorHUB.Services.MajstorService;
 
 namespace MajstorHUB.Controllers;
 
@@ -100,10 +101,10 @@ public class MajstorController : ControllerBase
         }
     }
 
-    [HttpPost("Add")]
+    [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post([FromBody] Majstor majstor)
+    public async Task<IActionResult> Register([FromBody] Majstor majstor)
     {
         try
         {
@@ -130,19 +131,125 @@ public class MajstorController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Pogresna format email-a!");
+
             var majstor = await _majstorService.GetByEmail(email);
             if (majstor is null)
                 return BadRequest("Majstor sa zadatim Email-om ne postoji");
-            var hashPasword = BCrypt.Net.BCrypt.Verify(password, majstor.Password);
-            if (hashPasword)
-            {
-                var token = new JwtProvider(_configuration).Generate(majstor);
-                return Ok(token);
-            }
-            else
+
+            var hashPassword = BCrypt.Net.BCrypt.Verify(password, majstor.Password);
+
+            if (!hashPassword)
             {
                 return BadRequest("Pogresna sifra!\n");
             }
+
+            var token = new JwtProvider(_configuration).Generate(majstor);
+
+            var refresh = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                JwtId = token.Id
+            };
+
+            await _majstorService.UpdateRefreshToken(majstor.Id!, refresh);
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                RefreshToken = refresh
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPost("Refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshModel model)
+    {
+        try
+        {
+            var jwtProvider = new JwtProvider(_configuration);
+            var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
+
+            if (principal?.Identity?.Name is null)
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+
+            // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
+            // sekude od datuma 01.01.1970 00:00:00
+            JwtOptions options = new JwtOptions(_configuration);
+            var expiryDateUnix =
+                long.Parse(principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDateTimeUtc = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                .AddSeconds(expiryDateUnix);
+
+            if (expiryDateTimeUtc > DateTime.UtcNow)
+                return Unauthorized();
+
+            var firma = await _majstorService.GetById(principal.Identity.Name);
+            var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+            if (firma is null ||
+                firma.RefreshToken?.JwtId != jwtId ||
+                firma.RefreshToken.TokenValue != model.RefreshToken ||
+                firma.RefreshToken.Expiry < DateTime.UtcNow
+                )
+                return Unauthorized();
+
+            var token = jwtProvider.Generate(firma);
+            var newRefreshToken = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                JwtId = token.Id
+            };
+            await _majstorService.UpdateRefreshToken(firma.Id!, newRefreshToken);
+
+
+            return Ok(new LoginResponse
+            {
+                JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
+                RefreshToken = newRefreshToken,
+                Expiration = token.ValidTo
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
+    [HttpDelete("Logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            var firma = await _majstorService.GetById(id);
+
+            if (firma is null)
+                return Unauthorized();
+
+            await _majstorService.DeleteRefreshToken(firma.Id!);
+
+            return Ok();
         }
         catch (Exception e)
         {

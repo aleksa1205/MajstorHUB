@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Authorization;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace MajstorHUB.Authorization;
 
 public class JwtProvider
 {
@@ -14,9 +16,8 @@ public class JwtProvider
         var claims = new List<Claim>
         {
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Sub, user.Id!),
             new(JwtRegisteredClaimNames.Email, user.Email),
-            new(ClaimTypes.Name, user.Email)
+            new(ClaimTypes.Name, user.Id!),
         };
 
         // Hard kodirano je ovako, ako zatreba uradicemo na bolji nacin
