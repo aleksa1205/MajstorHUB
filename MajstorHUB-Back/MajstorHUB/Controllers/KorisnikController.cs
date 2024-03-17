@@ -150,7 +150,6 @@ public class KorisnikController : ControllerBase
             {
                 TokenValue = RefreshProvider.GenerateRefreshToken(),
                 Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
-                Used = false,
                 JwtId = token.Id
             };
 
@@ -194,26 +193,31 @@ public class KorisnikController : ControllerBase
             if (expiryDateTimeUtc > DateTime.UtcNow)
                 return Unauthorized();
 
-            var korisnik = await _korisnikService.GetByEmail(principal.Identity.Name);
+            var korisnik = await _korisnikService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
             if (korisnik is null ||
                 korisnik.RefreshToken?.JwtId != jwtId ||
                 korisnik.RefreshToken.TokenValue != model.RefreshToken ||
-                korisnik.RefreshToken.Expiry < DateTime.UtcNow ||
-                korisnik.RefreshToken.Used)
+                korisnik.RefreshToken.Expiry < DateTime.UtcNow
+                )
                     return Unauthorized();
 
-            var newUsedToken = korisnik.RefreshToken;
-            //newUsedToken.Used = true; // kurcina nece moze ovako
-            await _korisnikService.UpdateRefreshToken(korisnik.Id!, newUsedToken);
+            var token = new JwtProvider(_configuration).Generate(korisnik);
 
-            var token = jwtProvider.Generate(korisnik);
+            var refresh = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                JwtId = token.Id
+            };
+
+            await _korisnikService.UpdateRefreshToken(korisnik.Id!, refresh);
 
             return Ok(new LoginResponse
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = newUsedToken,
+                RefreshToken = refresh,
                 Expiration = token.ValidTo
             });
         }
@@ -233,12 +237,12 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var email = HttpContext.User.Identity?.Name;
+            var id = HttpContext.User.Identity?.Name;
 
-            if (email is null)
+            if (id is null)
                 return Unauthorized();
 
-            var firma = await _korisnikService.GetByEmail(email);
+            var firma = await _korisnikService.GetById(id);
 
             if (firma is null)
                 return Unauthorized();

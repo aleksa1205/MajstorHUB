@@ -145,7 +145,6 @@ public class FirmaController : ControllerBase
             {
                 TokenValue = RefreshProvider.GenerateRefreshToken(),
                 Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
-                Used = false,
                 JwtId = token.Id
             };
 
@@ -190,26 +189,30 @@ public class FirmaController : ControllerBase
             if (expiryDateTimeUtc > DateTime.UtcNow)
                 return Unauthorized();
 
-            var firma = await _firmaService.GetByEmail(principal.Identity.Name);
+            var firma = await _firmaService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
             if (firma is null ||
                 firma.RefreshToken?.JwtId != jwtId ||
                 firma.RefreshToken.TokenValue != model.RefreshToken ||
-                firma.RefreshToken.Expiry < DateTime.UtcNow ||
-                firma.RefreshToken.Used)
+                firma.RefreshToken.Expiry < DateTime.UtcNow
+                )
                     return Unauthorized();
 
-            var newUsedToken = firma.RefreshToken;
-            //newUsedToken.Used = true; // kurcina nece moze ovako
-            await _firmaService.UpdateRefreshToken(firma.Id!, newUsedToken);
-
             var token = jwtProvider.Generate(firma);
+            var newRefreshToken = new RefreshToken
+            {
+                TokenValue = RefreshProvider.GenerateRefreshToken(),
+                Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
+                JwtId = token.Id
+            };
+            await _firmaService.UpdateRefreshToken(firma.Id!, newRefreshToken);
+
 
             return Ok(new LoginResponse
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
-                RefreshToken = newUsedToken,
+                RefreshToken = newRefreshToken,
                 Expiration = token.ValidTo
             });
         }
@@ -229,12 +232,12 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            var email = HttpContext.User.Identity?.Name;
+            var id = HttpContext.User.Identity?.Name;
 
-            if (email is null)
+            if (id is null)
                 return Unauthorized();
 
-            var firma = await _firmaService.GetByEmail(email);
+            var firma = await _firmaService.GetById(id);
 
             if (firma is null)
                 return Unauthorized();
