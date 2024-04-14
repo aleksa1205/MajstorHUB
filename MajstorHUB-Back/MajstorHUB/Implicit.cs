@@ -31,6 +31,7 @@ global using MajstorHUB.Services.MajstorService;
 global using MajstorHUB.Services.OglasService;
 global using MajstorHUB.Services.RecenzijaService;
 global using MajstorHUB.Swagger;
+global using MajstorHUB.Factories;
 
 global using MajstorHUB.Responses;
 global using Utlity;
