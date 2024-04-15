@@ -13,6 +13,7 @@ public class FirmaService : IFirmaService
     public async Task<List<Firma>> GetAll()
     {
         return await _firme.Find(firma => true).ToListAsync();
+
     }
 
     public async Task<Firma> GetById(string id)
