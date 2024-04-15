@@ -112,7 +112,9 @@ namespace MajstorHUB.Controllers
                 var recenzija = new Recenzija()
                 {
                     Recenzent = recenzijaDto.Recenzent,
+                    RecenzentType = recenzijaDto.RecenzentType,
                     Recenzirani = recenzijaDto.Recenzirani,
+                    RecenziraniType = recenzijaDto.RecenziraniType,
                     Ocena = recenzijaDto.Ocena,
                     Opis = recenzijaDto.Opis
                 };
