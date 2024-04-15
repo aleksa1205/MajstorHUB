@@ -19,7 +19,7 @@ public class Recenzija
     [BsonElement("recenzirani")]
     public required string Recenzirani { get; init; }
 
-    [Range(0,5)]
+    [Range(1,5)]
     [BsonElement("ocena")]
     public required double Ocena { get; set; }
 

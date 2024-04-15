@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Services.RecenzijaService;
 
-public class RecenzijaService
+public class RecenzijaService : IRecenzijaService
 {
     private readonly IMongoCollection<Recenzija> _recenzije;
 
