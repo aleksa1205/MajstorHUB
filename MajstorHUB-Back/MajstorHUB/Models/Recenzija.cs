@@ -10,6 +10,12 @@ public class Recenzija
     [BsonElement("recenzent")]
     public required string Recenzent { get; init; }
 
+    [BsonElement("RecenzentType")]
+    public required Roles RecenzentType { get; set; }
+
+    [BsonElement("RecenziraniType")]
+    public required Roles RecenziraniType { get; set; }
+
     [BsonElement("recenzirani")]
     public required string Recenzirani { get; init; }
 
