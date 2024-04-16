@@ -20,6 +20,15 @@ public class RecenzijaService : IRecenzijaService
         return await _recenzije.Find(recenzija => recenzija.Id == id).FirstOrDefaultAsync();
     }
 
+    public async Task<List<Recenzija>> GetByRecenzent(string recenzent)
+    {
+        return await _recenzije.Find(recenzija => recenzija.Recenzent == recenzent).ToListAsync();
+    }
+    public async Task<List<Recenzija>> GetByRecenzirani(string recenzirani)
+    {
+        return await _recenzije.Find(recenzija => recenzija.Recenzirani == recenzirani).ToListAsync();
+    }
+
     public async Task Create(Recenzija recenzija)
     {
         await _recenzije.InsertOneAsync(recenzija);

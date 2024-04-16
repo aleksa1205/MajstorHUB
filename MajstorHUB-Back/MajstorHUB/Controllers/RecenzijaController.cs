@@ -85,11 +85,53 @@ namespace MajstorHUB.Controllers
             try
             {
                 var recenzija = await _recenzijaService.GetById(id);
+                if (recenzija == null)
+                    return NotFound("Recenzija sa datim ID-em ne postoji!\n");
                 return Ok(recenzija);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetByRecenzent/{recenzent}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByRecenzent(string recenzent)
+        {
+            try
+            {
+                var recenzije = await _recenzijaService.GetByRecenzent(recenzent);
+                if (recenzije.Count == 0)
+                    return NotFound("Ne postoji ni jedna recenzija za datog recenzenta!\n");
+
+                return Ok(recenzije);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("GetByRecenzirani/{recenzirani}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByRecenzirani(string recenzirani)
+        {
+            try
+            {
+                var recenzije = await _recenzijaService.GetByRecenzirani(recenzirani);
+                if (recenzije.Count == 0)
+                    return NotFound("Ne postoji ni jedna recenzija za datog recenziranog!\n");
+
+                return Ok(recenzije);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
 
