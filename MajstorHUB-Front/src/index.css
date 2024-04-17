@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  min-height: 100vh;
+  font-family: Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  /* line-height: 24px; */
+  /* font-weight: 400; */
+  /* background-image: radial-gradient(ellipse at top left, #2b7a78, #17252a); */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+  /* font-size: 2.75rem; */
+  font-size: clamp(2rem, 10vw, 2.75rem);
+}
+
+h2 {
+  margin-bottom: 4rem;
+  font-size: clamp(2rem, 8vw, 2.5rem);
+}
+ 
+p {
+  line-height: 1.35rem;
+  font-weight: 300;
+}
+
+body {
+  padding-top: 79.19;
+  margin: 0;
+  color: #e6ddf9;
+}
+
+
+img {
+  display: block;
+  width: 100%;
+}
+
+.mainContainer {
+  max-width: 1300px;
+  margin-inline: auto;
+  padding-inline: 2rem;
+}
+
+.mainButton {
+  background-color: #f57624;
+  /* color: #efded3; */
+  color: white;
+  padding: 1rem 1.75rem;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  text-transform: uppercase;
+}
+
+.mainButton:hover {
+  background-color: #ca560c;
+}
+
+.mainButton:active {
+  background-color: #8a3a06;
+}
+
+
+.link {
+  background-color: none;
+  /* color: #efded3; */
+  color: white;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+}
+
+.link:hover {
+  color: #f57624;
+}
+
+.link:active {
+  color: #ca560c;
+}
+
+.blockMargins {
+  margin: 5rem auto;
+}
