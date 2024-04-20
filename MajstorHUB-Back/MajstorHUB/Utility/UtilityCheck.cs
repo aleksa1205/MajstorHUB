@@ -57,6 +57,16 @@ public class UtilityCheck
         return pib.Length == 8 && pib.All(Char.IsNumber);
     }
 
+    public static bool IsValidOcena(double ocena)
+    {
+        return ocena >= 1 && ocena <= 5;
+    }
+
+    public static bool IsValidRecenzentRecenzirani(string recenzent, string recenzirani)
+    {
+        return recenzent != recenzirani;
+    }
+
     // NE KORISTI SE OVA FUNKCIJA, jer ako se unosi korisnik FromBody automatski se proverava kao sto stoji u models
     // Proverava korisnika, ako je sve u redu vraca true
     // ako nije vraca false i puni errorMessage adekvatnom porukom

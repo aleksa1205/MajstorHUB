@@ -45,11 +45,11 @@ namespace MajstorHUB.Controllers
             switch (userType)
             {
                 case Roles.Firma:
-                    return "Majstor sa prosledjenim ID-em nije pronadjen!\n";
+                    return "Firma sa prosledjenim ID-em nije pronadjena!\n";
                 case Roles.Korisnik:
                     return "Korinsik sa prosledjenim ID-em nije pronadjen!\n";
                 case Roles.Majstor:
-                    return "Firma sa prosledjenim ID-em nije pronadjena!\n";
+                    return "Majstor sa prosledjenim ID-em nije pronadjen!\n";
                 default:
                     throw new NotSupportedException("Tip koji je prosledjen nije podrzan!\n");
             }
@@ -85,6 +85,8 @@ namespace MajstorHUB.Controllers
             try
             {
                 var recenzija = await _recenzijaService.GetById(id);
+                if (recenzija == null)
+                    return NotFound("Recenzija sa datim ID-em ne postoji!\n");
                 return Ok(recenzija);
             }
             catch (Exception ex)
@@ -93,31 +95,64 @@ namespace MajstorHUB.Controllers
             }
         }
 
-        [HttpPost("Add")]
+        [HttpGet("GetByRecenzent/{recenzent}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Add(RecenzijaDTO recenzijaDto)
+        public async Task<IActionResult> GetByRecenzent(string recenzent)
         {
             try
             {
-                var recenzent = await GetUserById(recenzijaDto.Recenzent, recenzijaDto.RecenzentType);
+                var recenzije = await _recenzijaService.GetByRecenzent(recenzent);
+                if (recenzije.Count == 0)
+                    return NotFound("Ne postoji ni jedna recenzija za datog recenzenta!\n");
+
+                return Ok(recenzije);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet("GetByRecenzirani/{recenzirani}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByRecenzirani(string recenzirani)
+        {
+            try
+            {
+                var recenzije = await _recenzijaService.GetByRecenzirani(recenzirani);
+                if (recenzije.Count == 0)
+                    return NotFound("Ne postoji ni jedna recenzija za datog recenziranog!\n");
+
+                return Ok(recenzije);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost("Dodaj")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Dodaj([FromBody] Recenzija recenzija)
+        {
+            try
+            {
+                if (!UtilityCheck.IsValidRecenzentRecenzirani(recenzija.Recenzent, recenzija.Recenzirani))
+                    return BadRequest("User ne moze sam sebe da recenzira!\n");
+
+                var recenzent = await GetUserById(recenzija.Recenzent, recenzija.RecenzentType);
                 if (recenzent == null)
-                    return NotFound(GetUserErrorMessage(recenzijaDto.RecenzentType));
+                    return NotFound(GetUserErrorMessage(recenzija.RecenzentType));
 
-                var recenzirani = await GetUserById(recenzijaDto.Recenzirani, recenzijaDto.RecenziraniType);
+                var recenzirani = await GetUserById(recenzija.Recenzirani, recenzija.RecenziraniType);
                 if (recenzirani == null)
-                    return NotFound(GetUserErrorMessage(recenzijaDto.RecenziraniType));
-
-                var recenzija = new Recenzija()
-                {
-                    Recenzent = recenzijaDto.Recenzent,
-                    RecenzentType = recenzijaDto.RecenzentType,
-                    Recenzirani = recenzijaDto.Recenzirani,
-                    RecenziraniType = recenzijaDto.RecenziraniType,
-                    Ocena = recenzijaDto.Ocena,
-                    Opis = recenzijaDto.Opis
-                };
+                    return NotFound(GetUserErrorMessage(recenzija.RecenziraniType));
 
                 await _recenzijaService.Create(recenzija);
                 return Ok(recenzija);
@@ -127,7 +162,38 @@ namespace MajstorHUB.Controllers
                 return BadRequest(e.Message);
             }
         }
-        //Put
+
+        [HttpPut("Izmeni/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Izmeni(string id, [FromBody] Recenzija recenzija)
+        {
+            try
+            {
+                var postojecaRecenzija = await _recenzijaService.GetById(id);
+                if (postojecaRecenzija == null)
+                    return NotFound("Recenzija sa prosledjenim ID-em ne postoji!\n");
+
+                if (!UtilityCheck.IsValidRecenzentRecenzirani(recenzija.Recenzent, recenzija.Recenzirani))
+                    return BadRequest("User ne moze sam sebe da recenzira!\n");
+
+                var recenzent = await GetUserById(recenzija.Recenzent, recenzija.RecenzentType);
+                if (recenzent == null)
+                    return NotFound(GetUserErrorMessage(recenzija.RecenzentType));
+
+                var recenzirani = await GetUserById(recenzija.Recenzirani, recenzija.RecenziraniType);
+                if (recenzirani == null)
+                    return NotFound(GetUserErrorMessage(recenzija.RecenziraniType));
+
+                await _recenzijaService.Update(id, recenzija);
+                return Ok($"Recenzija sa ID-em {id} je uspesno azurirana!\n");
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
 
         [HttpDelete("Delete/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]

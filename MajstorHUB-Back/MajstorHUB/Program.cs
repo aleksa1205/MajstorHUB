@@ -34,8 +34,7 @@ builder.Services.AddScoped<IKorisnikService, KorisnikService>();
 builder.Services.AddScoped<IFirmaService, FirmaService>();
 builder.Services.AddScoped<IMajstorService,MajstorService>();
 builder.Services.AddScoped<IOglasService, OglasService>();
-//Dok se ne dodaju sve metode ne moze
-//builder.Services.AddScoped<IRecenzijaService, RecenzijaService>();
+builder.Services.AddScoped<IRecenzijaService, RecenzijaService>();
 
 var app = builder.Build();
 

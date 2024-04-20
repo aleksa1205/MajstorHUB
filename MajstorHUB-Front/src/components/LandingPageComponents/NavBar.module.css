@@ -1,0 +1,54 @@
+header {
+    width: 100%;
+    background-color: #0c1626;
+    position: fixed;
+    top: 0;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border: 5px solid red;  */
+    padding: 0.3rem 2rem;
+    font-weight: bold;
+    color: white;
+}
+
+.dropDown {
+    display: none;
+}
+
+.logo {
+    font-size: 1.5em;
+}
+
+span {
+    display: flex;
+    gap: 2rem;
+}
+
+.optionsContainer {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+@media (width <= 800px) {
+    span {
+        display: none;
+    }
+}
+
+@media (width <= 600px) {
+    .optionsContainer p {
+        display: none;
+    }
+    /* nav {
+        /* background-color: white; */
+        /* color: #3a1700; 
+    } */
+    .dropDown {
+        display: block;
+    }
+}

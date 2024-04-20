@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Services.RecenzijaService;
 
-public class RecenzijaService
+public class RecenzijaService : IRecenzijaService
 {
     private readonly IMongoCollection<Recenzija> _recenzije;
 
@@ -18,6 +18,15 @@ public class RecenzijaService
     public async Task<Recenzija> GetById(string id)
     {
         return await _recenzije.Find(recenzija => recenzija.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<List<Recenzija>> GetByRecenzent(string recenzent)
+    {
+        return await _recenzije.Find(recenzija => recenzija.Recenzent == recenzent).ToListAsync();
+    }
+    public async Task<List<Recenzija>> GetByRecenzirani(string recenzirani)
+    {
+        return await _recenzije.Find(recenzija => recenzija.Recenzirani == recenzirani).ToListAsync();
     }
 
     public async Task Create(Recenzija recenzija)
