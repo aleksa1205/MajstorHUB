@@ -3,7 +3,7 @@ import classes from './NavBar.module.css';
 function NavBar() {
     return (
         <header>
-            <nav className='mainContainer'>
+            <nav className='container'>
                 <p className={classes.dropDown}>Drop Down</p>
                 <p className={classes.logo}>MajstorHUB</p>
                 <div className={classes.optionsContainer}>
@@ -11,7 +11,7 @@ function NavBar() {
                         <p className="link">Pronađi Posao</p>
                         <p className="link">Pronađi Izvodjače</p>
                     </span>
-                    <p className="link">Uloguj se</p>
+                    <button className={`secondaryButton ${classes.loginButton}`}>Uloguj se</button>
                     <button className="mainButton">Registruj se</button>
                 </div>
             </nav>
