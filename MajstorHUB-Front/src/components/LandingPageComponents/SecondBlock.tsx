@@ -3,7 +3,7 @@ import classes from "./SecondBlock.module.css";
 function SecondBlock() {
   return (
     <div className={classes.mainDiv}>
-      <div className={`mainContainer`}>
+      <div className={`container`}>
         <img src="../../../pictures/construction-transparent.png" alt="searching pic" />
         <div>
           <h2>Povećajte svoje mogućnosti zapošljavanja</h2>
