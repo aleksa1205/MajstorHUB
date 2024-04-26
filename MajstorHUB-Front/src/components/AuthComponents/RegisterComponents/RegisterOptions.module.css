@@ -1,0 +1,50 @@
+.main {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    height: calc(100vh - 192px);
+}
+
+.kontinjer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.option {
+    border: 3px solid #3a1700;
+    border-radius: 10px;
+    padding: 3rem 2rem;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    color: #3a1700;
+    text-decoration: none;
+}
+
+.option:hover {
+    /* box-shadow: 0px 0px 0px 5px red; */
+    border-color: #f57624;
+    background-color: #faf4f0;
+    .naslov {
+        color: #f57624;
+    }
+}
+
+.naslov {
+    display: inline-flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: #3a1700;
+    transition: all 0.1s ease-in-out;
+}
+
+@media (width < 840px) {
+    .kontinjer {
+        grid-template-columns: none;
+    }
+
+    .main {
+        margin-top: 96px;
+    }
+}
