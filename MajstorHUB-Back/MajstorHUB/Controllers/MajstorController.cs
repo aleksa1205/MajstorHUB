@@ -16,6 +16,44 @@ public class MajstorController : ControllerBase
         _configuration = configuration;
     }
 
+    [HttpGet("EmailExists/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists(string email)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Email je pogresnog formata");
+
+            bool exists = await _majstorService.GetByEmail(email) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("JmbgExists/{jmbg}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> PibExists(string jmbg)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidJmbg(jmbg))
+                return BadRequest("JMBG mora zadrzati 13 broja");
+
+            bool exists = await _majstorService.GetByJmbg(jmbg) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

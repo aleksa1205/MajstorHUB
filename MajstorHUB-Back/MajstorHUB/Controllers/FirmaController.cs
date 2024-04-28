@@ -16,6 +16,44 @@ public class FirmaController : ControllerBase
         this._configuration = configuration;
     }
 
+    [HttpGet("EmailExists/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists(string email)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Email je pogresnog formata");
+
+            bool exists = await _firmaService.GetByEmail(email) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("PibExists/{pib}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> PibExists(string pib)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidPib(pib))
+                return BadRequest("Pib mora zadrzati 8 broja");
+
+            bool exists = await _firmaService.GetByPib(pib) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [Authorize]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
