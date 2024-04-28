@@ -1,9 +1,10 @@
-import classes from "./RegisterKorisnik.module.css";
+import classes from "./RegisterForm.module.css";
 import { Link } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { DevTool } from '@hookform/devtools';
 import { MdErrorOutline } from "react-icons/md";
-import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import PasswordStrengthMeter from "./PasswordStrengthMeter";
+import UserType from "../../../lib/UserType";
 
 type FormValues = {
   ime: string,
@@ -15,10 +16,30 @@ type FormValues = {
   uslovi: boolean
 };
 
-function RegisterKorisnik() {
+type PropsValue = {
+  formType : UserType
+}
+
+function RegisterForm({ formType } : PropsValue) {
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState, watch } = form;
   const { errors, isSubmitting } = formState;
+
+  let formTypeString : string;
+  switch(formType) {
+    case UserType.Korisnik:
+      formTypeString = 'Klijent';
+      break;
+    case UserType.Majstor:
+      formTypeString = 'Majstor';
+      break;
+    case UserType.Firma:
+      formTypeString = 'Firma';
+      break;
+    default:
+      formTypeString = 'Nepoznato'
+      break;
+  }
 
   const password = watch('sifra');
 
@@ -29,8 +50,10 @@ function RegisterKorisnik() {
   return (
     <div className={classes.main}>
           <form onSubmit={handleSubmit(onSubmit)} className={`container ${classes.form}`} noValidate>
-            <h3>Pridruži se kao izvođač</h3>
+            
+            <h3>Pridruži se kao {formTypeString}</h3>
             <hr />
+
             <div className={`${classes.imePrezime} ${classes.formControl}`}>
               <div>
                 <label htmlFor="ime">Ime</label>
@@ -168,4 +191,4 @@ function RegisterKorisnik() {
   );
 }
 
-export default RegisterKorisnik;
+export default RegisterForm;

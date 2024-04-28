@@ -1,0 +1,20 @@
+.kontinjer {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.buttonWrapper {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+}
+
+@media (width < 840px) {
+    .buttonWrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .clientBtn {
+        width: 100%;
+    }
+}
