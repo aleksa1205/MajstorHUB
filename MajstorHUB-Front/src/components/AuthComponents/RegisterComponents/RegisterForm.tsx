@@ -1,6 +1,6 @@
 import classes from "./RegisterForm.module.css";
 import { Link } from "react-router-dom";
-import { useForm, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { MdErrorOutline } from "react-icons/md";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
@@ -18,11 +18,27 @@ type FormValues = {
   uslovi: boolean;
 };
 
+type KorisnikDto = {
+  Ime : string,
+  Prezime : string,
+  JMBG : string,
+  Email : string,
+  Sifra : string
+}
+
+type FirmaDto = {
+  ImeFirme : string,
+  PIB : string,
+  Email : string,
+  Sifra : string
+}
+
 type PropsValue = {
   formType: UserType;
+  setSelected : React.Dispatch<React.SetStateAction<number>>
 };
 
-function RegisterForm({ formType }: PropsValue) {
+function RegisterForm({ formType, setSelected }: PropsValue) {
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState, watch } = form;
   const { errors, isSubmitting } = formState;
@@ -51,12 +67,56 @@ function RegisterForm({ formType }: PropsValue) {
 
   const password = watch("sifra");
 
-  const onSubmit = (data: FormValues) => {
-    console.log("Form submitted", data);
+  const onSubmit = async (formData: FormValues) => {
+    // console.log("Form submitted", formData);
+
+    const url = `${userUrl}/register`;
+    let sendData : FirmaDto | KorisnikDto;
+
+    if(formType == UserType.Korisnik || formType == UserType.Majstor) {
+      sendData = {
+        'Ime': formData.ime!,
+        'Prezime': formData.prezime!,
+        'JMBG': formData.jmbg!,
+        'Email': formData.email,
+        'Sifra': formData.sifra
+      }
+    }
+    else {
+      sendData = {
+        'ImeFirme': formData.imeFirme!,
+        'PIB': formData.pib!,
+        'Email': formData.email,
+        'Sifra': formData.sifra
+      }
+    }
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sendData)
+      });
+
+      console.log(response.status);
+      const data = await response.text();
+
+      if(response.status == 200) {
+        setSelected(UserType.Uspesno);
+      }
+      else {
+        console.error(data);
+        setSelected(UserType.Neuspesno);
+      }
+      
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // Specificne form control-e za svakog vrsta usera
-
   let imePrezimeFormControl,
     imeFirmeFormControl,
     jmbgFormControl,
@@ -134,6 +194,7 @@ function RegisterForm({ formType }: PropsValue) {
               const url = `${userUrl}/JmbgExists/${fieldValue}`;
               const response = await fetch(url);
               const data = await response.json();
+              console.log('Cekaj kenjam (jmbg)');
               return !data || 'JMBG vec postoji';
             }
           })}
@@ -190,6 +251,7 @@ function RegisterForm({ formType }: PropsValue) {
               message: "PIB mora da sadrži samo brojeve",
             },
             validate: async (fieldValue) => {
+              console.log('Cekaj kenjam (pib)');
               const url = `${userUrl}/PibExists/${fieldValue}`;
               const response = await fetch(url);
               const data = await response.json();
@@ -241,6 +303,7 @@ function RegisterForm({ formType }: PropsValue) {
                 message: "Format email-a neispravan",
               },
               validate: async (fieldValue) => {
+                console.log('Cekaj kenjam (email)');
                 const url = `${userUrl}/EmailExists/${fieldValue}`;
                 const response = await fetch(url);
                 const data = await response.json();
@@ -319,6 +382,7 @@ function RegisterForm({ formType }: PropsValue) {
             {errors.uslovi?.message}
           </p>
         </div>
+        
 
         <div className={`${classes.center} ${classes.formControl}`}>
           <button disabled={isSubmitting} className="mainButton">

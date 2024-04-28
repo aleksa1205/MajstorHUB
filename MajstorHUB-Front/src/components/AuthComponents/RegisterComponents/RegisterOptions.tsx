@@ -16,6 +16,7 @@ function RegisterOptions({ setSelected, children }: PropsType) {
   return (
     <main className={classes.main}>
       <div className={`container`}>
+        <h3 className={classes.mainNaslov}>Pridružite nam se kao izvođač radova ili kao klijent</h3>
         <div className={classes.kontinjer}>
           <label className={classes.option}>
             <FaHandshake className={classes.icon} size="3rem" />

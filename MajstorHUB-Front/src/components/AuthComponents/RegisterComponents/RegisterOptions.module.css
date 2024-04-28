@@ -5,6 +5,12 @@
   height: calc(100vh - 192px);
 }
 
+.mainNaslov {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-family: Caveat, Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
 .kontinjer {
   display: grid;
   grid-template-columns: 1fr 1fr;

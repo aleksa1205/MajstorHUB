@@ -4,6 +4,7 @@ import RegisterForm from "../components/AuthComponents/RegisterComponents/Regist
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserType from "../lib/UserType";
+import { FaCircleCheck } from "react-icons/fa6";
 
 function Register() {
   const [selected, setSelected] = useState(-1);
@@ -66,9 +67,24 @@ function Register() {
   return (
     <>
         {formSelected == -1 && registerOptions}
-        {formSelected == UserType.Korisnik && <RegisterForm formType={UserType.Korisnik}/>}
-        {formSelected == UserType.Majstor && <RegisterForm formType={UserType.Majstor} />}
-        {formSelected == UserType.Firma && <RegisterForm formType={UserType.Firma} />}
+        {formSelected == UserType.Korisnik && <RegisterForm setSelected={setFormSelected} formType={UserType.Korisnik}/>}
+        {formSelected == UserType.Majstor && <RegisterForm setSelected={setFormSelected} formType={UserType.Majstor} />}
+        {formSelected == UserType.Firma && <RegisterForm setSelected={setFormSelected} formType={UserType.Firma} />}
+        {formSelected == UserType.Uspesno && (
+          <div className={`container ${classes.main}`}>
+            <div className={classes.success}>
+              <FaCircleCheck size='3rem' className={classes.icons} />
+              <h2>Uspešno ste se registrovali, sada vam preostaje da se <Link className={classes.link} to='/login'>ulogujete</Link> na platformu</h2>
+            </div>
+          </div>
+        )}
+        {formSelected == UserType.Neuspesno && (
+          <div className={`container ${classes.main}`}>
+            <div className={classes.error}>
+              <h2>:( <br /><br /> Došlo je do greške prilikom registrovanja, pokušajte kasnije ili se obratite korisnickom servisu</h2>
+            </div>
+          </div>
+        )}
     </>
   );
 }

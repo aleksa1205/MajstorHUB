@@ -136,16 +136,28 @@ public class FirmaController : ControllerBase
     [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Register([FromBody] Firma firma)
+    public async Task<IActionResult> Register(RegisterFirmaDTO firmaDto)
     {
         try
         {
-            firma.Password = BCrypt.Net.BCrypt.HashPassword(firma.Password);
+            if (!UtilityCheck.IsValidEmail(firmaDto.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidPib(firmaDto.PIB))
+                return BadRequest("PIB mora da zadrzi 8 broja");
+            if ((await _firmaService.GetByPib(firmaDto.PIB)) != null)
+                return BadRequest($"Firma sa PIB-om {firmaDto.PIB} vec postoji!\n");
+            if ((await _firmaService.GetByEmail(firmaDto.Email)) != null)
+                return BadRequest($"Firma sa Email-om {firmaDto.Email} vec postoji!\n");
 
-            if ((await _firmaService.GetByPib(firma.PIB)) != null)
-                return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
-            if ((await _firmaService.GetByEmail(firma.Email)) != null)
-                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+            Firma firma = new Firma
+            {
+                Naziv = firmaDto.ImeFirme,
+                PIB = firmaDto.PIB,
+                Email = firmaDto.Email,
+                Password = firmaDto.Sifra
+            };
+
+            firma.Password = BCrypt.Net.BCrypt.HashPassword(firma.Password);
 
             await _firmaService.Create(firma);
             return Ok($"Uspesno dodata firma sa ID-em {firma.Id}!\n");
@@ -164,7 +176,7 @@ public class FirmaController : ControllerBase
         try
         {
             if (!UtilityCheck.IsValidEmail(email))
-                return BadRequest("Pogresna format email-a!");
+                return BadRequest("Pogresan format email-a!");
 
             var firma = await _firmaService.GetByEmail(email);
             if (firma is null)
@@ -323,6 +335,10 @@ public class FirmaController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(firma.Email))
+                return BadRequest("Format emaila pogresan");
+            if(!UtilityCheck.IsValidPib(firma.PIB))
+                return BadRequest("PIB mora da zadrzi 8 broja");
             if ((await _firmaService.GetByPib(firma.PIB)) != null)
                 return BadRequest($"Firma sa PIB-om {firma.PIB} vec postoji!\n");
             if ((await _firmaService.GetByEmail(firma.Email)) != null)
