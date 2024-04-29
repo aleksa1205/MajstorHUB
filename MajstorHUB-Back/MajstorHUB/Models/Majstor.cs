@@ -3,10 +3,10 @@
 public class Majstor : Korisnik
 {
     [BsonElement("struka")]
-    public required Struka Struka { get; set; }
+    public Struka Struka { get; set; }
 
     [BsonElement("iskustvo")]
-    public required Iskustvo Iskustvo { get; set; } = Iskustvo.Nedefinisano;
+    public Iskustvo Iskustvo { get; set; } = Iskustvo.Nedefinisano;
     
     [BsonElement("cena_po_satu")]    
     public double CenaPoSatu { get; set; }

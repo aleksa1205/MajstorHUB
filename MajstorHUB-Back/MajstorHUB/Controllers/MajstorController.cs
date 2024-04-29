@@ -16,6 +16,44 @@ public class MajstorController : ControllerBase
         _configuration = configuration;
     }
 
+    [HttpGet("EmailExists/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists(string email)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Email je pogresnog formata");
+
+            bool exists = await _majstorService.GetByEmail(email) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("JmbgExists/{jmbg}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> PibExists(string jmbg)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidJmbg(jmbg))
+                return BadRequest("JMBG mora zadrzati 13 broja");
+
+            bool exists = await _majstorService.GetByJmbg(jmbg) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -104,16 +142,29 @@ public class MajstorController : ControllerBase
     [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Register([FromBody] Majstor majstor)
+    public async Task<IActionResult> Register(RegisterMajstorDTO majstorDto)
     {
         try
         {
-            majstor.Password = BCrypt.Net.BCrypt.HashPassword(majstor.Password);
+            if (!UtilityCheck.IsValidEmail(majstorDto.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidJmbg(majstorDto.JMBG))
+                return BadRequest("JMBG mora da zadrzi 13 broja");
+            if ((await _majstorService.GetByJmbg(majstorDto.JMBG)) != null)
+                return BadRequest($"Majstor sa JMBG-om {majstorDto.JMBG} vec postoji!\n");
+            if ((await _majstorService.GetByEmail(majstorDto.Email)) != null)
+                return BadRequest($"Majstor sa Email-om {majstorDto.Email} vec postoji!\n");
 
-            if ((await _majstorService.GetByJmbg(majstor.JMBG)) != null)
-                return BadRequest($"Majstor sa JMBG-om {majstor.JMBG} vec postoji!\n");
-            if ((await _majstorService.GetByEmail(majstor.Email)) != null)
-                return BadRequest($"Majstor sa Email-om {majstor.Email} vec postoji!\n");
+            var majstor = new Majstor
+            {
+                Ime = majstorDto.Ime,
+                Prezime = majstorDto.Prezime,
+                Email = majstorDto.Email,
+                JMBG = majstorDto.JMBG,
+                Password = majstorDto.Sifra
+            };
+
+            majstor.Password = BCrypt.Net.BCrypt.HashPassword(majstor.Password);
 
             await _majstorService.Create(majstor);
             return Ok($"Uspesno dodat majstor sa ID-em {majstor.Id}!\n");
@@ -290,6 +341,10 @@ public class MajstorController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(majstor.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidJmbg(majstor.JMBG))
+                return BadRequest("JMBG mora da zadrzi 13 broja");
             if ((await _majstorService.GetByJmbg(majstor.JMBG)) != null)
                 return BadRequest($"Majstor sa JMBG-om {majstor.JMBG} vec postoji!\n");
             if ((await _majstorService.GetByEmail(majstor.Email)) != null)

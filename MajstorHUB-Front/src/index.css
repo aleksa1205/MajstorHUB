@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Lugrasimo&display=swap');
 
 * {
   box-sizing: border-box;
@@ -31,6 +32,11 @@ h2 {
 
 h3 {
   margin-bottom: 4rem;
+  font-size: clamp(1.25rem, 8vw, 1.75rem);
+}
+
+h4 {
+  font-size: clamp(1.1rem, 8vw, 1.25rem)
 }
  
 p {
@@ -62,11 +68,13 @@ img {
   color: white;
   padding: 1rem 1.75rem;
   border: none;
-  border-radius: 5px;
+  /* border-radius: 10px; */
+  border-radius: 100px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.1s ease-in-out;
+  transition: background-color 0.1s ease-in-out;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .mainButton:hover {
@@ -77,16 +85,23 @@ img {
   background-color: #8a3a06;
 }
 
+.mainButton:disabled {
+  background-color: #c2c8d2;
+  cursor: not-allowed;
+}
+
 .secondaryButton {
   background-color: #efded3;
   color: #f57624;
   padding: 1rem 1.75rem;
   border: none;
-  border-radius: 5px;
+  /* border-radius: 10px; */
+  border-radius: 100px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .secondaryButton:hover {
@@ -102,7 +117,12 @@ img {
   /* color: #efded3; */
   color: black;
   cursor: pointer;
-  transition: all 0.1s ease-in-out;
+  transition: color 0.1s ease-in-out;
+  font-weight: 400;
+  text-decoration: none;
+  /* margin: auto; */
+  border: none;
+  background-color: none;
 }
 
 .link:hover {
@@ -113,6 +133,111 @@ img {
   color: #ca560c;
 }
 
+.secondLink {
+  background-color: none;
+  color: #f57624;
+  cursor: pointer;
+  transition: color 0.1s ease-in-out;
+  font-weight: 400;
+  /* margin: auto; */
+  border: none;
+  background-color: none;
+}
+
+.secondLink:hover {
+  color: #ca560c;
+}
+
+.secondLink:active {
+  color: #8a3a06;
+}
+
 .blockMargins {
   margin: 5rem auto;
 }
+
+
+/* Checkbox stilovi, zakas jebiga */
+
+/* Customize the label (the container) */
+.checkbox {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  padding-top: 2px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  /* font-size: 22px; */
+  font-weight: 300 !important;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  border: 2px solid #f5aa7a;
+  border-radius: 3px;
+  /* background-color: #eee; */
+}
+
+/* On mouse-over, add a grey background color */
+.checkbox:hover input ~ .checkmark {
+  /* background-color: #ccc; */
+  border-color: #f57624;
+}
+
+/* When the checkbox is checked, add a blue background */
+.checkbox input:checked ~ .checkmark {
+  background-color: #f5aa7a;
+  border-color: #f5aa7a;
+}
+
+/* On mouse-over when the checkbox is checked, add a different border color */
+.checkbox:hover input:checked ~ .checkmark {
+  border-color: #f57624; /* Border color when checked and hovered */
+  background-color: #f57624;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.checkbox .checkmark:after {
+  /* left: 9px;
+  top: 5px; */
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+

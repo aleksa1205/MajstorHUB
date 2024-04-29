@@ -1,0 +1,139 @@
+.main {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  height: calc(100vh - 192px);
+}
+
+.mainNaslov {
+  margin-bottom: 2rem;
+  text-align: center;
+  font-family: Caveat, Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.kontinjer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.naslov {
+  display: inline-flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  color: #3a1700;
+  transition: all 0.1s ease-in-out;
+}
+
+.icon {
+  transition: all 0.1s ease-in-out;
+}
+
+/* Stilovi za radio button jbg :D */
+/* Customize the label (the option) */
+.option {
+  position: relative;
+  cursor: pointer;
+  border: 2px solid;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  border: 3px solid #3a1700;
+  border-radius: 10px;
+  padding: 3rem 2rem;
+  transition: all 0.1s ease-in-out;
+  color: #3a1700;
+  text-decoration: none;
+  max-width: 30rem;
+}
+
+.option:hover {
+  /* box-shadow: 0px 0px 0px 5px red; */
+  border-color: #f57624;
+  background-color: #faf4f0;
+  .naslov,
+  .icon {
+    color: #f57624;
+  }
+}
+
+.option:has(> input:checked) {
+  border-color: #f57624;
+  background-color: #faf4f0;
+  .naslov,
+  .icon {
+    color: #f57624;
+  }
+}
+
+.option:active {
+  transform: scale(0.95);
+}
+
+/* Hide the browser's default radio button */
+.option input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  height: 25px;
+  width: 25px;
+  /* background-color: #eee; */
+  border: 2px solid #3a1700;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.option:hover input ~ .checkmark {
+  border-color: #f57624;
+}
+
+/* When the radio button is checked, add a blue background */
+.option input:checked ~ .checkmark {
+  background-color: #f57624;
+  border-color: #f57624;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.option input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.option .checkmark:after {
+  top: 7px;
+  left: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  /* border: 1px solid white; */
+}
+
+@media (width < 840px) {
+  .kontinjer {
+    grid-template-columns: none;
+  }
+
+  .main {
+    margin-top: 96px;
+  }
+}

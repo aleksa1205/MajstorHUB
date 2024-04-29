@@ -15,6 +15,11 @@
     height: 100%;
 }
 
+.divContainer p {
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+}
+
 .divContainer h3 {
     font-weight: 300;
     margin-bottom: 2rem !important;

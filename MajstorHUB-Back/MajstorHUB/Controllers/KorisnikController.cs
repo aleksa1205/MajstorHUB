@@ -16,6 +16,44 @@ public class KorisnikController : ControllerBase
         _configuration = configuration;
     }
 
+    [HttpGet("EmailExists/{email}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists(string email)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidEmail(email))
+                return BadRequest("Email je pogresnog formata");
+
+            bool exists = await _korisnikService.GetByEmail(email) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet("JmbgExists/{jmbg}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> PibExists(string jmbg)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidJmbg(jmbg))
+                return BadRequest("JMBG mora zadrzati 13 broja");
+
+            bool exists = await _korisnikService.GetByJmbg(jmbg) != null;
+            return Ok(exists);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -102,16 +140,29 @@ public class KorisnikController : ControllerBase
     [HttpPost("Register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Register([FromBody] Korisnik korisnik)
+    public async Task<IActionResult> Register(RegisterKorisnikDTO korisnikDto)
     {
         try
         {
-            korisnik.Password = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
+            if (!UtilityCheck.IsValidEmail(korisnikDto.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidJmbg(korisnikDto.JMBG))
+                return BadRequest("JMBG mora da zadrzi 13 broja");
+            if ((await _korisnikService.GetByJmbg(korisnikDto.JMBG)) != null)
+                return BadRequest($"Korisnik sa JMBG-om {korisnikDto.JMBG} vec postoji!\n");
+            if ((await _korisnikService.GetByEmail(korisnikDto.Email)) != null)
+                return BadRequest($"Korisnik sa Email-om {korisnikDto.Email} vec postoji!\n");
 
-            if ((await _korisnikService.GetByJmbg(korisnik.JMBG)) != null)
-                return BadRequest($"Korisnik sa JMBG-om {korisnik.JMBG} vec postoji!\n");
-            if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)
-                return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
+            var korisnik = new Korisnik
+            {
+                Ime = korisnikDto.Ime,
+                Prezime = korisnikDto.Prezime,
+                Email = korisnikDto.Email,
+                JMBG = korisnikDto.JMBG,
+                Password = korisnikDto.Sifra,
+            };
+
+            korisnik.Password = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
 
             await _korisnikService.Create(korisnik);
             return Ok($"Dodat je korisnik sa ID-em {korisnik.Id}!\n");
@@ -290,6 +341,10 @@ public class KorisnikController : ControllerBase
     {
         try
         {
+            if (!UtilityCheck.IsValidEmail(korisnik.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidJmbg(korisnik.JMBG))
+                return BadRequest("JMBG mora da zadrzi 13 broja");
             if ((await _korisnikService.GetByJmbg(korisnik.JMBG)) != null)
                 return BadRequest($"Korisnik sa JMBG-om {korisnik.JMBG} vec postoji!\n");
             if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)

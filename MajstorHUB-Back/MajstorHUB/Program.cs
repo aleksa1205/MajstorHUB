@@ -1,6 +1,19 @@
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+var AllowFrontendOrgin = "_allowFrontendOrigin";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(AllowFrontendOrgin,
+                             policy =>
+                             {
+                                 policy.WithOrigins("http://localhost:5173")
+                                                     .AllowAnyHeader()
+                                                     .AllowAnyMethod();
+                             });
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
 {
@@ -37,6 +50,8 @@ builder.Services.AddScoped<IOglasService, OglasService>();
 builder.Services.AddScoped<IRecenzijaService, RecenzijaService>();
 
 var app = builder.Build();
+
+app.UseCors(AllowFrontendOrgin);
 
 app.UseAuthentication();
 app.UseAuthorization();

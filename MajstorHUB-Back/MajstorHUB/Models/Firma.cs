@@ -10,7 +10,7 @@ public class Firma : User
     public required string Naziv { get; set; }
 
     [BsonElement("struke")]
-    public required List<Struka> Struke { get; set; }
+    public List<Struka> Struke { get; set; }
 
     [JsonIgnore]
     [BsonElement("zaradjeno_na_platformi")]

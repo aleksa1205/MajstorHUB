@@ -1,18 +1,19 @@
 import classes from './NavBar.module.css';
+import { Link } from 'react-router-dom';
 
 function NavBar() {
     return (
         <header>
             <nav className='container'>
                 <p className={classes.dropDown}>Drop Down</p>
-                <p className={classes.logo}>MajstorHUB</p>
+                <Link to='/' className={classes.logo}>MajstorHUB</Link>
                 <div className={classes.optionsContainer}>
                     <span>
-                        <p className="link">Pronađi Posao</p>
-                        <p className="link">Pronađi Izvodjače</p>
+                        <Link to='/' className="link">Pronađi Posao</Link>
+                        <Link to='/' className="link">Pronađi Izvodjače</Link>
                     </span>
-                    <button className={`secondaryButton ${classes.loginButton}`}>Uloguj se</button>
-                    <button className="mainButton">Registruj se</button>
+                    <Link to='/' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>
+                    <Link to='/register' className="mainButton">Registruj se</Link>
                 </div>
             </nav>
         </header>

@@ -1,8 +1,8 @@
-import FirstBlock from "./FirstBlock";
-import Footer from "./Footer";
-import MainBlock from "./MainBlock";
-import NavBar from "./NavBar";
-import SecondBlock from "./SecondBlock";
+import FirstBlock from "../components/LandingPageComponents/FirstBlock";
+import Footer from "../components/LandingPageComponents/Footer";
+import MainBlock from "../components/LandingPageComponents/MainBlock";
+import NavBar from "../components/LandingPageComponents/NavBar";
+import SecondBlock from "../components/LandingPageComponents/SecondBlock";
 
 function LandingPage() {
 
