@@ -1,4 +1,4 @@
-.main{
+.main {
     display: flex;
     align-items: center;
     align-content: center;
@@ -54,13 +54,13 @@ hr {
   font: inherit;
   padding: 0.5rem;
   border-radius: 7px;
-  border: 2px solid white;
-  background-color: #efded3;
+  border: 2px solid #efded3;
+  /* background-color: #efded3; */
   transition: all 0.15s ease-in-out;
 }
 
 .form input:hover {
-  border-color: #f5caae;
+  border-color: #f5aa7a;
 }
 
 .form input:focus {

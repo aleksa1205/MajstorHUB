@@ -385,7 +385,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         
 
         <div className={`${classes.center} ${classes.formControl}`}>
-          <button disabled={isSubmitting} className="mainButton">
+          <button disabled={isSubmitting}  className={"mainButton" + ' ' + `${isSubmitting ? 'button--loading' : ''}`}>
             Napravi nalog
           </button>
         </div>

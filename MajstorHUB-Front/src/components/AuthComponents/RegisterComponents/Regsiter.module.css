@@ -9,39 +9,6 @@
     grid-template-columns: 1fr 1fr;
 }
 
-.main {
-    height: calc(100vh - 192px);
-    display: flex;
-    align-items: center;
-}
-
-.success {
-    background-color: #d9f2e3;
-    color: #038839;
-    border-color: #038839;
-    border: 5px solid #038839;
-    border-radius: 20px;
-    padding: 5rem;
-}
-
-.error {
-    background-color: #f6dcdd;
-    color: #bb121c;
-    border-color: #bb121c;
-    border: 5px solid #bb121c;
-    border-radius: 20px;
-    padding: 5rem;
-}
-
-.link {
-    color: #0dd75f;
-    transition: all 0.1s ease-in-out;
-}
-
-.link:hover {
-    color: #038839;
-}
-
 @media (width < 840px) {
     .buttonWrapper {
         grid-template-columns: 1fr;
@@ -49,9 +16,5 @@
 
     .clientBtn {
         width: 100%;
-    }
-
-    .error, .success {
-        padding: 3rem;
     }
 }
