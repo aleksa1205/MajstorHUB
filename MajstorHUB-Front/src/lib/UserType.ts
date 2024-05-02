@@ -13,3 +13,31 @@ enum UserType {
 }
 
 export default UserType;
+
+export function userToPath(userType : UserType) : string {
+    switch (userType) {
+        case UserType.Korisnik:
+            return 'Korisnik';            
+        case UserType.Majstor:
+            return 'Majstor';
+        case UserType.Firma:
+            return 'Firma';
+        default:
+            console.error("Ovaj tip usera nije podrzan od strane userToPah funkcije");
+            return 'Nedefinisano';
+    }
+}
+
+export function pathToUser(path : string) : UserType {
+    switch (path) {
+        case 'Korisnik':
+            return UserType.Korisnik;
+        case 'Majstor':
+            return UserType.Majstor;
+        case 'Firma':
+            return UserType.Firma;
+        default:
+            console.error("Ovaj tip usera nije podrzan od strane pathToUser funkcije");
+            return UserType.Nedefinisano;
+    }
+}

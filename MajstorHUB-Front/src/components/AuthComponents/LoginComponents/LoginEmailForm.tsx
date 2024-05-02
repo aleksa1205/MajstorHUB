@@ -2,23 +2,22 @@ import classes from "./LoginEmailForm.module.css";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MdErrorOutline } from "react-icons/md";
-import UserType from "../../../lib/UserType";
+import UserType, { pathToUser } from "../../../lib/UserType";
 import { CiUser } from "react-icons/ci";
 import { ServerBaseUrl } from "../../../lib/ServerBaseUrl";
 import { useState } from "react";
 import { IoIosWarning } from "react-icons/io";
-import { LoginSteps } from "../../../routes/Login";
 
 type FromValues = {
   email: string;
 };
 
 type PropsValues = {
-  setLoginStep : React.Dispatch<React.SetStateAction<LoginSteps>>;
-  selectedTypePath : string;
+  setUserTypesFound : React.Dispatch<React.SetStateAction<UserType[]>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>
 }
 
-function LoginEmailForm({ setLoginStep, selectedTypePath } : PropsValues) {
+function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
   const [emailExists, setEmailExists] = useState(true);
 
   const form = useForm<FromValues>();
@@ -38,50 +37,30 @@ function LoginEmailForm({ setLoginStep, selectedTypePath } : PropsValues) {
         if(!response.ok) console.log('Greska pri fetch-u');
         else {
           const data = await response.json();
-          if(data) userTypesFound.push(parseInt(i));
+          if(data) userTypesFound.push(pathToUser(userTypesPath[i]));
         }
       }
     } catch (error) {
       console.log(error);
     }
 
-    // Ako je niz prazan izbaci gresku
-    // ako ima 1 element, zna se kom kontroleru se prosledjuje zahtev
-    // ako ima vise od 1 element, mora korisnik da izabera tip naloga na koj zeli da se loguje
-
-    console.log(userTypesFound);
     if(userTypesFound.length == 0)
       setEmailExists(false);
-    else if(userTypesFound.length == 1) {
+    else {
       setEmailExists(true);
-      
-      switch(userTypesFound[0]) {
-        case UserType.Korisnik:
-          selectedTypePath = 'Korisnik';
-          break;
-        case UserType.Majstor:
-          selectedTypePath = 'Majstor';
-          break;
-        case UserType.Firma:
-          selectedTypePath = 'Firma';
-          break;
-      }
-
-      console.log("u formi " + selectedTypePath);
-
-      setLoginStep(LoginSteps.EnterPassword);
-      } else {
-        setEmailExists(true);
-        setLoginStep(LoginSteps.EnterUserType);
+      setEmail(email);
+      setUserTypesFound(userTypesFound);
     }
   }
 
   return (
-    <main className={`container ${classes.main}`}>
+    <>
       {!emailExists && (
-        <div className={classes.emailWarning}>
+        <div className='warrningBox'>
           <IoIosWarning size='1.25rem' className={classes.warningIcon} />
-          <p>Email koji ste uneli ne postoji</p>
+          <div>
+            <p>Email koji ste uneli ne postoji</p>
+          </div>
         </div>
       )}
       <form className={`${classes.form}`} noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -126,7 +105,7 @@ function LoginEmailForm({ setLoginStep, selectedTypePath } : PropsValues) {
           </Link>
         </div>
       </form>
-    </main>
+    </>
   );
 }
 
