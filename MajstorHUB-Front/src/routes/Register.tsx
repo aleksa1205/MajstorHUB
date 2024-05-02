@@ -2,13 +2,15 @@ import classes from "../components/AuthComponents/RegisterComponents/Regsiter.mo
 import RegisterOptions from "../components/AuthComponents/RegisterComponents/RegisterOptions";
 import RegisterForm from "../components/AuthComponents/RegisterComponents/RegisterForm";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserType from "../lib/UserType";
 import { FaCircleCheck } from "react-icons/fa6";
+import { MdError } from "react-icons/md";
 
 function Register() {
-  const [selected, setSelected] = useState(-1);
-  const [formSelected, setFormSelected] = useState(-1);
+  const navigate = useNavigate();
+  const [userSelected, setUserSelected] = useState(-1);
+  const [formSelected, setFormSelected] = useState(UserType.Nedefinisano);
 
   function selectButtonHandler(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -17,15 +19,15 @@ function Register() {
   }
 
   const registerOptions = (
-    <RegisterOptions setSelected={setSelected}>
+    <RegisterOptions setSelected={setUserSelected}>
     <div className={classes.kontinjer}>
-      {selected == -1 && (
+      {userSelected == -1 && (
         <button disabled className="mainButton">
           Napravi Nalog
         </button>
       )}
 
-      {selected == UserType.Korisnik && (
+      {userSelected == UserType.Korisnik && (
         <button
           onClick={selectButtonHandler}
           className={`mainButton ${classes.clientBtn}`}
@@ -35,7 +37,7 @@ function Register() {
         </button>
       )}
 
-      {selected == UserType.Izvodjac && (
+      {userSelected == UserType.Izvodjac && (
         <div className={classes.buttonWrapper}>
           <button
             onClick={selectButtonHandler}
@@ -70,21 +72,8 @@ function Register() {
         {formSelected == UserType.Korisnik && <RegisterForm setSelected={setFormSelected} formType={UserType.Korisnik}/>}
         {formSelected == UserType.Majstor && <RegisterForm setSelected={setFormSelected} formType={UserType.Majstor} />}
         {formSelected == UserType.Firma && <RegisterForm setSelected={setFormSelected} formType={UserType.Firma} />}
-        {formSelected == UserType.Uspesno && (
-          <div className={`container ${classes.main}`}>
-            <div className={classes.success}>
-              <FaCircleCheck size='3rem' className={classes.icons} />
-              <h2>Uspešno ste se registrovali, sada vam preostaje da se <Link className={classes.link} to='/login'>ulogujete</Link> na platformu</h2>
-            </div>
-          </div>
-        )}
-        {formSelected == UserType.Neuspesno && (
-          <div className={`container ${classes.main}`}>
-            <div className={classes.error}>
-              <h2>:( <br /><br /> Došlo je do greške prilikom registrovanja, pokušajte kasnije ili se obratite korisnickom servisu</h2>
-            </div>
-          </div>
-        )}
+        {formSelected == UserType.Uspesno && navigate('/success')}
+        {formSelected == UserType.Neuspesno && navigate('/error')}
     </>
   );
 }

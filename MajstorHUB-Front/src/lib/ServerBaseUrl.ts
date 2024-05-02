@@ -1,0 +1,1 @@
+export const ServerBaseUrl = 'https://localhost:7163';

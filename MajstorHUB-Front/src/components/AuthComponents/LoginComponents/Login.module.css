@@ -1,0 +1,9 @@
+.main {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    /* height: calc(100vh - 220px);
+      margin-top: 96px; */
+}
+  

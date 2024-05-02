@@ -66,7 +66,7 @@ img {
   background-color: #f57624;
   /* color: #efded3; */
   color: white;
-  padding: 1rem 1.75rem;
+  padding: 0.9rem 1.75rem;
   border: none;
   /* border-radius: 10px; */
   border-radius: 100px;
@@ -75,6 +75,51 @@ img {
   transition: background-color 0.1s ease-in-out;
   text-transform: uppercase;
   text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Dugmici */
+
+.mainButton:has(> .button__text), .secondaryButton:has(> .button__text), .lightButton:has(> .button__text) {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.button__text {
+  transition: all 0.2s;
+}
+
+.button--loading .button__text {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.button--loading::after {
+  content: "";
+  position: absolute;
+  height: 1rem;
+  width: 1rem;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  border: 5px solid transparent;
+  border-top-color: white;
+  border-radius: 50%;
+  animation: button-loading-spinner 0.75s ease infinite;
+}
+
+@keyframes button-loading-spinner {
+  from {
+    transform: rotate(0turn);
+  }
+
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 .mainButton:hover {
@@ -91,10 +136,10 @@ img {
 }
 
 .secondaryButton {
-  background-color: #efded3;
+  background-color: transparent;
   color: #f57624;
-  padding: 1rem 1.75rem;
-  border: none;
+  padding: 0.81rem 1.75rem;
+  border: 2px solid #f57624;
   /* border-radius: 10px; */
   border-radius: 100px;
   font-weight: bold;
@@ -105,10 +150,34 @@ img {
 }
 
 .secondaryButton:hover {
-  background-color: #eee2db;
+  background-color: #f57624;
+  color: white;
 }
 
 .secondaryButton:active {
+  background-color: #8a3a06;
+  border-color: #8a3a06;
+}
+
+.lightButton {
+  background-color: #efded3;
+  color: #f57624;
+  padding: 0.9rem 1.75rem;
+  border: none;
+  /* border-radius: 10px; */
+  border-radius: 100px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.lightButton:hover {
+  background-color: #eee2db;
+}
+
+.lightButton:active {
   background-color: #f0e5df;
 }
 
@@ -241,3 +310,80 @@ img {
   transform: rotate(45deg);
 }
 
+.separator {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center !important;
+  column-gap: 1rem !important;
+}
+
+.separator::before, .separator::after {
+  content: "";
+  height: 1px;
+  background-color: black;
+  display: block;
+}
+
+/* Info, warrning, success, error boxovi */
+.infoBox,
+.warrningBox {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.infoBox button,
+.warrningBox button {
+  padding: 1rem;
+  margin-right: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.infoBox > svg,
+.warrningBox > svg  {
+  margin-top: 1rem;
+}
+
+.infoBox > div > p:first-child,
+.warrningBox > div > p:first-child {
+  font-weight: bold;
+}
+
+.infoBox {
+  background-color: #dde6f9;
+  color: #03235f;
+  border-inline-color: #1d60eb;
+}
+
+.infoBox > svg {
+  color: #1d60eb;
+}
+
+.infoBox button {
+  background-color: #1d60eb;
+  color: #dde6f9;
+}
+
+.infoBox button:hover {
+  background-color: #0e4ac6;
+}
+
+.infoBox button:active {
+  background-color: #093893;
+}
+
+.warrningBox {
+  background-color: #f0efd2;
+  color: #beb706;
+  border-inline-color: #beb706;
+}
