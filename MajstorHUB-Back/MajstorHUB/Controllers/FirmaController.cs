@@ -55,6 +55,7 @@ public class FirmaController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(Roles.Firma)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -168,13 +169,17 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPost("Login/{email}/{password}")]
+    [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Login(string email, string password)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(LoginDTO loginDto)
     {
         try
         {
+            string email = loginDto.Email;
+            string password = loginDto.Password;
+
             if (!UtilityCheck.IsValidEmail(email))
                 return BadRequest("Pogresan format email-a!");
 
@@ -186,10 +191,18 @@ public class FirmaController : ControllerBase
 
             if (!hashPassword)
             {
-                return BadRequest("Pogresna sifra!\n");
+                return Unauthorized("Pogresna sifra!\n");
             }
 
             var token = new JwtProvider(_configuration).Generate(firma);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
 
             var refresh = new RefreshToken
             {
@@ -204,7 +217,8 @@ public class FirmaController : ControllerBase
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                RefreshToken = refresh
+                RefreshToken = refresh,
+                Roles = roles
             });
 
         }
@@ -250,6 +264,15 @@ public class FirmaController : ControllerBase
                     return Unauthorized();
 
             var token = jwtProvider.Generate(firma);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
+
             var newRefreshToken = new RefreshToken
             {
                 TokenValue = RefreshProvider.GenerateRefreshToken(),
@@ -263,7 +286,8 @@ public class FirmaController : ControllerBase
             {
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
-                Expiration = token.ValidTo
+                Expiration = token.ValidTo,
+                Roles = roles
             });
         }
         catch (Exception e)

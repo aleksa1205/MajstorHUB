@@ -9,7 +9,7 @@
   margin-bottom: 1rem;
 }
 
-.formControl p {
+.pError {
   color: #e5212c;
   display: flex;
   gap: 0.3rem;
@@ -88,4 +88,10 @@
   color: black;
   font-weight: 300;
   margin-bottom: 2rem;
+}
+
+.nisteViBtn {
+  width: 100%;
+  font-weight: bold;
+  margin-top: 2rem;
 }

@@ -1,6 +1,5 @@
-import UserType, { pathToUser, userToPath } from "../../../lib/UserType";
+import UserType, { userToPath } from "../../../lib/UserType";
 import { FaCircleInfo } from "react-icons/fa6";
-import classes from './LoginSelectUser.module.css';
 type PropsValues = {
     setUserTypesFound : React.Dispatch<React.SetStateAction<UserType[]>>;
     userTypesFound : UserType[];

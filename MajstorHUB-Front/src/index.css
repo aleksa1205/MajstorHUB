@@ -182,7 +182,9 @@ img {
 }
 
 .link {
-  background-color: none;
+  background-color: transparent;
+  font-size: inherit;
+  font-family: inherit;
   /* color: #efded3; */
   color: black;
   cursor: pointer;
@@ -191,7 +193,6 @@ img {
   text-decoration: none;
   /* margin: auto; */
   border: none;
-  background-color: none;
 }
 
 .link:hover {
@@ -203,14 +204,15 @@ img {
 }
 
 .secondLink {
-  background-color: none;
+  background-color: transparent;
+  font-size: inherit;
+  font-family: inherit;
   color: #f57624;
   cursor: pointer;
   transition: color 0.1s ease-in-out;
   font-weight: 400;
   /* margin: auto; */
   border: none;
-  background-color: none;
 }
 
 .secondLink:hover {

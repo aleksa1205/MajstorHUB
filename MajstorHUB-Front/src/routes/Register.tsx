@@ -4,8 +4,6 @@ import RegisterForm from "../components/AuthComponents/RegisterComponents/Regist
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserType from "../lib/UserType";
-import { FaCircleCheck } from "react-icons/fa6";
-import { MdError } from "react-icons/md";
 
 function Register() {
   const navigate = useNavigate();
@@ -72,8 +70,6 @@ function Register() {
         {formSelected == UserType.Korisnik && <RegisterForm setSelected={setFormSelected} formType={UserType.Korisnik}/>}
         {formSelected == UserType.Majstor && <RegisterForm setSelected={setFormSelected} formType={UserType.Majstor} />}
         {formSelected == UserType.Firma && <RegisterForm setSelected={setFormSelected} formType={UserType.Firma} />}
-        {formSelected == UserType.Uspesno && navigate('/success')}
-        {formSelected == UserType.Neuspesno && navigate('/error')}
     </>
   );
 }
