@@ -1,6 +1,7 @@
 import UserType, { userToPath } from "../lib/UserType.ts";
 import { isAxiosError } from "axios";
 import axios from "./axios.ts";
+import useAxiosPrivate from "../hooks/useAxiosPrivate.tsx";
 
 // fajl sa funkcijama za slanje zahteva serveru, error-i se handluju ovde i posto koristim axios
 // to znaci da svaki status kod koji nije 200 ide direktno u catch block, ako bi koristili fetch,
@@ -75,15 +76,16 @@ export async function getPibExists(type : UserType.Firma, pib : string) : Promis
 }
 
 export type RefreshToken = {
-    TokenValue : string;
-    Expiry : Date;
-    JwtId : string;
+    tokenValue : string;
+    expiry : Date;
+    jwtId : string;
 }
 // Isto kao na backend-u
 export type LoginResponse = {
-    JwtToken : string;
-    RefreshToken : RefreshToken;
-    Expiration : Date;
+    jwtToken : string;
+    refreshToken : RefreshToken;
+    expiration : Date;
+    roles : Array<string>;
 }
 // funkcije vraca object ako je uspeo login, false ako je greska sa sifrom ili emailom ili null ako je server riknuo
 export async function postLogin(type : UserType, email : string, password : string) : Promise<LoginResponse | false | null> {

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdLockOutline } from "react-icons/md";
 import { useState } from "react";
 import { postLogin } from "../../../api/serverRequests";
+import useAuth from "../../../hooks/useAuth";
 
 type FormValues = {
   password: string;
@@ -17,25 +18,33 @@ type PropsValues = {
 };
 
 function LoginPasswordForm({ email, userType, reset }: PropsValues) {
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
-    const [isWrongPassword, setIsWrongPassword] = useState(false);
+  const [isWrongPassword, setIsWrongPassword] = useState(false);
 
   const form = useForm<FormValues>();
   const { register, handleSubmit, formState } = form;
   const { errors, isSubmitting } = formState;
 
-  async function onSubmit(formData : FormValues) {
+  async function onSubmit(formData: FormValues) {
     const { password } = formData;
 
     const data = await postLogin(userType, email, password);
 
-    if(data === null) 
-      navigate('/error');
-    else if(!data)
-      setIsWrongPassword(true);
+    if (data === null) navigate("/error");
+    else if (!data) setIsWrongPassword(true);
     else {
+      // Auth context (mesto gde cuvamo sve podatke o trenutno logovanom useru) 
+      // mora da se updatuje kada submitujemo login formu
+      setAuth({
+        email,
+        jwtToken: data.jwtToken,
+        refreshToken: data.refreshToken,
+        userType,
+        roles: data.roles
+      });
+
       setIsWrongPassword(false);
-      console.log(data);
     }
   }
   return (
@@ -68,18 +77,20 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
 
           {errors.password != null && (
             <p className={classes.pError}>
-                {errors.password?.message && <MdErrorOutline />}
-                {errors.password?.message}
+              {errors.password?.message && <MdErrorOutline />}
+              {errors.password?.message}
             </p>
           )}
 
-        {isWrongPassword && (
+          {isWrongPassword && (
             <p className={classes.pError}>
-                <MdErrorOutline />
-                Pogrešna šifra
+              <MdErrorOutline />
+              Pogrešna šifra
             </p>
-        )}
-          <p style={{fontWeight: 'bold'}} className={`secondLink`}>Zaboravili ste šifru?</p>
+          )}
+          <p style={{ fontWeight: "bold" }} className={`secondLink`}>
+            Zaboravili ste šifru?
+          </p>
         </div>
 
         <div className={`${classes.center} ${classes.formControl}`}>
