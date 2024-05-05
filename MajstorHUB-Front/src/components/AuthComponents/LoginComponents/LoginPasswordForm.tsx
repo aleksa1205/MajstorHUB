@@ -46,6 +46,11 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
         roles: data.roles.map(el => pathToUser(el))
       });
 
+      // Nesto ne radi kada nema setTimeout
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 100);
+
       setIsWrongPassword(false);
     }
   }

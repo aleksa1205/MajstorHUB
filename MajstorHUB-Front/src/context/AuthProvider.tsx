@@ -24,7 +24,7 @@ export type AuthValues = {
 // kada se aplikacija ponovu ucita context je prazan, procitamo iz local storage session id, posaljemo serveru, server autentifikuje korisnika
 // i vrati nazad sve potrebne informacije o autentifikaciji i mi tada updatujemo context
 
-const defaultValues : AuthValues = {
+export const emptyAuthValue : AuthValues = {
     userId : '',
     email: '',
     jwtToken: '',
@@ -39,7 +39,7 @@ const defaultValues : AuthValues = {
 
 // Da se radi sa vanilla js ovde bi se samo prosledio prazan objekat, {}
 const AuthContext = createContext<ContextValues>({
-    auth : defaultValues,
+    auth : emptyAuthValue,
     setAuth: () => {}
 });
 
@@ -48,7 +48,7 @@ type PropsValue = {
 }
 
 export const AuthProvider = ({ children } : PropsValue) => {
-    const [auth, setAuth] = useState<AuthValues>(defaultValues);
+    const [auth, setAuth] = useState<AuthValues>(emptyAuthValue);
 
     const localStorageItem = {
         userId: auth.userId,

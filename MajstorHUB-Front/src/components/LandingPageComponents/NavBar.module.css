@@ -1,23 +1,35 @@
 header {
     width: 100%;
     /* background-color: #0c1626; */
-    background-color: white;
+
     position: fixed;
     top: 0;
     z-index: 999;
 }
 
-nav {
+.register {
+    display: none;
+}
+
+.nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     /* border: 5px solid red;  */
     padding: 0.85rem 2rem;
     font-weight: bold;
+    height: 77px;
+    background-color: white;
 }
 
 .dropDown {
     display: none;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.dropDown:hover {
+    color: #f57624;
 }
 
 .logo {
@@ -38,26 +50,20 @@ span {
     gap: 2rem;
 }
 
-@media (width <= 840px) {
+@media (width <= 900px) {
     header span {
         display: none;
     }
 
-}
+    .dropDown {
+        display: block;
+    }
 
-@media (width <= 600px) {
-    .optionsContainer p {
+    .optionsContainer {
         display: none;
     }
 
-    .loginButton {
-        display: none !important;
-    }
-    /* nav {
-        /* background-color: white; */
-        /* color: #3a1700; 
-    } */
-    .dropDown {
+    .register {
         display: block;
     }
 }
