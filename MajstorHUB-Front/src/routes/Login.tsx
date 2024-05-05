@@ -4,11 +4,14 @@ import LoginEmailForm from "../components/AuthComponents/LoginComponents/LoginEm
 import UserType from "../lib/UserType";
 import LoginSelectUser from "../components/AuthComponents/LoginComponents/LoginSelectUser";
 import LoginPasswordForm from "../components/AuthComponents/LoginComponents/LoginPasswordForm";
-import { useLoaderData } from 'react-router-dom';
+import { redirect, useLoaderData } from 'react-router-dom';
 import { FaCircleInfo } from 'react-icons/fa6';
+import { isLoggedIn } from '../lib/utils';
 
 export function loader({ request } : any) {
     // Proveriti da li je korisnik logovan, ako jeste ne rendereuj ovu komponentu
+    if(isLoggedIn())
+        throw redirect('/');
 
     const url = new URL(request.url);
     return url.searchParams.get("message");

@@ -92,9 +92,3 @@ hr {
 .errorCheckBox {
   border-color: #e5212c !important;
 }
-
-@media (width < 680px) {
-  .form {
-    width: none !important;
-  }
-}

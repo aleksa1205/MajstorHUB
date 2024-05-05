@@ -2,12 +2,11 @@ import classes from "./LoginEmailForm.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MdErrorOutline } from "react-icons/md";
-import UserType, { pathToUser } from "../../../lib/UserType";
+import UserType from "../../../lib/UserType";
 import { CiUser } from "react-icons/ci";
 import { useState } from "react";
 import { IoIosWarning } from "react-icons/io";
-import { getEmailExists } from "../../../api/serverRequests";
-import { Form } from "react-router-dom";
+import useUserController from "../../../api/controllers/useUserController";
 
 type FromValues = {
   email: string;
@@ -19,9 +18,10 @@ type PropsValues = {
 }
 
 function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
+  const { emailExists } = useUserController();
   const navigate = useNavigate();
 
-  const [emailExists, setEmailExists] = useState(true);
+  const [doesEmailExists, setDoesEmailExists] = useState(true);
 
   const form = useForm<FromValues>();
   const { register, handleSubmit, formState } = form;
@@ -35,7 +35,7 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
     // Puni niz tipovima usera koji imaju prosledjen email u bazi
 
     for(const type of userTypesArr) {
-      const data = await getEmailExists(type, email);
+      const data = await emailExists(type, email);
 
       if(data === null) {
         console.log('sjebo sam, sad moram da te redirectujem');
@@ -46,9 +46,9 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
     }
 
     if(userTypesFound.length == 0)
-      setEmailExists(false);
+      setDoesEmailExists(false);
     else {
-      setEmailExists(true);
+      setDoesEmailExists(true);
       setEmail(email);
       setUserTypesFound(userTypesFound);
     }
@@ -56,7 +56,7 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
 
   return (
     <>
-      {!emailExists && (
+      {!doesEmailExists && (
         <div className='warrningBox'>
           <IoIosWarning size='1.25rem' className={classes.warningIcon} />
           <div>

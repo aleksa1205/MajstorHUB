@@ -1,5 +1,5 @@
 import axios from "../api/axios";
-import { LoginResponse } from "../api/serverRequests";
+import { LoginResponse } from "../api/controllers/useUserController"; 
 import UserType, { userToPath } from "../lib/UserType";
 import useAuth from "./useAuth";
 
