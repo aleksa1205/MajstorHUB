@@ -1,10 +1,11 @@
 import classes from "./RegisterForm.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { MdErrorOutline } from "react-icons/md";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
-import UserType from "../../../lib/UserType";
+import UserType, { userToPath } from "../../../lib/UserType";
+import { getEmailExists, getJmbgExists, getPibExists, postRegister } from "../../../api/serverRequests";
 
 type FormValues = {
   ime?: string;
@@ -39,38 +40,16 @@ type PropsValue = {
 };
 
 function RegisterForm({ formType, setSelected }: PropsValue) {
+  const navigate = useNavigate();
+
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState, watch } = form;
   const { errors, isSubmitting } = formState;
-
-  let formTypeString: string;
-  let userUrl: string;
-  switch (formType) {
-    case UserType.Korisnik:
-      formTypeString = "Klijent";
-      userUrl = "https://localhost:7163/Korisnik";
-      break;
-    case UserType.Majstor:
-      formTypeString = "Majstor";
-      userUrl = "https://localhost:7163/Majstor";
-      break;
-    case UserType.Firma:
-      formTypeString = "Firma";
-      userUrl = "https://localhost:7163/Firma";
-      break;
-    default:
-      formTypeString = "Nepoznato";
-      userUrl = "Nepoznato";
-      console.error("Prosledjen pogresan tip forme");
-      break;
-  }
 
   const password = watch("sifra");
 
   const onSubmit = async (formData: FormValues) => {
     // console.log("Form submitted", formData);
-
-    const url = `${userUrl}/register`;
     let sendData : FirmaDto | KorisnikDto;
 
     if(formType == UserType.Korisnik || formType == UserType.Majstor) {
@@ -91,29 +70,9 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       }
     }
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sendData)
-      });
-
-      console.log(response.status);
-      const data = await response.text();
-
-      if(response.status == 200) {
-        setSelected(UserType.Uspesno);
-      }
-      else {
-        console.error(data);
-        setSelected(UserType.Neuspesno);
-      }
-      
-    } catch (error) {
-      console.error(error);
-    }
+    const data = await postRegister(formType, sendData);
+    if(data === null) navigate('/error');
+    else navigate('/success');
   };
 
   // Specificne form control-e za svakog vrsta usera
@@ -191,11 +150,19 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               message: "JMBG mora da sadrži samo brojeve",
             },
             validate: async (fieldValue) => {
-              const url = `${userUrl}/JmbgExists/${fieldValue}`;
-              const response = await fetch(url);
-              const data = await response.json();
-              console.log('Cekaj kenjam (jmbg)');
+              let data;
+              
+              if(typeof fieldValue === 'string')
+                data = await getJmbgExists(formType, fieldValue)
+              if(data === null) navigate('/error');
+              
               return !data || 'JMBG vec postoji';
+              
+              // const url = `${userUrl}/JmbgExists/${fieldValue}`;
+              // const response = await fetch(url);
+              // const data = await response.json();
+              // console.log('Cekaj kenjam (jmbg)');
+              // return !data || 'JMBG vec postoji';
             }
           })}
         />
@@ -205,7 +172,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         </p>
       </div>
     );
-  } else {
+  } else if(formType == UserType.Firma) {
     imeFirmeFormControl = (
       <div className={classes.formControl}>
         <label htmlFor="imeFirme">Ime Firme</label>
@@ -251,11 +218,19 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               message: "PIB mora da sadrži samo brojeve",
             },
             validate: async (fieldValue) => {
-              console.log('Cekaj kenjam (pib)');
-              const url = `${userUrl}/PibExists/${fieldValue}`;
-              const response = await fetch(url);
-              const data = await response.json();
-              return !data || 'PIb vec postoji';
+              let data;
+              
+              if(typeof fieldValue === 'string')
+                data = await getPibExists(formType, fieldValue)
+              if(data === null) navigate('/error');
+              
+              return !data || 'PIB vec postoji';
+
+              // console.log('Cekaj kenjam (pib)');
+              // const url = `${userUrl}/PibExists/${fieldValue}`;
+              // const response = await fetch(url);
+              // const data = await response.json();
+              // return !data || 'PIb vec postoji';
             }
           })}
         />
@@ -274,7 +249,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         className={`container ${classes.form}`}
         noValidate
       >
-        <h3>Pridruži se kao {formTypeString}</h3>
+        <h3>Pridruži se kao {userToPath(formType)}</h3>
         <hr />
 
         {(formType == UserType.Korisnik || formType == UserType.Majstor) && (
@@ -303,11 +278,18 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
                 message: "Format email-a neispravan",
               },
               validate: async (fieldValue) => {
-                console.log('Cekaj kenjam (email)');
-                const url = `${userUrl}/EmailExists/${fieldValue}`;
-                const response = await fetch(url);
-                const data = await response.json();
+                let data;
+              
+                data = await getEmailExists(formType, fieldValue)
+                if(data === null) navigate('/error');
+                
                 return !data || 'Email vec postoji';
+
+                // console.log('Cekaj kenjam (email)');
+                // const url = `${userUrl}/EmailExists/${fieldValue}`;
+                // const response = await fetch(url);
+                // const data = await response.json();
+                // return !data || 'Email vec postoji';
               }
             })}
           />
@@ -404,12 +386,3 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
 }
 
 export default RegisterForm;
-
-/*
-  const response = await fetch(
-  `https://localhost:7163/Korisnik/GetByEmail/${fieldValue}`
-  );
-  const data = await response.json();
-  console.log(response);
-  return data.length == 0 || "Email je vec postoji";
-*/

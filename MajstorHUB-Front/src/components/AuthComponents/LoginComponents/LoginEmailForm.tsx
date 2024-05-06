@@ -1,12 +1,13 @@
 import classes from "./LoginEmailForm.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MdErrorOutline } from "react-icons/md";
 import UserType, { pathToUser } from "../../../lib/UserType";
 import { CiUser } from "react-icons/ci";
-import { ServerBaseUrl } from "../../../lib/ServerBaseUrl";
 import { useState } from "react";
 import { IoIosWarning } from "react-icons/io";
+import { getEmailExists } from "../../../api/serverRequests";
+import { Form } from "react-router-dom";
 
 type FromValues = {
   email: string;
@@ -18,6 +19,8 @@ type PropsValues = {
 }
 
 function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
+  const navigate = useNavigate();
+
   const [emailExists, setEmailExists] = useState(true);
 
   const form = useForm<FromValues>();
@@ -26,22 +29,20 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
 
   async function onSubmit(formData : FromValues) {
     const { email } = formData;
-    const userTypesPath = ['Korisnik', 'Majstor', 'Firma'];
+    const userTypesArr = [UserType.Korisnik, UserType.Majstor, UserType.Firma];
     let userTypesFound : Array<UserType> = [];
 
     // Puni niz tipovima usera koji imaju prosledjen email u bazi
-    try {
-      for(const i in userTypesPath) {
-        const url : string = `${ServerBaseUrl}/${userTypesPath[i]}/EmailExists/${email}`;
-        const response = await fetch(url);
-        if(!response.ok) console.log('Greska pri fetch-u');
-        else {
-          const data = await response.json();
-          if(data) userTypesFound.push(pathToUser(userTypesPath[i]));
-        }
+
+    for(const type of userTypesArr) {
+      const data = await getEmailExists(type, email);
+
+      if(data === null) {
+        console.log('sjebo sam, sad moram da te redirectujem');
+        navigate('/error');
       }
-    } catch (error) {
-      console.log(error);
+
+      if(data) userTypesFound.push(type);
     }
 
     if(userTypesFound.length == 0)
@@ -63,6 +64,7 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
           </div>
         </div>
       )}
+
       <form className={`${classes.form}`} noValidate onSubmit={handleSubmit(onSubmit)}>
         <h3>Ulogujte se na MajstorHub</h3>
         <div className={classes.formControl}>
@@ -84,7 +86,7 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
               })}
             />
           </div>
-          <p>
+          <p className={classes.pError}>
             {errors.email?.message && <MdErrorOutline />}
             {errors.email?.message}
           </p>
