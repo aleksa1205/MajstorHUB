@@ -1,7 +1,7 @@
 header {
     width: 100%;
     /* background-color: #0c1626; */
-
+    background-color: white;
     position: fixed;
     top: 0;
     z-index: 999;
@@ -65,5 +65,8 @@ span {
 
     .register {
         display: block;
+    }
+    .dashboard {
+        display: none;
     }
 }

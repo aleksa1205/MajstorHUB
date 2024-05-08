@@ -29,11 +29,14 @@ function NavBar() {
                         <Link to='/login' className="link">Pronađi Izvodjače</Link>
                     </span>
                     {isLoggedIn() ? 
-                        <button onClick={() => {
-                            hideSidebar();
-                            logoutUser();
-                        }} className='link'>Izloguj se</button> : 
-                        <Link to='/login' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>
+                        <>
+                            <Link to='/dashboard' className={`link ${classes.dashboard}`}>Dashboard</Link>
+                            <button onClick={() => {
+                                hideSidebar();
+                                logoutUser();
+                            }} className='link'>Izloguj se</button>
+                        </> :
+                            <Link to='/login' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>
                     }
                     <Link to='/register' className="mainButton">Registruj se</Link>
                 </div>
