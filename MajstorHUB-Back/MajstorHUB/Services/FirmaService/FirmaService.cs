@@ -1,4 +1,5 @@
-﻿namespace MajstorHUB.Services.FirmaService;
+﻿using MajstorHUB.Utility;
+namespace MajstorHUB.Services.FirmaService;
 
 public class FirmaService : IFirmaService
 {
@@ -70,5 +71,31 @@ public class FirmaService : IFirmaService
             .Unset("refresh_token");
 
         await _firme.UpdateOneAsync(filter, update);
+    }
+
+    public async Task<List<Firma>> Filter(string naziv, Struka struka)
+    {
+        List<Firma> listaNaziva;
+        List<Firma> listaStruka;
+
+        if (naziv == "")
+        {
+            listaNaziva = await _firme.Find(_ => true).ToListAsync();
+        }
+        else
+        {
+            listaNaziva = await _firme.Find(firma => firma.Naziv.Contains(naziv)).ToListAsync();
+        }
+        if (struka == Struka.Nedefinisano)
+        {
+            listaStruka=await _firme.Find(_=>true).ToListAsync();
+        }
+        else
+        {
+            listaStruka = await _firme.Find(firma => firma.Struke.Contains(struka)).ToListAsync();
+        }
+
+        List<Firma> konacnaLista = listaNaziva.Intersect(listaStruka, new FirmaComparer()).ToList();
+        return konacnaLista;
     }
 }

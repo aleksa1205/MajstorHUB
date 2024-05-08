@@ -9,6 +9,7 @@ public interface IKorisnikService
     Task Create(Korisnik korisnik);
     Task Update(string id, Korisnik korisnik);
     Task UpdateRefreshToken(string id, RefreshToken token);
+    Task<List<Korisnik>> Filter(string ime, string prezime);
     Task Delete(string id);
     Task DeleteRefreshToken(string id);
 }

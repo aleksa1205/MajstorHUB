@@ -406,4 +406,25 @@ public class MajstorController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPost("Filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Filter(FilterDTO filter)
+    {
+        try
+        {
+            var filterList = await _majstorService.Filter(filter.Ime, filter.Prezime, filter.Struka);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Majstor za zadatim imenom, prezimenom i strukom nije pronadjen!\n");
+            }
+            return Ok(filterList);
+        }
+        catch(Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

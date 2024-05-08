@@ -1,6 +1,5 @@
-﻿
-using MajstorHUB.Models;
-
+﻿using MajstorHUB.Models;
+using MajstorHUB.Utility;
 namespace MajstorHUB.Services.KorisnikService;
 
 public class KorisnikService : IKorisnikService
@@ -72,5 +71,32 @@ public class KorisnikService : IKorisnikService
             .Unset("refresh_token");
 
         await _korisnici.UpdateOneAsync(filter, update);
+    }
+
+    public async Task<List<Korisnik>> Filter(string ime, string prezime)
+    {
+        //Ako je string prazan vrati sve
+        List<Korisnik> listaImena;
+        List<Korisnik> listaPrezimena;
+
+        if (ime == "")
+        {
+            listaImena = await _korisnici.Find(korisnik => true).ToListAsync();
+        }
+        else
+        {
+            listaImena = await _korisnici.Find(korisnik => korisnik.Ime.Contains(ime)).ToListAsync();
+        }
+        if (prezime == "")
+        {
+            listaPrezimena = await _korisnici.Find(korisnik => true).ToListAsync();
+        }
+        else
+        {
+            listaPrezimena = await _korisnici.Find(korisnik => korisnik.Prezime.Contains(prezime)).ToListAsync();
+        }
+
+        List<Korisnik> konacnaLista = listaImena.Intersect(listaPrezimena, new KorisnikComparer()).ToList();
+        return konacnaLista;
     }
 }

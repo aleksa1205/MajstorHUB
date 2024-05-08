@@ -408,4 +408,25 @@ public class KorisnikController : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpPost("Filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Filter(FilterDTO filter)
+    {
+        try
+        {
+            var filterList = await _korisnikService.Filter(filter.Ime, filter.Prezime);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Korisnik sa zadatim imenom i prezimenom ne postoji!\n");
+            }
+            return Ok(filterList);
+        }
+        catch(Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }
