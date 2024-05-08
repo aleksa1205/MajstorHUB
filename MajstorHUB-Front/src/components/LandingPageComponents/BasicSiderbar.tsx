@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { isLoggedIn } from "../../lib/utils";
 import useLogout from "../../hooks/useLogout";
+import { useErrorBoundary } from "react-error-boundary";
 
 type PropsValue = {
     setShowSidebar : React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function BasicSidebar({ setShowSidebar } : PropsValue) {
-
     const LogoutUser = useLogout();
 
     function hideSidebar() {

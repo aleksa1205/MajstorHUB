@@ -6,6 +6,7 @@ import { MdErrorOutline, MdLockOutline } from "react-icons/md";
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import useUserController from "../../../api/controllers/useUserController";
+import { useErrorBoundary } from "react-error-boundary";
 
 type FormValues = {
   password: string;
@@ -19,7 +20,8 @@ type PropsValues = {
 
 function LoginPasswordForm({ email, userType, reset }: PropsValues) {
   const { setAuth } = useAuth();
-  const { login } = useUserController()
+  const { login } = useUserController();
+  const {showBoundary} = useErrorBoundary();
   const navigate = useNavigate();
   const [isWrongPassword, setIsWrongPassword] = useState(false);
 
@@ -30,10 +32,14 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
   async function onSubmit(formData: FormValues) {
     const { password } = formData;
 
-    const data = await login(userType, email, password);
-
-    if (data === null) navigate("/error");
-    else if (!data) setIsWrongPassword(true);
+    let data;
+    try {
+      data = await login(userType, email, password);
+    } catch (error) {
+      showBoundary(error);
+    }
+    
+    if (!data) setIsWrongPassword(true);
     else {
       // Auth context (mesto gde cuvamo sve podatke o trenutno logovanom useru) 
       // mora da se updatuje kada submitujemo login formu

@@ -33,7 +33,7 @@ function Footer() {
                 </div>
 
                 <hr />
-                <p>Copyright © MajstorHUB 2024 - Perić Aleksa 18000, Cvetković Jovan 18981</p>
+                <p>Copyright © MajstorHUB 2024 - Perić Aleksa 18826, Cvetković Jovan 18981</p>
             </div>
         </footer>
     );
