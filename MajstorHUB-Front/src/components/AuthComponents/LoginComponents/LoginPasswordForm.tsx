@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
-import UserType from "../../../lib/UserType";
+import UserType, { pathToUser } from "../../../lib/UserType";
 import classes from "./LoginEmailForm.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdLockOutline } from "react-icons/md";
 import { useState } from "react";
-import { postLogin } from "../../../api/serverRequests";
 import useAuth from "../../../hooks/useAuth";
+import useUserController from "../../../api/controllers/useUserController";
 
 type FormValues = {
   password: string;
@@ -18,7 +18,8 @@ type PropsValues = {
 };
 
 function LoginPasswordForm({ email, userType, reset }: PropsValues) {
-  const { auth, setAuth } = useAuth();
+  const { setAuth } = useAuth();
+  const { login } = useUserController()
   const navigate = useNavigate();
   const [isWrongPassword, setIsWrongPassword] = useState(false);
 
@@ -29,7 +30,7 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
   async function onSubmit(formData: FormValues) {
     const { password } = formData;
 
-    const data = await postLogin(userType, email, password);
+    const data = await login(userType, email, password);
 
     if (data === null) navigate("/error");
     else if (!data) setIsWrongPassword(true);
@@ -37,12 +38,18 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
       // Auth context (mesto gde cuvamo sve podatke o trenutno logovanom useru) 
       // mora da se updatuje kada submitujemo login formu
       setAuth({
+        userId: data.userId,
         email,
         jwtToken: data.jwtToken,
         refreshToken: data.refreshToken,
         userType,
-        roles: data.roles
+        roles: data.roles.map(el => pathToUser(el))
       });
+
+      // Nesto ne radi kada nema setTimeout
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 100);
 
       setIsWrongPassword(false);
     }

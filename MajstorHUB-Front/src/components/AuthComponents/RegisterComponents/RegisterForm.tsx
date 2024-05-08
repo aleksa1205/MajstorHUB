@@ -5,7 +5,7 @@ import { DevTool } from "@hookform/devtools";
 import { MdErrorOutline } from "react-icons/md";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import UserType, { userToPath } from "../../../lib/UserType";
-import { getEmailExists, getJmbgExists, getPibExists, postRegister } from "../../../api/serverRequests";
+import useUserController from "../../../api/controllers/useUserController";
 
 type FormValues = {
   ime?: string;
@@ -40,6 +40,7 @@ type PropsValue = {
 };
 
 function RegisterForm({ formType, setSelected }: PropsValue) {
+  const { emailExists, jmbgExists, pibExists, register: registerUser } = useUserController();
   const navigate = useNavigate();
 
   const form = useForm<FormValues>();
@@ -70,7 +71,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       }
     }
 
-    const data = await postRegister(formType, sendData);
+    const data = await registerUser(formType, sendData);
     if(data === null) navigate('/error');
     else navigate('/success');
   };
@@ -153,7 +154,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               let data;
               
               if(typeof fieldValue === 'string')
-                data = await getJmbgExists(formType, fieldValue)
+                data = await jmbgExists(formType, fieldValue)
               if(data === null) navigate('/error');
               
               return !data || 'JMBG vec postoji';
@@ -221,7 +222,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               let data;
               
               if(typeof fieldValue === 'string')
-                data = await getPibExists(formType, fieldValue)
+                data = await pibExists(formType, fieldValue)
               if(data === null) navigate('/error');
               
               return !data || 'PIB vec postoji';
@@ -280,7 +281,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               validate: async (fieldValue) => {
                 let data;
               
-                data = await getEmailExists(formType, fieldValue)
+                data = await emailExists(formType, fieldValue)
                 if(data === null) navigate('/error');
                 
                 return !data || 'Email vec postoji';

@@ -54,6 +54,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -221,6 +223,7 @@ public class MajstorController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                UserId = majstor.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 RefreshToken = refresh,
@@ -245,7 +248,7 @@ public class MajstorController : ControllerBase
             var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
-                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
 
             // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
             // sekude od datuma 01.01.1970 00:00:00
