@@ -6,7 +6,7 @@ function useUserControllerAuth(type : UserType) {
     const axiosPrivate = useAxiosPrivate(type);
 
     const UserControllerAuth = {
-        logout: async function() : Promise<Boolean | null> {
+        logout: async function() : Promise<Boolean> {
             try {
                 await axiosPrivate.delete(`${userToPath(type)}/Logout`);
                 return true;
@@ -15,20 +15,16 @@ function useUserControllerAuth(type : UserType) {
                     console.log(error.response.status);
                     switch(error.response.status) {
                         case 401:
-                            console.error('Pokusavas da se izlogujes a nemas token');
-                            return false;
+                            throw Error('Pokusavas da se izlogujes a nemas token');
                         default:
-                            console.error('Unexpected error ' + error.message);
-                            return null;
+                            throw Error('Axios Error - ' + error.message);
                     }
                 }
                 else if(error instanceof Error) {
-                    console.error(error.message);
-                    return null;
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
-                    return null;
+                    throw Error('Unexpected Error - ' + error);
                 }
             }
         },

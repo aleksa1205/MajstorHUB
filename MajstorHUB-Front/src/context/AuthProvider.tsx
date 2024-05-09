@@ -4,9 +4,8 @@ import {
   RefreshToken,
 } from "../api/controllers/useUserController";
 import UserType, { pathToUser, userToPath } from "../lib/UserType";
-import useLoginTestUser from "../hooks/useLoginTestUser";
-import { useLoaderData } from "react-router-dom";
 import axios from "../api/axios";
+import { useErrorBoundary } from "react-error-boundary";
 
 // Ovi tipovi moraju da se dodaju da se typescirpt ne bi bunio
 // I zato sto createContext zahteva default values
@@ -55,10 +54,11 @@ type PropsValue = {
 
 export const AuthProvider = ({ children }: PropsValue) => {
   const [auth, setAuth] = useState<AuthValues>(emptyAuthValue);
+  const { showBoundary } = useErrorBoundary();
 
   // Iskomentarisi useEffect, ovde samo logujem nekog test usera pre pokretanja aplikacije
   useEffect(() => {
-    getData(setAuth);
+    getData(setAuth, showBoundary);
   }, []);
 
 
@@ -80,27 +80,30 @@ export const AuthProvider = ({ children }: PropsValue) => {
 
 export default AuthContext;
 
-async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>) {
+async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>, showBoundary : (error: any) => void) {
     const email = "milosmilosevic@gmail.com";
     const password = "sifra123";
     const type = UserType.Korisnik;
     const dataToSend = { email, password };
 
-    const response = await axios.post(
-      `${userToPath(UserType.Korisnik)}/Login`,
-      JSON.stringify(dataToSend),
-      { headers: { "Content-Type": "application/json" } }
-    );
-
-    if (response.data !== null) {
-      const data: LoginResponse = response.data;
-      setAuth({
-        email: email,
-        jwtToken: data.jwtToken,
-        refreshToken: data.refreshToken,
-        roles: data.roles.map((el) => pathToUser(el)),
-        userId: data.userId,
-        userType: type,
-      });
+    let response;
+    try {
+      response = await axios.post(
+        `${userToPath(UserType.Korisnik)}/Login`,
+        JSON.stringify(dataToSend),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    } catch (error) {
+      showBoundary(error);
     }
+
+    const data: LoginResponse = response!.data;
+    setAuth({
+      email: email,
+      jwtToken: data.jwtToken,
+      refreshToken: data.refreshToken,
+      roles: data.roles.map((el) => pathToUser(el)),
+      userId: data.userId,
+      userType: type,
+    });
   }

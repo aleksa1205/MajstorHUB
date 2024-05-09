@@ -6,6 +6,7 @@ import { MdErrorOutline } from "react-icons/md";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import UserType, { userToPath } from "../../../lib/UserType";
 import useUserController from "../../../api/controllers/useUserController";
+import { useErrorBoundary } from "react-error-boundary";
 
 type FormValues = {
   ime?: string;
@@ -41,6 +42,7 @@ type PropsValue = {
 
 function RegisterForm({ formType, setSelected }: PropsValue) {
   const { emailExists, jmbgExists, pibExists, register: registerUser } = useUserController();
+  const { showBoundary } = useErrorBoundary();
   const navigate = useNavigate();
 
   const form = useForm<FormValues>();
@@ -71,9 +73,15 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       }
     }
 
-    const data = await registerUser(formType, sendData);
-    if(data === null) navigate('/error');
-    else navigate('/success');
+    let data;
+    try {
+      data = await registerUser(formType, sendData);
+      
+    } catch (error) {
+      showBoundary(error);
+    }
+    
+    navigate('/success');
   };
 
   // Specificne form control-e za svakog vrsta usera
@@ -153,9 +161,12 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             validate: async (fieldValue) => {
               let data;
               
-              if(typeof fieldValue === 'string')
-                data = await jmbgExists(formType, fieldValue)
-              if(data === null) navigate('/error');
+              try {
+                if(typeof fieldValue === 'string')
+                  data = await jmbgExists(formType, fieldValue)                
+              } catch (error) {
+                showBoundary(error);
+              }
               
               return !data || 'JMBG vec postoji';
               
@@ -221,9 +232,13 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             validate: async (fieldValue) => {
               let data;
               
-              if(typeof fieldValue === 'string')
-                data = await pibExists(formType, fieldValue)
-              if(data === null) navigate('/error');
+              try {
+                if(typeof fieldValue === 'string')
+                  data = await pibExists(formType, fieldValue)
+                
+              } catch (error) {
+                showBoundary(error);
+              }
               
               return !data || 'PIB vec postoji';
 
@@ -280,9 +295,11 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               },
               validate: async (fieldValue) => {
                 let data;
-              
-                data = await emailExists(formType, fieldValue)
-                if(data === null) navigate('/error');
+                try {
+                  data = await emailExists(formType, fieldValue)
+                } catch (error) {
+                  showBoundary(error);
+                }
                 
                 return !data || 'Email vec postoji';
 

@@ -33,64 +33,61 @@ type RegiserKorisnikDto = {
 
 function useUserController() {
     const UserController = {
-        emailExists: async function(type : UserType, email : string) : Promise<boolean | null> {
+        emailExists: async function(type : UserType, email : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/EmailExists/${email}`);
                 return response.data;
             } 
             catch (error) {
                 if(isAxiosError(error)) {
-                    console.error(error.message);
+                    throw Error('Axios Error - ' + error.message);
                 }
                 else if (error instanceof Error) {
-                    console.error(error.message);
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
+                    throw Error('Unexpected Error - ' + error);
                 }
-                return null;
             }
         },
 
-        jmbgExists: async function(type : UserType.Korisnik | UserType.Majstor, jmbg : string) : Promise<boolean | null> {
+        jmbgExists: async function(type : UserType.Korisnik | UserType.Majstor, jmbg : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/JmbgExists/${jmbg}`);
                 return response.data;
             } 
             catch (error) {
                 if(isAxiosError(error)) {
-                    console.error(error.message);
+                    throw Error('Axios Error - ' + error.message);
                 }
                 else if (error instanceof Error) {
-                    console.error(error.message);
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
+                    throw Error('Unexpected Error - ' + error);
                 }
-                return null;
             }
         },
 
-        pibExists: async function(type : UserType.Firma, pib : string) : Promise<boolean | null> {
+        pibExists: async function(type : UserType.Firma, pib : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/PibExists/${pib}`);
                 return response.data;
             } 
             catch (error) {
                 if(isAxiosError(error)) {
-                    console.error(error.message);
+                    throw Error('Axios Error - ' + error.message);
                 }
                 else if (error instanceof Error) {
-                    console.error(error.message);
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
+                    throw Error('Unexpected Error - ' + error);
                 }
-                return null;
             }
         },
 
-        login: async function (type : UserType, email : string, password : string) : Promise<LoginResponse | false | null> {
+        login: async function (type : UserType, email : string, password : string) : Promise<LoginResponse | false> {
             const dataToSend = {Email: email, Password: password};
             
             try {
@@ -110,21 +107,19 @@ function useUserController() {
                         case 401:
                             return false;
                         default:
-                            console.error('Unexpected error ' + error.message);
-                            return null;
+                            throw Error('Axios Error - ' + error.message);
                     }
                 }
                 else if(error instanceof Error) {
-                    return null;
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
-                    return null;
+                    throw Error('Unexpected Error - ' + error);
                 }
             }
         },
 
-        register: async function (type : UserType, registerDto : RegiserKorisnikDto | RegisterFirmaDto) : Promise<null | object> {
+        register: async function (type : UserType, registerDto : RegiserKorisnikDto | RegisterFirmaDto) : Promise<object> {
             // Proverava da li je tip korisnik ili majstor, sto znaci da registerDto mora da bude RegiserKorisnikDto
             // odnosno ako registerDto zadrzi property 'PIB' moramo da bacimo gresku
             if((type == UserType.Korisnik || type == UserType.Majstor) && 'PIB' in registerDto)
@@ -143,17 +138,15 @@ function useUserController() {
                 return response.data;
             } 
             catch (error) {
-                if(isAxiosError(error) && error.response != null) {
-                    console.error(error.response);
+                if(isAxiosError(error)) {
+                    throw Error('Axios Error - ' + error.message);
                 }
-                else if(error instanceof Error) {
-                    console.error(error.message);
+                else if (error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
                 }
                 else {
-                    console.error(error);
+                    throw Error('Unexpected Error - ' + error);
                 }
-        
-                return null;
             }
         },
     }

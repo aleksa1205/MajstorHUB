@@ -8,6 +8,7 @@ import { useState } from "react";
 import { IoIosWarning } from "react-icons/io";
 import useUserController from "../../../api/controllers/useUserController";
 import { FaCircleInfo } from "react-icons/fa6";
+import { useErrorBoundary } from "react-error-boundary";
 
 type FromValues = {
   email: string;
@@ -20,6 +21,7 @@ type PropsValues = {
 
 function LoginEmailForm({ setUserTypesFound, setEmail }: PropsValues) {
   const { emailExists } = useUserController();
+  const {showBoundary} = useErrorBoundary();
   const navigate = useNavigate();
   const message = useLoaderData();
 
@@ -37,11 +39,11 @@ function LoginEmailForm({ setUserTypesFound, setEmail }: PropsValues) {
     // Puni niz tipovima usera koji imaju prosledjen email u bazi
 
     for (const type of userTypesArr) {
-      const data = await emailExists(type, email);
-
-      if (data === null) {
-        console.log("sjebo sam, sad moram da te redirectujem");
-        navigate("/error");
+      let data;
+      try {
+        data = await emailExists(type, email);
+      } catch (error) {
+        showBoundary(error);
       }
 
       if (data) userTypesFound.push(type);

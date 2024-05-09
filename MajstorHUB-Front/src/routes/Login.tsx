@@ -17,18 +17,14 @@ export function loader({ request } : any) {
 }
 
 function Login() {
-
     const [userTypesFound, setUserTypesFound] = useState<UserType[]>([]);
     const [email, setEmail] = useState('');
-    // const navigate = useNavigate();
 
     return (
         <main className={`container ${classes.main}`}>
             {userTypesFound.length == 0 && <LoginEmailForm setUserTypesFound={setUserTypesFound} setEmail={setEmail} />}
             {userTypesFound.length > 1 && <LoginSelectUser setUserTypesFound={setUserTypesFound} userTypesFound={userTypesFound} />}
             {userTypesFound.length === 1 && <LoginPasswordForm email={email} userType={userTypesFound[0]} reset={setUserTypesFound} />}
-
-            {/* {(loginStep == LoginSteps.EnterPassword && selectedTypePath === '') && navigate('/error')} */}
         </main>
     )
 }
