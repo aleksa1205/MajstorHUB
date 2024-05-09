@@ -23,7 +23,7 @@ function useLogout() {
         setAuth(emptyAuthValue);
 
         setTimeout(() => {
-            navigate('/');
+            navigate('/login');
         }, 100);
         
     }

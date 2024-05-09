@@ -67,6 +67,7 @@ public class FirmaController : ControllerBase
             var firme = await _firmaService.GetAll();
             if (firme.Count == 0)
                 return NotFound("Nijedna firma ne postoji u bazi!\n");
+
             return Ok(firme);
         }
         catch (Exception e)
@@ -86,7 +87,24 @@ public class FirmaController : ControllerBase
             var firma = await _firmaService.GetById(id);
             if (firma == null)
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
-            return Ok(firma);
+
+            var getResponse = new GetFirmaResponse
+            {
+                DatumKreiranjaNaloga = firma.DatumKreiranjaNaloga,
+                Email = firma.Email,
+                Naziv = firma.Naziv,
+                NovacNaSajtu = firma.NovacNaSajtu,
+                PIB = firma.PIB,
+                Adresa = firma.Adresa,
+                BrojTelefona = firma.BrojTelefona,
+                Id = firma.Id,
+                Opis = firma.Opis,
+                Slika = firma.Slika,
+                Struke = firma.Struke,
+                Zaradjeno = firma.Zaradjeno,
+            };
+
+            return Ok(getResponse);
         }
         catch (Exception e)
         {
@@ -215,6 +233,7 @@ public class FirmaController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = firma.Naziv,
                 UserId = firma.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
@@ -285,6 +304,7 @@ public class FirmaController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = firma.Naziv,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
                 Expiration = token.ValidTo,

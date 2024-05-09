@@ -1,0 +1,70 @@
+.userInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1.5rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+.userInfo:hover .imePrezime {
+    color: #f57624;
+}
+
+.info {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.info > div >  p {
+    margin: 0;
+}
+
+.arrow {
+    transition: all 0.2s ease-in-out;
+    transform: rotate(180deg);
+}
+
+.arrowDown {
+    transform: rotate(360deg);
+}
+
+.userInfo img {
+    width: 4rem;
+    border-radius: 100%;
+}
+
+.imePrezime {
+    font-weight: bold;
+    transition: all 0.15s ease-in-out;
+}
+
+.userInfoOptions {
+    padding: 0;
+}
+
+.userInfoOptions li {
+    /* border-top: 1px solid black; */
+    list-style-type: none;
+    padding: 1rem 0.5rem;
+    cursor: pointer;
+}
+
+.userInfoOptions li:first-child {
+    margin-top: -1.5rem;
+}
+
+.userInfoOptions li:hover {
+    background-color: #faf4f0;
+}
+
+.userInfoOptions li > div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.userInfoOptions li > div > p {
+    margin: 0;
+}

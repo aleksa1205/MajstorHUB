@@ -11,18 +11,24 @@ import Success from "./routes/Success.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import { requireAuth } from "./lib/utils.ts";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
+import AuthorizedLayout from "./components/AuthorizedComponents/AuthNavBarComponents/AuthorizedLayout.tsx";
 
 const router = createBrowserRouter([
   {
-    element:
-    <ErrorBoundaryProvider>
-      <RootLayout />
-    </ErrorBoundaryProvider>,
-    children: [
-      { path: "/", element:
+    element: (
       <ErrorBoundaryProvider>
-        <LandingPage />
-      </ErrorBoundaryProvider> },
+        <RootLayout />
+      </ErrorBoundaryProvider>
+    ),
+    children: [
+      {
+        path: "/",
+        element: (
+          <ErrorBoundaryProvider>
+            <LandingPage />
+          </ErrorBoundaryProvider>
+        ),
+      },
       {
         path: "/login",
         element: (
@@ -41,22 +47,32 @@ const router = createBrowserRouter([
         ),
       },
       { path: "/success", element: <Success /> },
+    ],
+    errorElement: <ErrorPage />,
+  },
+
+  {
+    element: (
+      <ErrorBoundaryProvider>
+        <AuthorizedLayout />
+      </ErrorBoundaryProvider>
+    ),
+    children: [
       {
         path: "/dashboard",
         element: <h1>Tekst</h1>,
         loader: () => requireAuth(),
       },
     ],
-    errorElement: <ErrorPage />,
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundaryProvider>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </ErrorBoundaryProvider>
   </React.StrictMode>
 );

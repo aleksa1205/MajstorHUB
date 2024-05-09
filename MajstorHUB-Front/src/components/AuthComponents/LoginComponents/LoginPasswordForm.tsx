@@ -44,6 +44,7 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
       // Auth context (mesto gde cuvamo sve podatke o trenutno logovanom useru) 
       // mora da se updatuje kada submitujemo login formu
       setAuth({
+        naziv: data.naziv,
         userId: data.userId,
         email,
         jwtToken: data.jwtToken,

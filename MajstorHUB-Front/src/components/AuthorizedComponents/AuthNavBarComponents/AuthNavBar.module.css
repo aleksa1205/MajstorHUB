@@ -1,0 +1,76 @@
+.header {
+    width: 100%;
+    /* background-color: #0c1626; */
+    background-color: white;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+}
+
+.register {
+    display: none;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* border: 5px solid red;  */
+    padding: 0.85rem 2rem;
+    font-weight: bold;
+    height: 77px;
+    background-color: white;
+}
+
+.dropDown {
+    display: none;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.dropDown:hover {
+    color: #f57624;
+}
+
+.logo {
+    font-size: 1.5em;
+    color: #f57624;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+span {
+    display: flex;
+    gap: 2rem;
+}
+
+.optionsContainer {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.iconContainer {
+    position: relative;
+}
+
+@media (width <= 900px) {
+    header span {
+        display: none;
+    }
+
+    .dropDown {
+        display: block;
+    }
+
+    .optionsContainer {
+        display: none;
+    }
+
+    .register {
+        display: block;
+    }
+    .dashboard {
+        display: none;
+    }
+}
