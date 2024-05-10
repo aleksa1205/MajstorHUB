@@ -77,6 +77,7 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -90,7 +91,24 @@ public class MajstorController : ControllerBase
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
-            return Ok(majstor);
+
+            var getResponse = new GetMajstorResponse
+            {
+                DatumKreiranjaNaloga = majstor.DatumKreiranjaNaloga,
+                Email = majstor.Email,
+                NovacNaSajtu = majstor.NovacNaSajtu,
+                Slika = majstor.Slika,
+                Adresa = majstor.Adresa,
+                BrojTelefona = majstor.BrojTelefona,
+                CenaPoSatu = majstor.CenaPoSatu,
+                Id = majstor.Id,
+                Iskustvo = majstor.Iskustvo,
+                Opis = majstor.Opis,
+                Struka = majstor.Struka,
+                Zaradjeno = majstor.Zaradjeno
+            };
+
+            return Ok(getResponse);
         }
         catch(Exception ex)
         {
@@ -223,6 +241,7 @@ public class MajstorController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = majstor.Ime + ' ' + majstor.Prezime,
                 UserId = majstor.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
@@ -261,17 +280,17 @@ public class MajstorController : ControllerBase
             if (expiryDateTimeUtc > DateTime.UtcNow)
                 return Unauthorized();
 
-            var firma = await _majstorService.GetById(principal.Identity.Name);
+            var majstor = await _majstorService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-            if (firma is null ||
-                firma.RefreshToken?.JwtId != jwtId ||
-                firma.RefreshToken.TokenValue != model.RefreshToken ||
-                firma.RefreshToken.Expiry < DateTime.UtcNow
+            if (majstor is null ||
+                majstor.RefreshToken?.JwtId != jwtId ||
+                majstor.RefreshToken.TokenValue != model.RefreshToken ||
+                majstor.RefreshToken.Expiry < DateTime.UtcNow
                 )
                 return Unauthorized();
 
-            var token = jwtProvider.Generate(firma);
+            var token = jwtProvider.Generate(majstor);
 
             List<string> roles = new List<string>();
 
@@ -287,11 +306,12 @@ public class MajstorController : ControllerBase
                 Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
                 JwtId = token.Id
             };
-            await _majstorService.UpdateRefreshToken(firma.Id!, newRefreshToken);
+            await _majstorService.UpdateRefreshToken(majstor.Id!, newRefreshToken);
 
 
             return Ok(new LoginResponse
             {
+                Naziv = majstor.Ime + ' ' + majstor.Prezime,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
                 Expiration = token.ValidTo,

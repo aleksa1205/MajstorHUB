@@ -9,6 +9,7 @@ export type RefreshToken = {
 }
 // Isto kao na backend-u
 export type LoginResponse = {
+    naziv : string;
     userId : string,
     jwtToken : string;
     refreshToken : RefreshToken;

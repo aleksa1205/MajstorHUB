@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { isLoggedIn } from "../../lib/utils";
 import useLogout from "../../hooks/useLogout";
-import { useErrorBoundary } from "react-error-boundary";
 
 type PropsValue = {
     setShowSidebar : React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,38 +15,33 @@ function BasicSidebar({ setShowSidebar } : PropsValue) {
 
   return (
     <nav className="sidebar">
-      {isLoggedIn() && (
-        <div className="sidebar-item">
-          <Link to="/dashboard" onClick={hideSidebar} className="link">
-            Dashboard
+      <div>
+        {isLoggedIn() && (
+            <Link to="/dashboard" onClick={hideSidebar} className="link sidebar-item">
+              Dashboard
+            </Link>
+        )}
+          <Link to="/register" onClick={hideSidebar} className="link sidebar-item">
+            Pronađi Posao
           </Link>
-        </div>
-      )}
-      <div className="sidebar-item">
-        <Link to="/register" onClick={hideSidebar} className="link">
-          Pronađi Posao
-        </Link>
-      </div>
 
-      <div className="sidebar-item">
-        <Link to="/register" onClick={hideSidebar} className="link">
-          Pronađi Izvodjače
-        </Link>
-      </div>
+          <Link to="/register" onClick={hideSidebar} className="link sidebar-item">
+            Pronađi Izvodjače
+          </Link>
 
-      <div className="sidebar-item">
-        {!isLoggedIn() ? 
-            <Link className="link" onClick={hideSidebar} to="/login">
-                Uloguj se
-            </Link> :
-            <button className="link" onClick={() => {
-                hideSidebar();
-                LogoutUser();
-            }}>
-                Izloguj se
-            </button>
-        }
+          {!isLoggedIn() ? 
+              <Link className="link sidebar-item" onClick={hideSidebar} to="/login">
+                  Uloguj se
+              </Link> :
+              <button className="link sidebar-item" onClick={() => {
+                  hideSidebar();
+                  LogoutUser();
+              }}>
+                  Izloguj se
+              </button>
+          }
       </div>
+        
       <Link to="/register" onClick={hideSidebar} className="mainButton">
         Registruj se
       </Link>

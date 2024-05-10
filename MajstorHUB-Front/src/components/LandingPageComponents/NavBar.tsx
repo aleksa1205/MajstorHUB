@@ -14,12 +14,17 @@ function NavBar() {
         setShowSidebar(false);
     }
 
+    function toggleSidebar() {
+        setShowSidebar(!showSidebar);
+    }
+
+
     return (
         <header>
             <nav className={`container ${classes.nav}`}>
                 {!showSidebar ? 
-                    <IoMenu onClick={() => setShowSidebar(true)} className={classes.dropDown} size='2rem' /> :
-                    <IoClose  onClick={() => setShowSidebar(false)} className={classes.dropDown} size='2rem' />
+                    <IoMenu onClick={toggleSidebar} className={classes.dropDown} size='2rem' /> :
+                    <IoClose  onClick={toggleSidebar} className={classes.dropDown} size='2rem' />
                 }
                 <Link to='/' onClick={hideSidebar} className={classes.logo}>MajstorHUB</Link>
                 <Link to='/register' onClick={hideSidebar} className={`${classes.register} link`}>Registruj Se</Link>
@@ -31,9 +36,9 @@ function NavBar() {
                     {isLoggedIn() ? 
                         <>
                             <Link to='/dashboard' className={`link ${classes.dashboard}`}>Dashboard</Link>
-                            <button onClick={() => {
+                            <button onClick={async () => {
                                 hideSidebar();
-                                logoutUser();
+                                await logoutUser();
                             }} className='link'>Izloguj se</button>
                         </> :
                             <Link to='/login' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>

@@ -77,6 +77,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -88,7 +89,25 @@ public class KorisnikController : ControllerBase
             var korisnik = await _korisnikService.GetById(id);
             if (korisnik == null)
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
-            return Ok(korisnik);
+
+            var getResponse = new GetKorisnikResponse
+            {
+                Id = korisnik.Id,
+                Ime = korisnik.Ime,
+                Prezime = korisnik.Prezime,
+                Email = korisnik.Email,
+                Adresa = korisnik.Adresa,
+                DatumKreiranjaNaloga = korisnik.DatumKreiranjaNaloga,
+                JMBG = korisnik.JMBG,
+                NovacNaSajtu = korisnik.NovacNaSajtu,
+                BrojTelefona = korisnik.BrojTelefona,
+                DatumRodjenja = korisnik.DatumRodjenja,
+                Opis = korisnik.Opis,
+                Potroseno = korisnik.Potroseno,
+                Slika = korisnik.Slika
+            };
+            
+            return Ok(getResponse);
         }
         catch (Exception e)
         {
@@ -222,6 +241,7 @@ public class KorisnikController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = korisnik.Ime + ' ' + korisnik.Prezime,
                 UserId = korisnik.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
@@ -291,6 +311,7 @@ public class KorisnikController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = korisnik.Ime + ' ' + korisnik.Prezime,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = refresh,
                 Expiration = token.ValidTo,
@@ -372,7 +393,8 @@ public class KorisnikController : ControllerBase
                 return BadRequest("JMBG mora da zadrzi 13 broja");
             if ((await _korisnikService.GetByJmbg(korisnik.JMBG)) != null)
                 return BadRequest($"Korisnik sa JMBG-om {korisnik.JMBG} vec postoji!\n");
-            if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)
+            var obj = await _korisnikService.GetByEmail(korisnik.Email);
+            if (obj != null && obj.Email != korisnik.Email)
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
             var postojeciKorisnik = await _korisnikService.GetById(id);

@@ -16,6 +16,7 @@ type ContextValues = {
 };
 
 export type AuthValues = {
+  naziv: string;
   email: string;
   userId: string;
   jwtToken: string;
@@ -30,6 +31,7 @@ export type AuthValues = {
 // i vrati nazad sve potrebne informacije o autentifikaciji i mi tada updatujemo context
 
 export const emptyAuthValue: AuthValues = {
+  naziv: "",
   userId: "",
   email: "",
   jwtToken: "",
@@ -60,7 +62,6 @@ export const AuthProvider = ({ children }: PropsValue) => {
   useEffect(() => {
     getData(setAuth, showBoundary);
   }, []);
-
 
   const localStorageItem = {
     userId: auth.userId,
@@ -98,7 +99,19 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
     }
 
     const data: LoginResponse = response!.data;
+    // const binaryData = atob(data.slika);
+
+    // var arrayBuffer = new ArrayBuffer(binaryData.length);
+    // var uint8Array = new Uint8Array(arrayBuffer);
+    // for (var i = 0; i < binaryData.length; i++) {
+    //     uint8Array[i] = binaryData.charCodeAt(i);
+    // }
+
+    // var blob = new Blob([uint8Array], { type: 'image/png' });
+    // const url = URL.createObjectURL(blob);
+
     setAuth({
+      naziv: data.naziv,
       email: email,
       jwtToken: data.jwtToken,
       refreshToken: data.refreshToken,

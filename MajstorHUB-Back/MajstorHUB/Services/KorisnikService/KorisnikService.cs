@@ -41,6 +41,7 @@ public class KorisnikService : IKorisnikService
     {
         var filter = Builders<Korisnik>.Filter.Eq(korisnik => korisnik.Id, id);
         var update = Builders<Korisnik>.Update
+            .Set("slika", korisnik.Slika)
             .Set("email", korisnik.Email)
             .Set("adresa", korisnik.Adresa)
             .Set("broj_telefona", korisnik.BrojTelefona)

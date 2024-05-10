@@ -6,7 +6,7 @@ function useUserControllerAuth(type : UserType) {
     const axiosPrivate = useAxiosPrivate(type);
 
     const UserControllerAuth = {
-        logout: async function() : Promise<Boolean> {
+        logout: async function() : Promise<true> {
             try {
                 await axiosPrivate.delete(`${userToPath(type)}/Logout`);
                 return true;

@@ -393,6 +393,17 @@ img {
   border-inline-color: #beb706;
 }
 
+/* ------------------------------------ Nav Bar ------------------------------------ */
+.iconButton {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.iconButton:hover {
+  color: #f57624;
+}
+.iconButton:active {
+  color: #ca560c;
+}
 
 /* ------------------------------------ Sidebar ------------------------------------ */
 
@@ -406,11 +417,23 @@ img {
   backdrop-filter: blur(10px); */
 }
 
+.sidebar > div {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
 .sidebar-item {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
   border-top: 1px solid transparent;
   border-color: #c2c8d2;
+  text-align: left;
+}
+
+.sidebar-item:last-child {
+  border-bottom: 1px solid #c2c8d2;
+  margin-bottom: 3rem;
 }
 
 @media (width >= 900px) {
