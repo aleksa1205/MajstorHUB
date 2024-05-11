@@ -12,6 +12,8 @@ import { AuthProvider } from "./context/AuthProvider.tsx";
 import { requireAuth } from "./lib/utils.ts";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
 import AuthorizedLayout from "./components/AuthorizedComponents/AuthNavBarComponents/AuthorizedLayout.tsx";
+// import { QueryClient, QueryClientProvider } from "react-query";
+
 
 const router = createBrowserRouter([
   {
@@ -48,7 +50,7 @@ const router = createBrowserRouter([
       },
       { path: "/success", element: <Success /> },
     ],
-    errorElement: <ErrorPage />,
+    errorElement: <ErrorPage />
   },
 
   {
@@ -67,12 +69,17 @@ const router = createBrowserRouter([
   },
 ]);
 
+// const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ErrorBoundaryProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ErrorBoundaryProvider>
+    {/* <QueryClientProvider client={queryClient}> */}
+      <ErrorBoundaryProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          
+        </AuthProvider>
+      </ErrorBoundaryProvider>
+    {/* </QueryClientProvider> */}
   </React.StrictMode>
 );

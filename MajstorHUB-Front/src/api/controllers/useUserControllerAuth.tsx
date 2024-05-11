@@ -1,6 +1,7 @@
 import UserType, { userToPath } from "../../lib/UserType";
 import { isAxiosError } from "axios";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from '../responseTypes';
 
 function useUserControllerAuth(type : UserType) {
     const axiosPrivate = useAxiosPrivate(type);
@@ -29,9 +30,30 @@ function useUserControllerAuth(type : UserType) {
             }
         },
 
-        getAll: async function() {
-            const response = await axiosPrivate.get(`${userToPath(type)}/GetAll`);
-            console.log(response.data);
+        getById: async function(userId : string) : Promise<false | GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse> {
+            try {
+                const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`);
+                let data: GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse = response.data;
+                
+                return data;
+
+            } catch (error) {
+                if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 404:
+                            return false;
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
         }
     }
 

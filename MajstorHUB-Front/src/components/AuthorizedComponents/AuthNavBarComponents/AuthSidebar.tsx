@@ -7,13 +7,15 @@ import UserType, { userToPath } from '../../../lib/UserType';
 import { useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
+import { IoSettingsSharp } from 'react-icons/io5';
 
 
 type PropsValue = {
     hideSidebar(): void
+    pictureUrl : string
 }
 
-function AuthSidebar({ hideSidebar } : PropsValue) {
+function AuthSidebar({ hideSidebar, pictureUrl } : PropsValue) {
     const [showUserInfo, setShowUserInfo] = useState(false)
     const logoutUser = useLogout();
     const { auth } = useAuth();
@@ -23,7 +25,11 @@ function AuthSidebar({ hideSidebar } : PropsValue) {
             <div>
                 <div onClick={() => setShowUserInfo(!showUserInfo)} className={`${classes.userInfo} sidebar-item`}>
                     <div className={classes.info}>
-                        <FaUser size='2rem' />
+                        {pictureUrl !== '' ? 
+                            (<img src={pictureUrl} alt='User Picture' />) : 
+                            (<FaUser size='2rem' />)
+                        }
+
                         <div>
                             <p className={classes.imePrezime}>{auth.naziv}</p>
                             <p className={classes.role}>{auth.userType != UserType.Nedefinisano ? userToPath(auth.userType) : 'Role'}</p>
@@ -37,6 +43,12 @@ function AuthSidebar({ hideSidebar } : PropsValue) {
                             <div>
                                 <FaUser />
                                 <p>Vaš Profil</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <IoSettingsSharp />
+                                <p>Podešavanja Profila</p>
                             </div>
                         </li>
 

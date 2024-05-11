@@ -94,6 +94,10 @@ public class MajstorController : ControllerBase
 
             var getResponse = new GetMajstorResponse
             {
+                JMBG = majstor.JMBG,
+                DatumRodjenja = majstor.DatumRodjenja,
+                Ime = majstor.Ime,
+                Prezime = majstor.Prezime,
                 DatumKreiranjaNaloga = majstor.DatumKreiranjaNaloga,
                 Email = majstor.Email,
                 NovacNaSajtu = majstor.NovacNaSajtu,
