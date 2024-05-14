@@ -19,3 +19,18 @@ export async function requireAuth() {
 
     return null;
 }
+
+export function base64ToUrl(data : string) : string {
+    const binaryData = atob(data);
+
+    var arrayBuffer = new ArrayBuffer(binaryData.length);
+    var uint8Array = new Uint8Array(arrayBuffer);
+    for (var i = 0; i < binaryData.length; i++) {
+        uint8Array[i] = binaryData.charCodeAt(i);
+    }
+
+    var blob = new Blob([uint8Array], { type: 'image/png' });
+    const url = URL.createObjectURL(blob);
+
+    return url;
+}

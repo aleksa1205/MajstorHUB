@@ -19,7 +19,7 @@ type PropsValues = {
   setEmail: React.Dispatch<React.SetStateAction<string>>;
 };
 
-function LoginEmailForm({ setUserTypesFound, setEmail }: PropsValues) {
+function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
   const { emailExists } = useUserController();
   const {showBoundary} = useErrorBoundary();
   const navigate = useNavigate();
@@ -59,11 +59,11 @@ function LoginEmailForm({ setUserTypesFound, setEmail }: PropsValues) {
 
   return (
     <>
-      {message !== null && (
+      {message && (
         <div className="infoBox">
           <FaCircleInfo size="1.25rem" />
           <div>
-            <p>Morate da budete ulogovani</p>
+            <p>{typeof message === 'string' && message}</p>
           </div>
         </div>
       )}

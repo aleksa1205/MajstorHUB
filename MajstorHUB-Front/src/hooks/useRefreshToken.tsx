@@ -7,6 +7,7 @@ function useRefreshToken() {
     const { auth, setAuth } = useAuth();
 
     async function refresh(type : UserType) {
+        console.log('Refreshing...');
         const response = await axios.post(`${userToPath(type)}/Refresh`, 
         JSON.stringify({jwtToken: auth.jwtToken, refreshToken: auth.refreshToken.tokenValue}),
         {

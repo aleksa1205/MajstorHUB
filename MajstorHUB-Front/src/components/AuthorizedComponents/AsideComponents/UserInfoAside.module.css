@@ -1,0 +1,23 @@
+.aside {
+    background-color: #faf4f0;
+    padding: 1.5rem 1rem;
+}
+
+.firstSection {
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+}
+
+.firstSection img {
+    border-radius: 50%;
+    width: 4rem;
+}
+
+.firstSection > div > p {
+    margin: 0;
+}
+
+.firstSection > div > p:first-child {
+    font-weight: bold;
+}

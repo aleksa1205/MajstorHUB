@@ -81,6 +81,10 @@ export const AuthProvider = ({ children }: PropsValue) => {
 
 export default AuthContext;
 
+
+
+
+
 async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>, showBoundary : (error: any) => void) {
     const email = "milosmilosevic@gmail.com";
     const password = "sifra123";
@@ -94,29 +98,22 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
         JSON.stringify(dataToSend),
         { headers: { "Content-Type": "application/json" } }
       );
+
+      const data: LoginResponse = response!.data;
+      data.refreshToken.expiry = new Date(data.refreshToken.expiry);
+      console.log(data.refreshToken.expiry);
+      
+      setAuth({
+        naziv: data.naziv,
+        email: email,
+        jwtToken: data.jwtToken,
+        refreshToken: data.refreshToken,
+        roles: data.roles.map((el) => pathToUser(el)),
+        userId: data.userId,
+        userType: type,
+      });
     } catch (error) {
       showBoundary(error);
     }
 
-    const data: LoginResponse = response!.data;
-    // const binaryData = atob(data.slika);
-
-    // var arrayBuffer = new ArrayBuffer(binaryData.length);
-    // var uint8Array = new Uint8Array(arrayBuffer);
-    // for (var i = 0; i < binaryData.length; i++) {
-    //     uint8Array[i] = binaryData.charCodeAt(i);
-    // }
-
-    // var blob = new Blob([uint8Array], { type: 'image/png' });
-    // const url = URL.createObjectURL(blob);
-
-    setAuth({
-      naziv: data.naziv,
-      email: email,
-      jwtToken: data.jwtToken,
-      refreshToken: data.refreshToken,
-      roles: data.roles.map((el) => pathToUser(el)),
-      userId: data.userId,
-      userType: type,
-    });
   }

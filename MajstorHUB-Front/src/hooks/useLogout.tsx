@@ -11,21 +11,21 @@ function useLogout() {
     const navigate = useNavigate();
 
     const LogoutUser = async function logoutHandler() {
-
-        let data;
         try {
-            data = await logout();
+            let msg : string = '';
+            if(auth.refreshToken.expiry > new Date())
+                await logout();
+            else
+                msg = '?message=Vaša sesija je istekla, ulogujte se ponovo'
             
+            setAuth(emptyAuthValue);
+
+            setTimeout(() => {
+                navigate('/login' + msg);
+            }, 100);
         } catch (error) {
             showBoundary(error);
         }
-        
-        setAuth(emptyAuthValue);
-
-        setTimeout(() => {
-            navigate('/login');
-        }, 100);
-        
     }
 
     return LogoutUser;

@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 import classes from './AuthNavBar.module.css'
 import { IoClose, IoMenu } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import AuthSidebar from './AuthSidebar';
 import { FaUserCircle } from "react-icons/fa";
 import UserMenu from './UserMenu';
+import useCurrUser from '../../../hooks/useCurrUser';
+import DottedLoader from '../../Loaders/DottedLoader';
 
 function AuthNavBar() {
     const [showSidebar, setShowSidebar] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const { pictureUrl, isFetching } = useCurrUser();
 
     function hideSidebar() {
         setShowSidebar(false);
@@ -27,7 +31,7 @@ function AuthNavBar() {
         return () => {
             document.removeEventListener('mousedown', handler);
         }
-    })
+    });
 
     return (
         <header className={classes.header}>
@@ -43,8 +47,14 @@ function AuthNavBar() {
                     <Link to='/firme' onClick={hideSidebar} className='link'>Pretraži Firme</Link>
                     <Link to='/oglasi' onClick={hideSidebar} className='link'>Pretraži Oglase</Link>
                     <div ref={menuRef} className={classes.iconContainer}>
-                        <FaUserCircle onClick={() => setShowUserMenu(!showUserMenu)} className='iconButton' size='1.5rem' />
-                        {showUserMenu && <UserMenu />}
+                        {isFetching ? 
+                            (<DottedLoader size='1.5rem' />) :
+                            pictureUrl ? 
+                            (<img src={pictureUrl} alt='userPicture' onClick={() => setShowUserMenu(!showUserMenu)} />) :
+                            (<FaUserCircle onClick={() => setShowUserMenu(!showUserMenu)} className='iconButton' size='2rem' />)
+                        }
+                        
+                        { showUserMenu && <UserMenu /> }
                     </div>
                 </div>
             </nav>
