@@ -7,7 +7,7 @@ public class GetMajstorResponse : GetUserResponse
     public string? Prezime { get; set; }
     public DateTime? DatumRodjenja { get; set; }
     public Struka? Struka { get; set; }
-    public Iskustvo? Iskustvo { get; set; }
+    public Iskustvo Iskustvo { get; set; }
     public double? CenaPoSatu { get; set; }
-    public double? Zaradjeno { get; set; }
+    public double Zaradjeno { get; set; }
 }

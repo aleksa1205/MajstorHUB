@@ -12,7 +12,7 @@ function useAxiosPrivate(type : UserType) {
     const { auth } = useAuth();
 
     useEffect(() => {
-
+ 
         // Inicijalni request, on treba da jwt (koji se nalazi u authContext) upise u secure
         // cookie i tako ga posalje serveru, jer server jedino tako proverava tokene
         const requestIntercept = axiosPrivate.interceptors.request.use(
@@ -34,10 +34,11 @@ function useAxiosPrivate(type : UserType) {
                 const prevRequest = error?.config;
                 if(error?.response?.status === 401 && !prevRequest?.sent) {
                     prevRequest.sent = true;
-                    const { jwtToken }= await refresh(type);
+                    const { jwtToken } = await refresh(type);
                     prevRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
                     return axiosPrivate(prevRequest);
                 }
+                
                 return Promise.reject(error);
             }
         );

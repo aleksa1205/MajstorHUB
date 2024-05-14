@@ -81,6 +81,10 @@ export const AuthProvider = ({ children }: PropsValue) => {
 
 export default AuthContext;
 
+
+
+
+
 async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>, showBoundary : (error: any) => void) {
     const email = "milosmilosevic@gmail.com";
     const password = "sifra123";
@@ -96,6 +100,8 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
       );
 
       const data: LoginResponse = response!.data;
+      data.refreshToken.expiry = new Date(data.refreshToken.expiry);
+      console.log(data.refreshToken.expiry);
       
       setAuth({
         naziv: data.naziv,

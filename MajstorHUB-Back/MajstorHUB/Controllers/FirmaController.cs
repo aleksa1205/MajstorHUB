@@ -76,6 +76,7 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -102,6 +103,8 @@ public class FirmaController : ControllerBase
                 Slika = firma.Slika,
                 Struke = firma.Struke,
                 Zaradjeno = firma.Zaradjeno,
+                Iskustvo = firma.Iskustvo,
+                CenaPoSatu = firma.CenaPoSatu,
             };
 
             return Ok(getResponse);

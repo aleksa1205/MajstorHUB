@@ -1,3 +1,5 @@
+@import '../../vars.css';
+
 .main {
     height: calc(100vh - 192px);
     display: flex;
@@ -25,14 +27,35 @@
     padding: 5rem;
 }
 
-.errorButton {
-    background-color: #8d0810;
-    color: #f6dcdd;
+.errorButton, 
+.errorButton2 {
     padding: 1rem;
     cursor: pointer;
     border: none;
+    font-family: inherit;
+    font-size: inherit;
+    text-decoration: none;
     border-radius: 100px;
     font-weight: bold;
+    transition: all 0.15s ease-in-out;
+    margin-right: 1rem;
+}
+
+.errorButton {
+    background-color: var(--color-red-700);
+    color: var(--color-red-100);
+}
+
+.errorButton:hover {
+    background-color: var(--color-red-600);
+}
+
+.errorButton2 {
+    background-color: var(--color-red-500);
+    color: var(--color-red-100);
+}
+.errorButton2:hover {
+    background-color: var(--color-red-400);
 }
 
 .link {

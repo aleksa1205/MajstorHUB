@@ -3,6 +3,13 @@ import { isAxiosError } from "axios";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from '../responseTypes';
 
+export class SessionEndedError  extends Error {
+    constructor(message?: string) {
+        super(message || 'Unauthorized');
+        this.name = 'UnauthorizedError';
+    }
+}
+
 function useUserControllerAuth(type : UserType) {
     const axiosPrivate = useAxiosPrivate(type);
 
@@ -34,7 +41,13 @@ function useUserControllerAuth(type : UserType) {
             try {
                 const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`);
                 let data: GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse = response.data;
-                
+                data.datumKreiranjaNaloga = new Date(data.datumKreiranjaNaloga);
+
+                if('jmbg' in data) {
+                    if(data.datumRodjenja)
+                        data.datumRodjenja = new Date(data.datumRodjenja);
+                }
+
                 return data;
 
             } catch (error) {
@@ -43,6 +56,8 @@ function useUserControllerAuth(type : UserType) {
                     switch(error.response.status) {
                         case 404:
                             return false;
+                        case 401:
+                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

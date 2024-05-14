@@ -8,31 +8,34 @@ import { useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { IoSettingsSharp } from 'react-icons/io5';
-
+import useCurrUser from '../../../hooks/useCurrUser';
+import DottedLoader from '../../Loaders/DottedLoader';
 
 type PropsValue = {
     hideSidebar(): void
-    pictureUrl : string
 }
 
-function AuthSidebar({ hideSidebar, pictureUrl } : PropsValue) {
+function AuthSidebar({ hideSidebar } : PropsValue) {
     const [showUserInfo, setShowUserInfo] = useState(false)
     const logoutUser = useLogout();
     const { auth } = useAuth();
+    const { pictureUrl, isFetching } = useCurrUser();
 
     return (
         <nav className="sidebar">
             <div>
                 <div onClick={() => setShowUserInfo(!showUserInfo)} className={`${classes.userInfo} sidebar-item`}>
                     <div className={classes.info}>
-                        {pictureUrl !== '' ? 
+                        {isFetching ?
+                            (<DottedLoader size='3rem' />) :
+                            pictureUrl ?
                             (<img src={pictureUrl} alt='User Picture' />) : 
                             (<FaUser size='2rem' />)
                         }
 
                         <div>
                             <p className={classes.imePrezime}>{auth.naziv}</p>
-                            <p className={classes.role}>{auth.userType != UserType.Nedefinisano ? userToPath(auth.userType) : 'Role'}</p>
+                            <p className={classes.role}>{auth.userType != UserType.Nedefinisano ? UserType[auth.userType] : 'Role'}</p>
                         </div>
                     </div>
                     <MdOutlineKeyboardArrowUp size='2rem' className={`${classes.arrow}  ${showUserInfo && classes.arrowDown}`} />

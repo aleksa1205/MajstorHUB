@@ -4,16 +4,17 @@ import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import LandingPage from "./routes/LandingPage.tsx";
 import Register from "./routes/Register.tsx";
-import RootLayout from "./routes/RootLayout.tsx";
+import RootLayout from "./components/Layouts/RootLayout.tsx";
 import ErrorPage from "./components/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Login.tsx";
 import Success from "./routes/Success.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import { requireAuth } from "./lib/utils.ts";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
-import AuthorizedLayout from "./components/AuthorizedComponents/AuthNavBarComponents/AuthorizedLayout.tsx";
+import AuthorizedLayout from "./components/Layouts/AuthorizedLayout.tsx";
+import Dashboard from "./components/AuthorizedComponents/DashboardComponents/Dashboard.tsx";
+import AsideLayout from "./components/Layouts/AsideLayout.tsx";
 // import { QueryClient, QueryClientProvider } from "react-query";
-
 
 const router = createBrowserRouter([
   {
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
       },
       { path: "/success", element: <Success /> },
     ],
-    errorElement: <ErrorPage />
+    errorElement: <ErrorPage />,
   },
 
   {
@@ -61,9 +62,18 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "/dashboard",
-        element: <h1>Tekst</h1>,
-        loader: () => requireAuth(),
+        element: <AsideLayout />,
+        children: [
+          {
+            path: "/dashboard",
+            element: (
+              <ErrorBoundaryProvider>
+                <Dashboard />
+              </ErrorBoundaryProvider>
+            ),
+            loader: () => requireAuth(),
+          },
+        ],
       },
     ],
   },
@@ -74,12 +84,11 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <QueryClientProvider client={queryClient}> */}
-      <ErrorBoundaryProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          
-        </AuthProvider>
-      </ErrorBoundaryProvider>
+    <ErrorBoundaryProvider>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ErrorBoundaryProvider>
     {/* </QueryClientProvider> */}
   </React.StrictMode>
 );

@@ -1,3 +1,5 @@
+import UserType from "../lib/UserType";
+
 type GetUserResponse = {
     id: string;
     email: string;
@@ -14,7 +16,8 @@ export type GetKorisnikResponse  = GetUserResponse & {
     ime?: string;
     prezime?: string;
     datumRodjenja?: Date;
-    potroseno?: number;
+    potroseno: number;
+    userType: UserType.Korisnik;
 }
 
 export enum Struka {
@@ -32,19 +35,23 @@ export enum Iskustvo {
 }
 
 export type GetMajstorResponse = GetUserResponse & {
-    struka?: Struka;
-    iskustvo?: Iskustvo;
-    cenaPoSatu?: number;
-    zaradjeno?: number;
-}
-
-export type GetFirmaResponse = GetUserResponse & {
-    jmbg: string;
+    jmbg?: string;
     ime?: string;
     prezime?: string;
     datumRodjenja?: Date;
-    struka?: Struka;
-    iskustvo?: Iskustvo;
+    struka: Struka;
+    iskustvo: Iskustvo;
     cenaPoSatu?: number;
-    zaradjeno?: number;
+    zaradjeno: number;
+    userType: UserType.Majstor;
+}
+
+export type GetFirmaResponse = GetUserResponse & {
+    pib: string;
+    naziv?: string;
+    struke: Array<Struka>;
+    iskustvo: Iskustvo;
+    cenaPoSatu?: number;
+    zaradjeno: number;
+    userType: UserType.Firma;
 }
