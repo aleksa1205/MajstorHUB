@@ -10,6 +10,7 @@ import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { IoSettingsSharp } from 'react-icons/io5';
 import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Loaders/DottedLoader';
+import { getProfileUrl } from '../../../lib/utils';
 
 type PropsValue = {
     hideSidebar(): void
@@ -42,12 +43,14 @@ function AuthSidebar({ hideSidebar } : PropsValue) {
                 </div>
                 {showUserInfo && (
                     <ul className={classes.userInfoOptions}>
+                        <Link className={classes.link} to={getProfileUrl(auth.userType, auth.userId)}>
                         <li>
                             <div>
-                                <FaUser />
-                                <p>Vaš Profil</p>
+                                    <FaUser />
+                                    <p>Vaš Profil</p>
                             </div>
                         </li>
+                        </Link>
                         <li>
                             <div>
                                 <IoSettingsSharp />

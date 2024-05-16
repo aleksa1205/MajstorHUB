@@ -59,18 +59,18 @@ export const AuthProvider = ({ children }: PropsValue) => {
   const { showBoundary } = useErrorBoundary();
 
   // Iskomentarisi useEffect, ovde samo logujem nekog test usera pre pokretanja aplikacije
-  useEffect(() => {
-    getData(setAuth, showBoundary);
-  }, []);
+  // useEffect(() => {
+  //   getData(setAuth, showBoundary);
+  // }, []);
 
-  const localStorageItem = {
-    userId: auth.userId,
-    email: auth.email,
-    userType: auth.userType,
-    roles: auth.roles,
-  };
+  // const localStorageItem = {
+  //   userId: auth.userId,
+  //   email: auth.email,
+  //   userType: auth.userType,
+  //   roles: auth.roles,
+  // };
 
-  localStorage.setItem("_auth", JSON.stringify(localStorageItem));
+  // localStorage.setItem("_auth", JSON.stringify(localStorageItem));
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

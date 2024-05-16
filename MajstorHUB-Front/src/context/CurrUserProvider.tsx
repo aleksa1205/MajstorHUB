@@ -64,6 +64,7 @@ export function CurrUserProvider({ children } : PropsValue) {
                 setIsFetching(false);
             } catch (error) {
                 if(error instanceof SessionEndedError) {
+                    console.log('Ode sesija...');
                     logoutUser();
                 }
                 else

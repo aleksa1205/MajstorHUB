@@ -4,8 +4,9 @@ import LoginEmailForm from "../components/AuthComponents/LoginComponents/LoginEm
 import UserType from "../lib/UserType";
 import LoginSelectUser from "../components/AuthComponents/LoginComponents/LoginSelectUser";
 import LoginPasswordForm from "../components/AuthComponents/LoginComponents/LoginPasswordForm";
-import { redirect } from 'react-router-dom';
+import { Navigate, redirect } from 'react-router-dom';
 import { isLoggedIn } from '../lib/utils';
+import useAuth from '../hooks/useAuth';
 
 export function loader({ request } : any) {
     // Proveriti da li je korisnik logovan, ako jeste ne rendereuj ovu komponentu
@@ -19,14 +20,19 @@ export function loader({ request } : any) {
 function Login() {
     const [userTypesFound, setUserTypesFound] = useState<UserType[]>([]);
     const [email, setEmail] = useState('');
+    const { auth } = useAuth();
+    const isLoggedIn = auth.userId !== '';
 
-    return (
-        <main className={`container ${classes.main}`}>
-            {userTypesFound.length == 0 && <LoginEmailForm setUserTypesFound={setUserTypesFound} setEmail={setEmail} />}
-            {userTypesFound.length > 1 && <LoginSelectUser setUserTypesFound={setUserTypesFound} userTypesFound={userTypesFound} />}
-            {userTypesFound.length === 1 && <LoginPasswordForm email={email} userType={userTypesFound[0]} reset={setUserTypesFound} />}
-        </main>
-    )
+    if(isLoggedIn)
+        return <Navigate to='/dashboard' replace />
+    else
+        return (
+            <main className={`container ${classes.main}`}>
+                {userTypesFound.length == 0 && <LoginEmailForm setUserTypesFound={setUserTypesFound} setEmail={setEmail} />}
+                {userTypesFound.length > 1 && <LoginSelectUser setUserTypesFound={setUserTypesFound} userTypesFound={userTypesFound} />}
+                {userTypesFound.length === 1 && <LoginPasswordForm email={email} userType={userTypesFound[0]} reset={setUserTypesFound} />}
+            </main>
+        )
 }
 
 export default Login;

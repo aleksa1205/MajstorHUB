@@ -1,4 +1,5 @@
 import { redirect } from "react-router-dom";
+import UserType from "./UserType";
 
 export function isLoggedIn() {
     const data = localStorage.getItem('_auth');
@@ -33,4 +34,27 @@ export function base64ToUrl(data : string) : string {
     const url = URL.createObjectURL(blob);
 
     return url;
+}
+
+export function getProfileUrl(userType : UserType, id : string) : string {
+    let url : string = '';
+    if(userType === UserType.Nedefinisano)
+        return url;
+
+    switch (userType) {
+        case UserType.Korisnik:
+            url = '/klijenti'
+            break;
+        case UserType.Majstor:
+            url = '/majstori'
+            break;
+        case UserType.Firma:
+            url = '/firme'
+            break;
+        default:
+            console.error('Pogresan tip prosledjen funkciji getProfileUrl');
+            return '/';
+    }
+
+    return url + '/' + id;
 }

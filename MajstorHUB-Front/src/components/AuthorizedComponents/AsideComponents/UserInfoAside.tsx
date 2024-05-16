@@ -6,6 +6,8 @@ import useAuth from '../../../hooks/useAuth';
 import UserType  from '../../../lib/UserType';
 import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, Iskustvo, Struka } from '../../../api/responseTypes';
 import DropDownSlider, { DDSliderItem } from '../../Theme/DropDownSlider';
+import { Link } from 'react-router-dom';
+import { getProfileUrl } from '../../../lib/utils';
 
 function UserInfoAside() {
 
@@ -18,7 +20,7 @@ function UserInfoAside() {
                 <DottedLoader size='3rem' /> :
 
             (<>
-                <div className={classes.firstSection}>
+                <Link to={getProfileUrl(auth.userType, auth.userId)} className={classes.firstSection}>
                     {isFetching ?
                         (<DottedLoader size='3rem' />) :
                         pictureUrl ?
@@ -29,7 +31,7 @@ function UserInfoAside() {
                         <p>{auth.naziv}</p>
                         <p>{auth.userType !== UserType.Nedefinisano ? UserType[auth.userType] : ''}</p>
                     </div>
-                </div>
+                </Link>
 
                 <div>
                     {userData?.userType === UserType.Korisnik &&

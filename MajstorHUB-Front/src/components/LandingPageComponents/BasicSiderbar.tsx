@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import { isLoggedIn } from "../../lib/utils";
 import useLogout from "../../hooks/useLogout";
+import useAuth from "../../hooks/useAuth";
 
 type PropsValue = {
     setShowSidebar : React.Dispatch<React.SetStateAction<boolean>>;
@@ -8,6 +8,8 @@ type PropsValue = {
 
 function BasicSidebar({ setShowSidebar } : PropsValue) {
     const LogoutUser = useLogout();
+    const { auth } = useAuth();
+    const isLoggedIn = auth.userId !== '';
 
     function hideSidebar() {
         setShowSidebar(false);
@@ -16,7 +18,7 @@ function BasicSidebar({ setShowSidebar } : PropsValue) {
   return (
     <nav className="sidebar">
       <div>
-        {isLoggedIn() && (
+        {isLoggedIn && (
             <Link to="/dashboard" onClick={hideSidebar} className="link sidebar-item">
               Dashboard
             </Link>
@@ -29,7 +31,7 @@ function BasicSidebar({ setShowSidebar } : PropsValue) {
             Pronađi Izvodjače
           </Link>
 
-          {!isLoggedIn() ? 
+          {!isLoggedIn ? 
               <Link className="link sidebar-item" onClick={hideSidebar} to="/login">
                   Uloguj se
               </Link> :
