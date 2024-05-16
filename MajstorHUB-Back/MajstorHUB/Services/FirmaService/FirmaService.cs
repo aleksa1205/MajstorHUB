@@ -50,6 +50,22 @@ public class FirmaService : IFirmaService
         await _firme.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateSelf(string id, FirmaUpdateSelf firma)
+    {
+        var filter = Builders<Firma>.Filter.Eq(firma => firma.Id, id);
+        var update = Builders<Firma>.Update
+            .Set("email", firma.Email)
+            .Set("slika", firma.Slika)
+            .Set("adresa", firma.Adresa)
+            .Set("broj_telefona", firma.BrojTelefona)
+            .Set("opis", firma.Opis)
+            .Set("naziv", firma.Naziv)
+            .Set("struke", firma.Struke)
+            .Set("iskustvo", firma.Iskustvo)
+            .Set("cena_po_satu", firma.CenaPoSatu);
+        await _firme.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _firme.DeleteOneAsync(firma => firma.Id == id);

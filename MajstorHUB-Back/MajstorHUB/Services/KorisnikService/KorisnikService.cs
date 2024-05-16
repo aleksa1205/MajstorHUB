@@ -51,6 +51,21 @@ public class KorisnikService : IKorisnikService
         await _korisnici.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateSelf(string id, KorisnikUpdateSelf korisnik)
+    {
+        var filter = Builders<Korisnik>.Filter.Eq(korisnik => korisnik.Id, id);
+        var update = Builders<Korisnik>.Update
+            .Set("email", korisnik.Email)
+            .Set("slika", korisnik.Slika)
+            .Set("adresa", korisnik.Adresa)
+            .Set("broj_telefona", korisnik.BrojTelefona)
+            .Set("opis", korisnik.Opis)
+            .Set("ime", korisnik.Ime)
+            .Set("prezime", korisnik.Prezime)
+            .Set("datum_rodjenja", korisnik.DatumRodjenja);
+        await _korisnici.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _korisnici.DeleteOneAsync(korisnik => korisnik.Id == id);

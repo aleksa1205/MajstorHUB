@@ -1,6 +1,6 @@
 import {  useParams } from "react-router-dom";
 import UserType from "../../../lib/UserType";
-import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from "../../../api/responseTypes";
+import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from "../../../api/DTO-s/responseTypes";
 import useAuth from "../../../hooks/useAuth";
 import { useEffect, useState } from "react";
 import useUserControllerAuth, { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";
@@ -8,11 +8,13 @@ import useLogout from "../../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import useCurrUser from "../../../hooks/useCurrUser";
 import Hamster from "../../Loaders/Hamster";
+import { isAxiosError } from "axios";
+import classes from './UserProfile.module.css'
+import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate } from "../../../api/DTO-s/updateSelfTypes";
+import { base64ToUrl } from "../../../lib/utils";
 
 type PropsValues = {
     typeFromUrl: UserType;
-    // isCurrUser: boolean;
-    // userData: GetKorisnikResponse | GetMajstorResponse | GetFirmaResponse; 
 }
 
 function UserProfile({ typeFromUrl } : PropsValues) {
@@ -26,17 +28,22 @@ function UserProfile({ typeFromUrl } : PropsValues) {
 
     const currUserData = useCurrUser();
     const [userData, setUserData] = useState<GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse | null>(null);
+    const [userDataUpdate, setUserDataUpdate] = useState<KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate | null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [notFound, setNotFound] = useState(id?.length !== 24);
+
 
     const isCurrUser = id === auth.userId;
 
     useEffect(function() {
+        const controller = new AbortController();
+
         async function startFetching() {
             try {
                 setIsFetching(true);
 
-                const data = await getById(id!);
+                const data = await getById(id!, controller);
+
                 if(data === false) {
                     setIsFetching(false);
                     setNotFound(true);
@@ -59,15 +66,19 @@ function UserProfile({ typeFromUrl } : PropsValues) {
                 }
                 
                 setUserData(data);
-            } catch (error) {
-                if(error instanceof SessionEndedError) {
-                    logoutUser();
-                }
-                else
-                    showBoundary(error);
-
-            } finally {
                 setIsFetching(false);
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    console.log('GetById zahtev canceled');
+                }
+                else if(error instanceof SessionEndedError) {
+                    logoutUser();
+                    setIsFetching(false);
+                }
+                else {
+                    setIsFetching(false);
+                    showBoundary(error)
+                }
             }
         }
 
@@ -82,17 +93,49 @@ function UserProfile({ typeFromUrl } : PropsValues) {
                 startFetching();
         }
 
+        return function() {
+            controller.abort();
+        }
+
     }, [currUserData.isFetching]);
 
-    useEffect(() => console.log(userData), [userData])
+    useEffect(() => console.log(userData), [userData]);
 
     return (
-        <div>
-            {notFound && <h1>Nismo pronasli user-a kog trazite :(</h1>}
-            {isFetching && <Hamster />}
-            <Hamster />
+        <div className="container">
+            {notFound ?
+             <h1>Nismo pronasli user-a kog trazite :(</h1> : 
+             isFetching ? <Hamster /> : 
+             (
+                <main className={classes.main}>
+                    {userData?.userType === UserType.Korisnik && 
+                    <}
+                </main>
+             )
+            }
         </div>
     )
 }
 
 export default UserProfile;
+
+type BasicInforProps = {
+    userData: KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
+}
+
+export function BasicInfoSection({ userData } : BasicInforProps ) {
+    return (
+        <section className={classes.basicInfo}>
+            <div>
+                <img src={base64ToUrl(userData.slika)} alt="slika_korisnika" />
+            </div>
+            <div>
+                {userData.userType === UserType.Firma ? 
+                <p>{userData.naziv}</p> :
+                (<p>{userData.ime} {userData.prezime}</p>)
+                }
+                <p>{UserType[userData.userType]}</p>
+            </div>
+        </section>
+    )
+}

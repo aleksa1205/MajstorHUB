@@ -52,6 +52,24 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateSelf(string id, MajstorUpdateSelf majstor)
+    {
+        var filter = Builders<Majstor>.Filter.Eq(majstor => majstor.Id, id);
+        var update = Builders<Majstor>.Update
+            .Set("email", majstor.Email)
+            .Set("slika", majstor.Slika)
+            .Set("adresa", majstor.Adresa)
+            .Set("broj_telefona", majstor.BrojTelefona)
+            .Set("opis", majstor.Opis)
+            .Set("ime", majstor.Ime)
+            .Set("prezime", majstor.Prezime)
+            .Set("datum_rodjenja", majstor.DatumRodjenja)
+            .Set("struka", majstor.Struka)
+            .Set("iskustvo", majstor.Iskustvo)
+            .Set("cena_po_satu", majstor.CenaPoSatu);
+        await _majstori.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _majstori.DeleteOneAsync(majstor => majstor.Id == id);

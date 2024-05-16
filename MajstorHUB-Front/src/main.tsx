@@ -9,7 +9,6 @@ import ErrorPage from "./components/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Login.tsx";
 import Success from "./routes/Success.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
-import { requireAuth } from "./lib/utils.ts";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
 import AuthorizedLayout from "./components/Layouts/AuthorizedLayout.tsx";
 import Dashboard from "./components/AuthorizedComponents/DashboardComponents/Dashboard.tsx";

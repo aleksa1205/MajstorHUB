@@ -6,6 +6,7 @@ import {
 import UserType, { pathToUser, userToPath } from "../lib/UserType";
 import axios from "../api/axios";
 import { useErrorBoundary } from "react-error-boundary";
+import { redirect } from "react-router-dom";
 
 // Ovi tipovi moraju da se dodaju da se typescirpt ne bi bunio
 // I zato sto createContext zahteva default values
@@ -62,15 +63,6 @@ export const AuthProvider = ({ children }: PropsValue) => {
   // useEffect(() => {
   //   getData(setAuth, showBoundary);
   // }, []);
-
-  // const localStorageItem = {
-  //   userId: auth.userId,
-  //   email: auth.email,
-  //   userType: auth.userType,
-  //   roles: auth.roles,
-  // };
-
-  // localStorage.setItem("_auth", JSON.stringify(localStorageItem));
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>

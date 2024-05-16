@@ -1,4 +1,6 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Register;
+using MajstorHUB.Requests.UpdateSelf;
 using System.Runtime.Intrinsics.X86;
 
 namespace MajstorHUB.Controllers;
@@ -403,6 +405,44 @@ public class KorisnikController : ControllerBase
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
             await _korisnikService.Update(id, korisnik);
+            return Ok($"Korisnik sa ID-em {id} je uspesno azuriran!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(KorisnikUpdateSelf korisnik)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            if (!UtilityCheck.IsValidEmail(korisnik.Email))
+                return BadRequest("Format emaila pogresan");
+
+            var obj = await _korisnikService.GetByEmail(korisnik.Email);
+            if (obj != null && obj.Email != korisnik.Email)
+                return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
+
+            var postojeciKorisnik = await _korisnikService.GetById(id);
+            if (postojeciKorisnik == null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _korisnikService.UpdateSelf(id, korisnik);
             return Ok($"Korisnik sa ID-em {id} je uspesno azuriran!\n");
         }
         catch (Exception e)

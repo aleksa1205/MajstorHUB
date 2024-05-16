@@ -4,7 +4,7 @@ import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Loaders/DottedLoader';
 import useAuth from '../../../hooks/useAuth';
 import UserType  from '../../../lib/UserType';
-import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, Iskustvo, Struka } from '../../../api/responseTypes';
+import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, Iskustvo, Struka } from '../../../api/DTO-s/responseTypes';
 import DropDownSlider, { DDSliderItem } from '../../Theme/DropDownSlider';
 import { Link } from 'react-router-dom';
 import { getProfileUrl } from '../../../lib/utils';
