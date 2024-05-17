@@ -9,7 +9,7 @@ function AuthorizedLayout() {
     const location = useLocation();
 
     if(auth.userId === '') {
-        return <Navigate to='/login' state={{from: location}} replace />
+        return <Navigate to='/login?message=Morate prvo da se ulogujete' state={{from: location}} replace />
     } else {
         return (
             <CurrUserProvider>

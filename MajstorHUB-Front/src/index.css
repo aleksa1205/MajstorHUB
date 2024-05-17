@@ -62,6 +62,12 @@ img {
   padding-inline: 2rem;
 }
 
+@media (width <= 600px) {
+  .container {
+    padding-inline: 1rem;
+  }
+}
+
 /* ------------------------------------ Dugmici ------------------------------------ */
 
 .mainButton {
@@ -415,6 +421,12 @@ img {
   background-color: white;
   /* background-color: rgba(255, 255, 255, 0.925);
   backdrop-filter: blur(10px); */
+}
+
+@media (width <= 600px) {
+  .sidebar {
+    padding-inline: 1rem;
+  }
 }
 
 .sidebar > div {

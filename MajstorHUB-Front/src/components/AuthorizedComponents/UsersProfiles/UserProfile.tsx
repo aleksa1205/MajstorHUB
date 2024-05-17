@@ -33,8 +33,7 @@ function UserProfile({ typeFromUrl } : PropsValues) {
     const [isFetching, setIsFetching] = useState(false);
     const [notFound, setNotFound] = useState(id?.length !== 24);
 
-
-    const isCurrUser = id === auth.userId;
+    const [isCurrUser, setIsCurrUser] = useState<boolean>(id === auth.userId)
 
     useEffect(function() {
         const controller = new AbortController();
@@ -69,6 +68,8 @@ function UserProfile({ typeFromUrl } : PropsValues) {
             }
         }
 
+        setIsCurrUser(id === auth.userId)
+        
         if(!notFound) {
             if(isCurrUser) {
                 if(currUserData.userData) {
@@ -87,10 +88,10 @@ function UserProfile({ typeFromUrl } : PropsValues) {
             controller.abort();
         }
 
-    }, [currUserData.isFetching]);
+    }, [currUserData.isFetching, isCurrUser]);
 
     return (
-        <div className="container">
+        <div>
 
             {notFound ? (
                 <div className={classes.center}>

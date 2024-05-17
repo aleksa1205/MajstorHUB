@@ -7,9 +7,10 @@
     align-items: center;
     justify-content: center;
     position: relative;
-}
-
-.tooltip {
+  }
+  
+  .tooltip {
+  cursor: default;
     box-shadow: 0 0 10px 1px var(--color-neutral-300);
     font-size: 0.75rem;
     font-weight: 400;
@@ -23,6 +24,7 @@
     transition: all 0.3s ease;
     opacity: 0;
     z-index: 999;
+    color: black;
   }
   
   .arrow {
