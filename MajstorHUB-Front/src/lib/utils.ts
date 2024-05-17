@@ -1,5 +1,7 @@
 import { redirect } from "react-router-dom";
 import UserType from "./UserType";
+import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../api/DTO-s/updateSelfTypes";
+import { userDataType } from "../api/DTO-s/responseTypes";
 
 export function isLoggedIn() {
     const data = localStorage.getItem('_auth');
@@ -57,4 +59,52 @@ export function getProfileUrl(userType : UserType, id : string) : string {
     }
 
     return url + '/' + id;
+}
+
+export function getUpdateUserFromUserData(userData : userDataType) : userDataUpdateType {
+    switch (userData.userType) {
+        case UserType.Korisnik:
+            const korisnik : KorisnikDataUpdate = {
+                adresa: userData.adresa ?? '',
+                brojTelefona: userData.brojTelefona ?? '',
+                email: userData.email,
+                opis: userData.opis,
+                slika: userData.slika ?? '',
+                datumRodjenja: userData.datumRodjenja ?? new Date(),
+                ime: userData.ime ?? '',
+                prezime: userData.prezime ?? '',
+                userType: UserType.Korisnik
+            };
+            return korisnik;
+        case UserType.Majstor:
+            const majstor : MajstorDataUpdate = {
+                adresa: userData.adresa ?? '',
+                brojTelefona: userData.brojTelefona ?? '',
+                email: userData.email,
+                opis: userData.opis,
+                slika: userData.slika ?? '',
+                cenaPoSatu: userData.cenaPoSatu ?? 0,
+                datumRodjenja: userData.datumRodjenja ?? new Date(),
+                ime: userData.ime ?? '',
+                prezime: userData.prezime ?? '',
+                iskustvo: userData.iskustvo,
+                struka: userData.struka,
+                userType: UserType.Majstor
+            }
+            return majstor;
+        case UserType.Firma:
+            const firma: FirmaDataUpdate = {
+                adresa: userData.adresa ?? '',
+                brojTelefona: userData.brojTelefona ?? '',
+                email: userData.email,
+                opis: userData.opis,
+                slika: userData.slika ?? '',
+                cenaPoSatu: userData.cenaPoSatu ?? 0,
+                naziv: userData.naziv ?? '',
+                iskustvo: userData.iskustvo,
+                struke: userData.struke,
+                userType: UserType.Firma
+            }
+            return firma;
+    }
 }

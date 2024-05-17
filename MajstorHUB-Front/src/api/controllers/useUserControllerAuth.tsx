@@ -1,7 +1,7 @@
 import UserType, { userToPath } from "../../lib/UserType";
 import { isAxiosError } from "axios";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from '../responseTypes';
+import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from '../DTO-s/responseTypes';
 
 export class SessionEndedError  extends Error {
     constructor(message?: string) {
@@ -41,6 +41,18 @@ function useUserControllerAuth(type : UserType) {
             try {
                 const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`, {signal: abortController.signal});
                 let data: GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse = response.data;
+                
+                switch (type) {
+                    case UserType.Korisnik:
+                        data.userType = UserType.Korisnik
+                        break;
+                    case UserType.Majstor:
+                        data.userType = UserType.Majstor;
+                        break
+                    case UserType.Firma:
+                        data.userType = UserType.Firma;
+                        break
+                }
                 data.datumKreiranjaNaloga = new Date(data.datumKreiranjaNaloga);
 
                 if('jmbg' in data) {

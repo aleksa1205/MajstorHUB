@@ -33,3 +33,5 @@ export type FirmaDataUpdate = UserDataUpdate & {
     cenaPoSatu: number;
     userType: UserType.Firma;
 }
+
+export type userDataUpdateType = KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;

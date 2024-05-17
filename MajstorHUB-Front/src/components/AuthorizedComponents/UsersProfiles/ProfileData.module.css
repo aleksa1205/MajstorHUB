@@ -1,0 +1,71 @@
+@import '../../../vars.css';
+
+.basicInfo {
+    border: 1px solid var(--color-neutral-200);
+    /* border-radius: 10px; */
+    display: flex;
+    column-gap: 1rem;
+    padding: 2rem;
+    position: relative;
+}
+
+.basicInfo img {
+    width: 5rem;
+    border-radius: 50%;
+}
+
+.profileImage {
+    position: relative;
+}
+
+.editImage {
+    position: absolute;
+    top: 3.5rem;
+    right: 0;
+}
+
+.naziv {
+    font-weight: bold;
+    font-size: 2rem;
+    margin: 0;
+}
+
+.iconContainer {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+}
+
+.copyProfileContainer {
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+}
+
+.copyProfile {
+    color: var(--color-main-500);
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    border-radius: 50%;
+    border: 2px solid var(--color-main-500);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.1s ease;
+}
+
+.copyProfile:hover {
+    background-color: var(--color-main-25);
+}
+
+.copyProfile:active {
+    background-color: var(--color-main-50);
+}
+
+.containerWithButton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

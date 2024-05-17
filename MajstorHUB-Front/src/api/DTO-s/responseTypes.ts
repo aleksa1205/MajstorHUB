@@ -55,3 +55,5 @@ export type GetFirmaResponse = GetUserResponse & {
     zaradjeno: number;
     userType: UserType.Firma;
 }
+
+export type userDataType = GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse;
