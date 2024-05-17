@@ -6,6 +6,8 @@ import UserType  from '../../../lib/UserType';
 import useLogout from '../../../hooks/useLogout';
 import { IoSettingsSharp } from "react-icons/io5";
 import useCurrUser from '../../../hooks/useCurrUser';
+import { Link } from 'react-router-dom';
+import { getProfileUrl } from '../../../lib/utils';
 
 
 function UserMenu() {
@@ -29,18 +31,20 @@ function UserMenu() {
                 </div>
 
                 <span>
-                    <li>
-                        <FaUser />
-                        <span>Vaš Profil</span>
-                    </li>
-                    <li>
+                    <Link className={classes.link} to={getProfileUrl(auth.userType, auth.userId)}>
+                        <li className={classes.item}>
+                            <FaUser />
+                            <span>Vaš Profil</span>
+                        </li>
+                    </Link>
+                    <li className={classes.item}>
                         <IoSettingsSharp />
                         <span>Podešavanja Profila</span>
                     </li>
                 </span>
 
                 <span onClick={async () => await logoutUser()}>
-                    <li>
+                    <li className={classes.item}>
                         <BiLogOut/>
                         <span>Izloguj se</span>
                     </li> 

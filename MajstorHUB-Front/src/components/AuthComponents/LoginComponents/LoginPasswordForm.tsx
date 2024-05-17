@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import UserType, { pathToUser } from "../../../lib/UserType";
 import classes from "./LoginEmailForm.module.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdLockOutline } from "react-icons/md";
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
@@ -22,6 +22,9 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
   const { setAuth } = useAuth();
   const { login } = useUserController();
   const {showBoundary} = useErrorBoundary();
+
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/dashboard';
   const navigate = useNavigate();
   const [isWrongPassword, setIsWrongPassword] = useState(false);
 
@@ -55,7 +58,7 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
 
       // Nesto ne radi kada nema setTimeout
       setTimeout(() => {
-        navigate('/dashboard');
+        navigate(from, { replace: true });
       }, 100);
 
       setIsWrongPassword(false);

@@ -37,9 +37,9 @@ function useUserControllerAuth(type : UserType) {
             }
         },
 
-        getById: async function(userId : string) : Promise<false | GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse> {
+        getById: async function(userId : string, abortController : AbortController) : Promise<false | GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse> {
             try {
-                const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`);
+                const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`, {signal: abortController.signal});
                 let data: GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse = response.data;
                 data.datumKreiranjaNaloga = new Date(data.datumKreiranjaNaloga);
 
@@ -51,7 +51,10 @@ function useUserControllerAuth(type : UserType) {
                 return data;
 
             } catch (error) {
-                if(isAxiosError(error) && error.response != null) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
                         case 404:

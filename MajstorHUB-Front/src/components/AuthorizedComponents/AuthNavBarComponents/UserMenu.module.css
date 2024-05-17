@@ -11,6 +11,11 @@
     background-color: white;
 }
 
+.link {
+    text-decoration: none;
+    color: black;
+}
+
 .userInfo {
     padding: 1.5rem 1rem;
     display: flex;
@@ -33,7 +38,6 @@
     font-weight: bold;
 }
     
-
 .triangle {
     width: 0;
     height: 0;
@@ -56,7 +60,7 @@
     z-index: 2;
 }
 
-.mainDiv > ul > span > li {
+.item {
     display: flex;
     gap: 1rem;
 }
@@ -68,7 +72,7 @@
     border-top: 1px solid #c2c8d2;
 }
 
-.mainDiv > ul li {
+.item {
     list-style-type: none;
     margin: 0;
     padding: 1rem 1rem 1rem 1rem;
@@ -76,6 +80,6 @@
     text-align: left;
     cursor: pointer;
 }
-.mainDiv > ul li:hover {
+.item:hover {
     background-color: #faf4f0;
 }

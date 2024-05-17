@@ -8,6 +8,7 @@ public interface IMajstorService
     Task<Majstor> GetByEmail(string email);
     Task Create(Majstor majstor);
     Task Update(string id, Majstor majstor);
+    Task UpdateSelf(string id, MajstorUpdateSelf majstor);
     Task UpdateRefreshToken(string id, RefreshToken token);
     Task<List<Majstor>> Filter(string ime, string prezime, Struka struka);
     Task Delete(string id);

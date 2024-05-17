@@ -1,11 +1,12 @@
 import { createContext, useEffect, useState } from "react";
-import { GetKorisnikResponse, GetFirmaResponse, GetMajstorResponse } from "../api/responseTypes";
+import { GetKorisnikResponse, GetFirmaResponse, GetMajstorResponse } from "../api/DTO-s/responseTypes";
 import useAuth from "../hooks/useAuth";
 import useUserControllerAuth, { SessionEndedError } from "../api/controllers/useUserControllerAuth";
 import { useErrorBoundary } from "react-error-boundary";
 import { base64ToUrl } from "../lib/utils";
 import useLogout from "../hooks/useLogout";
 import UserType from "../lib/UserType";
+import { isAxiosError } from "axios";
 
 
 type CurrUserContextType = {
@@ -33,11 +34,13 @@ export function CurrUserProvider({ children } : PropsValue) {
 
 
     useEffect(() => {
+        const controller = new AbortController();
+
         async function startFetching() {
             try {
                 setIsFetching(true);
 
-                const data = await getById(auth.userId);
+                const data = await getById(auth.userId, controller);
                 if(data === false) {
                     throw Error('Invalid user id sent');
                 }
@@ -63,17 +66,25 @@ export function CurrUserProvider({ children } : PropsValue) {
                 setUserData(data);
                 setIsFetching(false);
             } catch (error) {
-                if(error instanceof SessionEndedError) {
-                    logoutUser();
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    console.log('GetById zahtev canceled');
                 }
-                else
+                else if(error instanceof SessionEndedError) {
+                    console.log('Ode sesija...');
+                    logoutUser();
+                    setIsFetching(false);
+                }
+                else {
+                    setIsFetching(false);
                     showBoundary(error);
+                }
 
-                setIsFetching(false);
             }
         }
         
         startFetching();
+
+        return () => controller.abort();
     }, []);
 
     return (

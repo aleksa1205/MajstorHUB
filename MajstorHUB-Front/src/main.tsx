@@ -9,11 +9,13 @@ import ErrorPage from "./components/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Login.tsx";
 import Success from "./routes/Success.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
-import { requireAuth } from "./lib/utils.ts";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
 import AuthorizedLayout from "./components/Layouts/AuthorizedLayout.tsx";
 import Dashboard from "./components/AuthorizedComponents/DashboardComponents/Dashboard.tsx";
 import AsideLayout from "./components/Layouts/AsideLayout.tsx";
+import FirmaProfile from "./routes/UsersProfiles/FirmaProfile.tsx";
+import KlijentProfile from "./routes/UsersProfiles/KlijentProfile.tsx";
+import MajstorProfile from "./routes/UsersProfiles/MajstorProfile.tsx";
 // import { QueryClient, QueryClientProvider } from "react-query";
 
 const router = createBrowserRouter([
@@ -71,9 +73,56 @@ const router = createBrowserRouter([
                 <Dashboard />
               </ErrorBoundaryProvider>
             ),
-            loader: () => requireAuth(),
           },
+          {
+            path: "/klijenti",
+            element: (
+              <ErrorBoundaryProvider>
+                <h1>Klijenti</h1>
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/majstori",
+            element: (
+              <ErrorBoundaryProvider>
+                <h1>Majstori</h1>
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/firme",
+            element: (
+              <ErrorBoundaryProvider>
+                <h1>Firme</h1>
+              </ErrorBoundaryProvider>
+            ),
+          }
         ],
+      },
+      {
+        path: '/klijenti/:id',
+        element: (
+          <ErrorBoundaryProvider>
+            <KlijentProfile />
+          </ErrorBoundaryProvider>
+        ),
+      },
+      {
+        path: '/majstori/:id',
+        element: (
+          <ErrorBoundaryProvider>
+            <MajstorProfile />
+          </ErrorBoundaryProvider>
+        ),
+      },
+      {
+        path: '/firme/:id',
+        element: (
+          <ErrorBoundaryProvider>
+            <FirmaProfile />
+          </ErrorBoundaryProvider>
+        ),
       },
     ],
   },

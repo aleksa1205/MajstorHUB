@@ -1,4 +1,4 @@
-import UserType from "../lib/UserType";
+import UserType from "../../lib/UserType";
 
 type GetUserResponse = {
     id: string;

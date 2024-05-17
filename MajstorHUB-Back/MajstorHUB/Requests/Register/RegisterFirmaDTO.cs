@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Requests;
+﻿namespace MajstorHUB.Requests.Register;
 
 public class RegisterFirmaDTO
 {

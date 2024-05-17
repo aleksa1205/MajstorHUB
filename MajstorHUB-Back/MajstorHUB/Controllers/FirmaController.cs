@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Authorization;
+using MajstorHUB.Requests.Register;
 using System.Collections.Immutable;
 
 namespace MajstorHUB.Controllers;
@@ -398,6 +399,44 @@ public class FirmaController : ControllerBase
                 return NotFound($"Firma sa ID-em {id} ne posotji!\n");
             }
             await _firmaService.Update(id, firma);
+            return Ok($"Firma sa ID-em {id} je uspesno azurirana!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Firma)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(FirmaUpdateSelf firma)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            if (!UtilityCheck.IsValidEmail(firma.Email))
+                return BadRequest("Format emaila pogresan");
+
+            var obj = await _firmaService.GetByEmail(firma.Email);
+            if (obj != null && obj.Email != firma.Email)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
+            var postojecaFirma = await _firmaService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+            }
+
+            await _firmaService.UpdateSelf(id, firma);
             return Ok($"Firma sa ID-em {id} je uspesno azurirana!\n");
         }
         catch (Exception e)

@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Register;
 using MajstorHUB.Services.MajstorService;
 
 namespace MajstorHUB.Controllers;
@@ -410,6 +411,44 @@ public class MajstorController : ControllerBase
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(MajstorUpdateSelf majstor)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            if (!UtilityCheck.IsValidEmail(majstor.Email))
+                return BadRequest("Format emaila pogresan");
+
+            var obj = await _majstorService.GetByEmail(majstor.Email);
+            if (obj != null && obj.Email != majstor.Email)
+                return BadRequest($"Majstor sa Email-om {majstor.Email} vec postoji!\n");
+
+            var postojeciMajstor = await _majstorService.GetById(id);
+            if (postojeciMajstor is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _majstorService.UpdateSelf(id, majstor);
+            return Ok($"Majstor sa ID-em {id} je uspesno azuriran!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 

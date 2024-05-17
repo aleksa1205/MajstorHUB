@@ -4,7 +4,7 @@
     gap: 1rem;
 }
 
-@media (width < 900px) {
+@media (width <= 900px) {
     .main {
         display: flex;
         flex-direction: column-reverse;
