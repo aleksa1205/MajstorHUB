@@ -7,7 +7,7 @@ import useUserControllerAuth, { SessionEndedError } from "../../../api/controlle
 import useLogout from "../../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import useCurrUser from "../../../hooks/useCurrUser";
-import Hamster from "../../Loaders/Hamster";
+import Hamster from "../../Theme/Loaders/Hamster";
 import { isAxiosError } from "axios";
 import classes from './UserProfile.module.css'
 import { userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
@@ -106,7 +106,7 @@ function UserProfile({ typeFromUrl } : PropsValues) {
              (
                 <main className={classes.main}>
                     {userDataUpdate &&
-                        <ProfileData userData={userDataUpdate} isCurrUser={isCurrUser} />
+                        <ProfileData userData={userDataUpdate} isCurrUser={isCurrUser} setUserData={setUserDataUpdate} />
                     }
                 </main>
              )

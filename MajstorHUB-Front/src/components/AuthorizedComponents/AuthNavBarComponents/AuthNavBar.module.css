@@ -2,9 +2,9 @@
     width: 100%;
     /* background-color: #0c1626; */
     background-color: white;
-    position: absolute;
+    position: fixed;
     top: 0;
-    z-index: 998;
+    z-index: 3;
 }
 
 .register {

@@ -6,7 +6,7 @@ import AuthSidebar from './AuthSidebar';
 import { FaUserCircle } from "react-icons/fa";
 import UserMenu from './UserMenu';
 import useCurrUser from '../../../hooks/useCurrUser';
-import DottedLoader from '../../Loaders/DottedLoader';
+import DottedLoader from '../../Theme/Loaders/DottedLoader';
 
 function AuthNavBar() {
     const [showSidebar, setShowSidebar] = useState(false);

@@ -9,7 +9,7 @@ import { BiLogOut } from 'react-icons/bi';
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { IoSettingsSharp } from 'react-icons/io5';
 import useCurrUser from '../../../hooks/useCurrUser';
-import DottedLoader from '../../Loaders/DottedLoader';
+import DottedLoader from '../../Theme/Loaders/DottedLoader';
 import { getProfileUrl } from '../../../lib/utils';
 
 type PropsValue = {

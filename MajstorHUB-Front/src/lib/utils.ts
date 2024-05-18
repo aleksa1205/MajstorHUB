@@ -108,3 +108,20 @@ export function getUpdateUserFromUserData(userData : userDataType) : userDataUpd
             return firma;
     }
 }
+
+export function formatDate(date : Date) : string {
+
+// Get day, month, and year
+    let day: number = date.getUTCDate();
+    let month: number = date.getUTCMonth() + 1; // Months are zero-based, so add 1
+    const year: number = date.getUTCFullYear();
+
+    // Add leading zero to day and month if they are less than 10
+    const dayString: string = day < 10 ? '0' + day : day.toString();
+    const monthString: string = month < 10 ? '0' + month : month.toString();
+
+    // Format the date as dd.mm.yyyy
+    const formattedDate: string = `${dayString}.${monthString}.${year}`;
+
+    return formattedDate;
+}

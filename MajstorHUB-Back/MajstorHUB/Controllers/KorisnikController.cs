@@ -269,7 +269,7 @@ public class KorisnikController : ControllerBase
             var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
-                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
+                return Unauthorized("Nemas token"); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
 
             // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
             // sekude od datuma 01.01.1970 00:00:00
@@ -280,17 +280,19 @@ public class KorisnikController : ControllerBase
                 .AddSeconds(expiryDateUnix);
 
             if (expiryDateTimeUtc > DateTime.UtcNow)
-                return Unauthorized();
+                return Unauthorized("Refresh token jos nije istekao");
 
             var korisnik = await _korisnikService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-            if (korisnik is null ||
-                korisnik.RefreshToken?.JwtId != jwtId ||
-                korisnik.RefreshToken.TokenValue != model.RefreshToken ||
-                korisnik.RefreshToken.Expiry < DateTime.UtcNow
-                )
-                    return Unauthorized();
+            if (korisnik is null)
+                return Unauthorized("Ne mozemo da nadjemo korisnika sa tim id-em u bazi");
+            if (korisnik.RefreshToken?.JwtId != jwtId)
+                return Unauthorized("Refresh token nije vezan za taj JWT");
+            if (korisnik.RefreshToken.TokenValue != model.RefreshToken)
+                    return Unauthorized("Refresh token se ne poklapa sa onim u bazi");
+            if (korisnik.RefreshToken.Expiry < DateTime.UtcNow)
+                return Unauthorized("Refresh token je istekao, ne smes ovaj endpoint da zoves tako");
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
 

@@ -1,39 +1,83 @@
 import UserType from "../../../lib/UserType";
-import { KorisnikDataUpdate, FirmaDataUpdate, MajstorDataUpdate } from "../../../api/DTO-s/updateSelfTypes";
+import { KorisnikDataUpdate, FirmaDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import classes from './ProfileData.module.css'
-import { base64ToUrl } from "../../../lib/utils";
+import { base64ToUrl, formatDate } from "../../../lib/utils";
 import { FaUserAlt } from "react-icons/fa";
 import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
 import { MdOutlineVerifiedUser } from "react-icons/md";
-import EditButton from "../../Theme/EditButton";
+import EditButton from "../../Theme/Buttons/EditButton";
 import { Iskustvo, Struka } from "../../../api/DTO-s/responseTypes";
 import { IoIosContact } from "react-icons/io";
 import { MdConstruction } from "react-icons/md";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
+import EditUserForm from "./EditUserForm";
+import { createContext, useContext, useState } from "react";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate
+    setUserData : React.Dispatch<React.SetStateAction<userDataUpdateType | null>>;
     isCurrUser: boolean;
 }
 
-function ProfileData({ userData, isCurrUser } : PropsValues) {
+type ContextValues = {
+    userData: KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
+    isCurrUser: boolean;
+    setHeading: React.Dispatch<React.SetStateAction<string>>;
+    setDescription: React.Dispatch<React.SetStateAction<string>>;
+    setFieldName: React.Dispatch<React.SetStateAction<keyof KorisnikDataUpdate | keyof MajstorDataUpdate | keyof FirmaDataUpdate>>
+    openModal: () => void;
+}
+
+const SectionContext = createContext<ContextValues | null>(null);
+
+function ProfileData({ userData, isCurrUser, setUserData } : PropsValues) {
+    const [showModal, setShowModal] = useState(false);
+
+    const [heading, setHeading] = useState('');
+    const [description, setDescription] = useState('');
+    const [fieldName, setFieldName] = useState<keyof KorisnikDataUpdate | keyof MajstorDataUpdate | keyof FirmaDataUpdate>('ime');
+
+    const defaultValues : ContextValues = {
+        isCurrUser: isCurrUser,
+        openModal: openModal,
+        setDescription: setDescription,
+        setFieldName: setFieldName,
+        setHeading: setHeading,
+        userData: userData
+    } 
+
+    function closeModal() {
+        setShowModal(false);
+    }
+
+    function openModal() {
+        setShowModal(true);
+    }
     
     return (
-        <div className="container">
-            <BasicInfoSection userData={userData} isCurrUser={isCurrUser} />
-            <div className={classes.sectionContainer}>
-                <UserSpecificDataSection userData={userData} isCurrUser={isCurrUser} />
-                <div>
-                    <Opis userData={userData} isCurrUser={isCurrUser} />
-                    {userData.userType !== UserType.Korisnik && 
-                        <Skills userData={userData} isCurrUser={isCurrUser} />
-                    }
-                    <Poslovi userData={userData} isCurrUser={isCurrUser} />
-                </div>
+        <>
+            {showModal && (
+                <EditUserForm userData={userData} setUserData={setUserData} description={description} heading={heading} fieldName={fieldName} closeModal={closeModal} />
+            )}
+
+            <div className="container">
+                <SectionContext.Provider value={defaultValues}>
+                    <BasicInfoSection/>
+                    <div className={classes.sectionContainer}>
+                        <UserSpecificDataSection />
+                        <div>
+                            <Opis />
+                            {userData.userType !== UserType.Korisnik && 
+                                <Skills />
+                            }
+                            {/* <Poslovi userData={userData} isCurrUser={isCurrUser} /> */}
+                        </div>
+                    </div>
+                </SectionContext.Provider>
             </div>
-        </div>
+        </>
     )
 }
 
@@ -42,12 +86,35 @@ export default ProfileData;
 
 
 
-type BasicInforProps = {
-    userData: KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
-    isCurrUser: boolean;
-}
 
-function BasicInfoSection({ userData, isCurrUser } : BasicInforProps ) {    
+function BasicInfoSection() {
+
+    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+
+    function slikaHandler() {
+        setDescription("Promenite sliku na profilu");
+        setFieldName("slika");
+        setHeading("Promenite sliku");
+
+        openModal();
+    }
+
+    function imePrezimeHandler() {
+        setDescription("Promenite vase ime i prezime");
+        setFieldName("ime");
+        setHeading("Promenite ime i prezime");
+
+        openModal();
+    }
+
+    function adresaHandler() {
+        setDescription("Promenite adresu");
+        setFieldName("adresa");
+        setHeading("Promenite adresu");
+
+        openModal();
+    }
+
     return (
         <section className={classes.basicInfo}>
             <div className={classes.profileImage}>
@@ -57,7 +124,7 @@ function BasicInfoSection({ userData, isCurrUser } : BasicInforProps ) {
                 }
                 {isCurrUser && (
                     <div className={classes.editImage}>
-                        <EditButton />
+                        <EditButton onClick={slikaHandler} />
                     </div>
                 )}
             </div>
@@ -68,13 +135,13 @@ function BasicInfoSection({ userData, isCurrUser } : BasicInforProps ) {
                         <p className={classes.naziv}>{userData.naziv}</p> :
                         (<p className={classes.naziv}>{userData.ime} {userData.prezime}</p>)
                     }
-                    {isCurrUser && <EditButton />}
+                    {isCurrUser && <EditButton onClick={imePrezimeHandler} />}
                 </div>
                 
                 <p className={`${classes.iconContainer} ${classes.userType}`}><MdOutlineVerifiedUser />{UserType[userData.userType]}</p>
                 <div className={classes.containerWithButton}>
                     <p className={classes.iconContainer}><IoLocationOutline /> {userData.adresa}</p>
-                    {isCurrUser && <EditButton />}
+                    {isCurrUser && <EditButton onClick={adresaHandler} />}
                 </div>
             </div>
 
@@ -88,7 +155,10 @@ function BasicInfoSection({ userData, isCurrUser } : BasicInforProps ) {
     )
 }
 
-function UserSpecificDataSection({ userData, isCurrUser } : BasicInforProps) {
+function UserSpecificDataSection() {
+
+    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+
     return (
         <section className={classes.userSpecificSec}>
 
@@ -135,7 +205,7 @@ function UserSpecificDataSection({ userData, isCurrUser } : BasicInforProps) {
                 )}
             </div>
 
-            {userData.userType === UserType.Korisnik || userData.userType === UserType.Majstor && (
+            {(userData.userType === UserType.Korisnik || userData.userType === UserType.Majstor) && (
                 <div>
                     <h4 className={classes.heading}>
                         <CiCalendar size='2rem' />
@@ -144,9 +214,7 @@ function UserSpecificDataSection({ userData, isCurrUser } : BasicInforProps) {
                     <div className={classes.containerWithButton}>
                         <p>
                             <span className={classes.bold}>
-                                {userData.datumRodjenja.getDay()}.
-                                {userData.datumRodjenja.getMonth()}.
-                                {userData.datumRodjenja.getFullYear()}.
+                                {formatDate(userData.datumRodjenja)}
                             </span>
                         </p>
                         {isCurrUser && <EditButton />}
@@ -157,7 +225,10 @@ function UserSpecificDataSection({ userData, isCurrUser } : BasicInforProps) {
     )
 }
 
-function Opis({ userData, isCurrUser } : BasicInforProps) {
+function Opis() {
+
+    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+
     function copyToClipboard() {
         alert("Link profila kopiran u clipboard");
         navigator.clipboard.writeText(window.location.href);
@@ -181,9 +252,11 @@ function Opis({ userData, isCurrUser } : BasicInforProps) {
     )
 }
 
-function Skills({ userData, isCurrUser } : BasicInforProps) {
+function Skills() {
 
-    let headingText = userData.userType === UserType.Majstor ? 'Vestina' : 'Vestine';
+    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+
+    let headingText = userData.userType === UserType.Majstor ? 'Veština' : 'Veštine';
 
     return (
         <section className={classes.skillsSec}>
@@ -215,10 +288,10 @@ function Skills({ userData, isCurrUser } : BasicInforProps) {
     )
 }
 
-function Poslovi({ userData, isCurrUser } : BasicInforProps) {
-    return (
-        <section>
-            <h3>Prethodni Poslovi</h3>
-        </section>
-    )
-}
+// function Poslovi({ userData, isCurrUser } : BasicInforProps) {
+//     return (
+//         <section>
+//             <h3>Prethodni Poslovi</h3>
+//         </section>
+//     )
+// }

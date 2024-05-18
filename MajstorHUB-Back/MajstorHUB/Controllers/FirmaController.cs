@@ -102,7 +102,7 @@ public class FirmaController : ControllerBase
                 Id = firma.Id,
                 Opis = firma.Opis,
                 Slika = firma.Slika,
-                Struke = firma.Struke,
+                Struke = firma.Struke, 
                 Zaradjeno = firma.Zaradjeno,
                 Iskustvo = firma.Iskustvo,
                 CenaPoSatu = firma.CenaPoSatu,
