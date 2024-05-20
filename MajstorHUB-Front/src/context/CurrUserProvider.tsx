@@ -5,7 +5,6 @@ import useUserControllerAuth, { SessionEndedError } from "../api/controllers/use
 import { useErrorBoundary } from "react-error-boundary";
 import { base64ToUrl } from "../lib/utils";
 import useLogout from "../hooks/useLogout";
-import UserType from "../lib/UserType";
 import { isAxiosError } from "axios";
 
 
@@ -46,21 +45,6 @@ export function CurrUserProvider({ children } : PropsValue) {
                 }
                 if(data.slika) {
                     setPictureUrl(base64ToUrl(data.slika));
-                }
-                
-                switch (auth.userType) {
-                    case UserType.Korisnik:
-                        data.userType = UserType.Korisnik
-                        break;
-                    case UserType.Majstor:
-                        data.userType = UserType.Majstor;
-                        break;
-                    case UserType.Firma:
-                        data.userType = UserType.Firma;
-                        break
-                    default:
-                        console.error('Greska pri odredjivanju tipa pri upisu u setData');
-                        break;
                 }
                 
                 setUserData(data);

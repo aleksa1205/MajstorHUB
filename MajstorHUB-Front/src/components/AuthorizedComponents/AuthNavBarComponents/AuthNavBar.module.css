@@ -4,7 +4,7 @@
     background-color: white;
     position: fixed;
     top: 0;
-    z-index: 999;
+    z-index: 3;
 }
 
 .register {
@@ -16,7 +16,8 @@
     justify-content: space-between;
     align-items: center;
     /* border: 5px solid red;  */
-    padding: 0.85rem 2rem;
+    padding-top: 0.85rem;
+    padding-bottom: 0.85rem;
     font-weight: bold;
     height: 77px;
     background-color: white;

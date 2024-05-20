@@ -1,13 +1,13 @@
 import { FaUser } from 'react-icons/fa';
 import classes from './UserInfoAside.module.css'
 import useCurrUser from '../../../hooks/useCurrUser';
-import DottedLoader from '../../Loaders/DottedLoader';
+import DottedLoader from '../../Theme/Loaders/DottedLoader';
 import useAuth from '../../../hooks/useAuth';
 import UserType  from '../../../lib/UserType';
 import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, Iskustvo, Struka } from '../../../api/DTO-s/responseTypes';
 import DropDownSlider, { DDSliderItem } from '../../Theme/DropDownSlider';
 import { Link } from 'react-router-dom';
-import { getProfileUrl } from '../../../lib/utils';
+import { formatDate, getProfileUrl } from '../../../lib/utils';
 
 function UserInfoAside() {
 
@@ -64,7 +64,7 @@ function KorisnikElements({ userData } : UserPropValues) {
                     <DDSliderItem>Adresa:<br /> {userData.adresa}</DDSliderItem>
                 }
                 {userData.datumRodjenja && 
-                    <DDSliderItem>Datum Rodjenja:<br /> {`${userData.datumRodjenja.getDay()}.${userData.datumRodjenja.getMonth()}.${userData.datumRodjenja.getFullYear()}.`}</DDSliderItem>
+                    <DDSliderItem>Datum Rodjenja:<br /> {formatDate(userData.datumRodjenja)}</DDSliderItem>
                 }
                 {userData.brojTelefona &&
                     <DDSliderItem>Broj Telefona:<br /> {userData.brojTelefona}</DDSliderItem>

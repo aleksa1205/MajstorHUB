@@ -6,11 +6,7 @@ import {
 import UserType, { pathToUser, userToPath } from "../lib/UserType";
 import axios from "../api/axios";
 import { useErrorBoundary } from "react-error-boundary";
-import { redirect } from "react-router-dom";
 
-// Ovi tipovi moraju da se dodaju da se typescirpt ne bi bunio
-// I zato sto createContext zahteva default values
-// TypeScirpt malo komplikuje ovaj proces
 type ContextValues = {
   auth: AuthValues;
   setAuth: React.Dispatch<React.SetStateAction<AuthValues>>;
@@ -26,11 +22,6 @@ export type AuthValues = {
   roles: Array<Number>;
 };
 
-// Posto u local storage ne cuvamo dovoljno informacija da bi authentifikovali korisnika moramo to na drugi nacin da resimo
-// U bazi mora da postoji tabela koja pamti sesiju korisnika (session id), taj session id mora da stoji u local storage
-// kada se aplikacija ponovu ucita context je prazan, procitamo iz local storage session id, posaljemo serveru, server autentifikuje korisnika
-// i vrati nazad sve potrebne informacije o autentifikaciji i mi tada updatujemo context
-
 export const emptyAuthValue: AuthValues = {
   naziv: "",
   userId: "",
@@ -45,7 +36,6 @@ export const emptyAuthValue: AuthValues = {
   userType: UserType.Nedefinisano,
 };
 
-// Da se radi sa vanilla js ovde bi se samo prosledio prazan objekat, {}
 const AuthContext = createContext<ContextValues>({
   auth: emptyAuthValue,
   setAuth: () => {},
@@ -59,10 +49,12 @@ export const AuthProvider = ({ children }: PropsValue) => {
   const [auth, setAuth] = useState<AuthValues>(emptyAuthValue);
   const { showBoundary } = useErrorBoundary();
 
-  // Iskomentarisi useEffect, ovde samo logujem nekog test usera pre pokretanja aplikacije
-  // useEffect(() => {
-  //   getData(setAuth, showBoundary);
-  // }, []);
+  const logTestUser : boolean = true;
+
+  useEffect(() => {
+    if(logTestUser)
+      getData(setAuth, showBoundary);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ auth, setAuth }}>
@@ -72,10 +64,6 @@ export const AuthProvider = ({ children }: PropsValue) => {
 };
 
 export default AuthContext;
-
-
-
-
 
 async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>, showBoundary : (error: any) => void) {
     const email = "milosmilosevic@gmail.com";

@@ -1,0 +1,23 @@
+@import '../../../vars.css';
+
+.btn {
+    background-color: white;
+    border: 2px solid var(--color-main-500);
+    border-radius: 50%;
+    color: var(--color-main-500);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    width: 2rem;
+    height: 2rem;
+}
+
+.btn:hover {
+    background-color: var(--color-main-25);
+}
+.btn:active {
+    background-color: var(--color-main-50);
+}

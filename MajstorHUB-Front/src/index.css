@@ -62,28 +62,44 @@ img {
   padding-inline: 2rem;
 }
 
+@media (width <= 600px) {
+  .container {
+    padding-inline: 1rem;
+  }
+}
+
 /* ------------------------------------ Dugmici ------------------------------------ */
 
-.mainButton {
+.mainButton,
+.mainButtonSmall {
   background-color: #f57624;
   /* color: #efded3; */
   color: white;
-  padding: 0.9rem 1.75rem;
   border: none;
   /* border-radius: 10px; */
   border-radius: 100px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.1s ease-in-out;
-  text-transform: uppercase;
   text-decoration: none;
   font-family: inherit;
   font-size: inherit;
   text-align: center;
 }
 
+.mainButton {
+  padding: 0.9rem 1.75rem;
+  text-transform: uppercase;
+}
 
-.mainButton:has(> .button__text), .secondaryButton:has(> .button__text), .lightButton:has(> .button__text) {
+.mainButtonSmall {
+  padding: 0.7rem 1.65rem;
+}
+
+.mainButton:has(> .button__text), 
+.secondaryButton:has(> .button__text), 
+.lightButton:has(> .button__text),
+.mainButtonSmall:has(> .button__text) {
   position: relative;
   display: flex;
   justify-content: center;
@@ -124,15 +140,18 @@ img {
   }
 }
 
-.mainButton:hover {
+.mainButton:hover,
+.mainButtonSmall:hover {
   background-color: #ca560c;
 }
 
-.mainButton:active {
+.mainButton:active,
+.mainButtonSmall:active {
   background-color: #8a3a06;
 }
 
-.mainButton:disabled {
+.mainButton:disabled,
+.mainButtonSmall:disabled {
   background-color: #c2c8d2;
   cursor: not-allowed;
 }
@@ -415,6 +434,12 @@ img {
   background-color: white;
   /* background-color: rgba(255, 255, 255, 0.925);
   backdrop-filter: blur(10px); */
+}
+
+@media (width <= 600px) {
+  .sidebar {
+    padding-inline: 1rem;
+  }
 }
 
 .sidebar > div {
