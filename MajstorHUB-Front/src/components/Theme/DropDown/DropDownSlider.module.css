@@ -1,4 +1,4 @@
-@import '../../vars.css';
+@import '../../../vars.css';
 
 .main  {
     /* background-color: var(--color-blue-200); */
@@ -41,8 +41,4 @@
     cursor: default;
     padding-inline: 1rem;
     margin-top: 1rem;
-}
-
-.item:first-child {
-
 }

@@ -13,6 +13,10 @@
     flex-wrap: wrap;
 }
 
+.divOpis {
+    white-space: pre-wrap;
+}
+
 .settings {
     position: absolute;
     top: 2rem;

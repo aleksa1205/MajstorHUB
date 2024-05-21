@@ -1,12 +1,12 @@
 import { FieldErrors, RegisterOptions, UseFormRegister, useForm } from 'react-hook-form';
-import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate, userDataUpdateType } from '../../../api/DTO-s/updateSelfTypes';
+import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate, userDataUpdateType } from '../../../../api/DTO-s/updateSelfTypes';
 import classes from './EditUserForm.module.css'
-import { Iskustvo, Struka } from '../../../api/DTO-s/responseTypes';
+import { Iskustvo, Struka } from '../../../../api/DTO-s/responseTypes';
 import { MdErrorOutline } from 'react-icons/md';
 import { useErrorBoundary } from 'react-error-boundary';
-import useUserController from '../../../api/controllers/useUserController';
-import UserType from '../../../lib/UserType';
-import Modal from '../../Theme/Modal/Modal';
+import useUserController from '../../../../api/controllers/useUserController';
+import UserType from '../../../../lib/UserType';
+import Modal from '../../../Theme/Modal/Modal';
 
 // Uopste mi se ne svidja implementacija ovoga, pokusao sam da napravim dinamcku komponentu za editovanje profila, sto sam i uspeo ali
 // je kod toliko necitljiv i uzasan zato sto za odredjena polja za editovanje ne prikazuje <input /> nego nesto drugo.

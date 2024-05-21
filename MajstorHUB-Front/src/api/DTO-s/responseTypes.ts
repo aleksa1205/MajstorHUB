@@ -24,8 +24,81 @@ export enum Struka {
     Nedefinisano = 0,
     Keramika = 1,
     Moleraj = 2,
-    Fasada = 3
+    Fasada = 3,
+    AdapdacijaProstora,
+    Bastovan,
+    Bojleri,
+    BravarskiRadovi,
+    Ciscenje,
+    Elektroinstalacije,
+    Grejanje,
+    HemijskoCiscenje,
+    Kamenorezac,
+    Klimatizacija,
+    KomarniciIRoletne,
+    KucniAparati,
+    KucniMajstor,
+    Limar,
+    Krov,
+    Moler,
+    Obucar,
+    Odzacar,
+    PlinskeInstalacije,
+    Podovi,
+    PVC,
+    Selidbe,
+    SigurnosniSistemi,
+    Snajder,
+    SolarniPaneli,
+    Staklorezac,
+    Stolar,
+    Vodoinstalater,
+    Zidar
 }
+
+const strukaDisplayNames: { [key in Struka]: string } = {
+    [Struka.Nedefinisano]: "Nedefinisano",
+    [Struka.Keramika]: "Keramika",
+    [Struka.Moleraj]: "Moleraj",
+    [Struka.Fasada]: "Fasada",
+    [Struka.AdapdacijaProstora]: "Adapdacija Prostora",
+    [Struka.Bastovan]: "Bastovan",
+    [Struka.Bojleri]: "Bojleri",
+    [Struka.BravarskiRadovi]: "Bravarski Radovi",
+    [Struka.Ciscenje]: "Ciscenje",
+    [Struka.Elektroinstalacije]: "Elektroinstalacije",
+    [Struka.Grejanje]: "Grejanje",
+    [Struka.HemijskoCiscenje]: "Hemijsko Ciscenje",
+    [Struka.Kamenorezac]: "Kamenorezac",
+    [Struka.Klimatizacija]: "Klimatizacija",
+    [Struka.KomarniciIRoletne]: "Komarnici i Roletne",
+    [Struka.KucniAparati]: "Kucni Aparati",
+    [Struka.KucniMajstor]: "Kucni Majstor",
+    [Struka.Limar]: "Limar",
+    [Struka.Krov]: "Krov",
+    [Struka.Moler]: "Moler",
+    [Struka.Obucar]: "Obucar",
+    [Struka.Odzacar]: "Odzacar",
+    [Struka.PlinskeInstalacije]: "Plinske Instalacije",
+    [Struka.Podovi]: "Podovi",
+    [Struka.PVC]: "PVC",
+    [Struka.Selidbe]: "Selidbe",
+    [Struka.SigurnosniSistemi]: "Sigurnosni Sistemi",
+    [Struka.Snajder]: "Snajder",
+    [Struka.SolarniPaneli]: "Solarni Paneli",
+    [Struka.Staklorezac]: "Staklorezac",
+    [Struka.Stolar]: "Stolar",
+    [Struka.Vodoinstalater]: "Vodoinstalater",
+    [Struka.Zidar]: "Zidar"
+};
+
+export const maxStrukeLength = 15;
+
+// Function to get the display name
+export function getStrukaDisplayName(struka: Struka): string {
+    return strukaDisplayNames[struka];
+}
+
 
 export enum Iskustvo {
     Nedefinisano,
