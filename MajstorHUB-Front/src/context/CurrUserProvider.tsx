@@ -12,6 +12,7 @@ type CurrUserContextType = {
     pictureUrl? : string | null;
     userData? : GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse | null;
     isFetching? : boolean | null;
+    refetchUser? : () => void;
 }
 
 const CurrUserContext = createContext<CurrUserContextType>({});
@@ -26,11 +27,15 @@ export function CurrUserProvider({ children } : PropsValue) {
     const [pictureUrl, setPictureUrl] = useState<string | null>(null);
     const [userData, setUserData] = useState<GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse | null>(null);
     const [isFetching, setIsFetching] = useState(true);
+    const [increment, setIncrement] = useState<number>(0);
 
     const { auth } = useAuth();
     const { getById }  = useUserControllerAuth(auth.userType);
     const { showBoundary } = useErrorBoundary();
 
+    function refetchUser() {
+        setIncrement(prev => prev + 1);
+    }
 
     useEffect(() => {
         const controller = new AbortController();
@@ -69,10 +74,10 @@ export function CurrUserProvider({ children } : PropsValue) {
         startFetching();
 
         return () => controller.abort();
-    }, []);
+    }, [increment]);
 
     return (
-        <CurrUserContext.Provider value={{pictureUrl, userData, isFetching}}>
+        <CurrUserContext.Provider value={{pictureUrl, userData, isFetching, refetchUser}}>
             {children}
         </CurrUserContext.Provider>
     )

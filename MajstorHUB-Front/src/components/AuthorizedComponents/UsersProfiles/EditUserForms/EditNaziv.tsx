@@ -2,13 +2,11 @@ import { MdErrorOutline } from "react-icons/md";
 import classes from './EditUserForm.module.css'
 import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
-import { Struka, getStrukaDisplayName } from "../../../../api/DTO-s/responseTypes";
 import { IoClose } from "react-icons/io5";
-import DropDown from "../../../Theme/DropDown/DropDown";
 import UserType from "../../../../lib/UserType";
 
 type FromValues = {
-    value: number;
+    value: string;
 };
 
 type PropsValues = {
@@ -17,9 +15,9 @@ type PropsValues = {
     userData: userDataUpdateType;
 }
 
-function EditStruka({ close, updateUser, userData }: PropsValues) {
+function EditImeFirme({ close, updateUser, userData }: PropsValues) {
     const form = useForm<FromValues>({defaultValues: {
-        value: userData.userType === UserType.Majstor ? userData.struka : Struka.Fasada
+        value: userData.userType === UserType.Firma ? userData.naziv : ''
     }});
     const { register, handleSubmit, formState } = form;
     const { errors, isSubmitting, isSubmitSuccessful } = formState;
@@ -27,45 +25,41 @@ function EditStruka({ close, updateUser, userData }: PropsValues) {
     if(isSubmitSuccessful) setTimeout(() => close(), 0);
 
     function onSubmit(formValues : FromValues) {
-        const { value } = formValues; 
-
-        updateUser(prev => ({...prev!, struka: value}));
+        const { value } = formValues;
+        updateUser(prev => ({...prev!, naziv: value}));
     }
-
-    const sveStruke = Object.keys(Struka)
-                        .filter((v) => !isNaN(Number(v)));
 
     return (
         <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
             <div className={classes.header}>
-                <h3>Promenite struku</h3>
+                <h3>Promenite Ime Firme</h3>
                 <IoClose onClick={close} size='2rem' />
             </div>
-
-            <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
-            <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
+    
+            <p>Unesite ime vaše firme</p>
             
-            <label htmlFor="struka">Struka</label>
-            <DropDown>
-                <select
-                    className={errors.value ? `${classes.error}` : ""}
-                    id="struka"
-                    {...register("value", {
-                        valueAsNumber: true,
-                        required: 'Ovo je obavezno polje',
-                    })}
-                >
-                    {sveStruke.map((e) => {
-                        const el = parseInt(e, 10);
-                        if(el !== Struka.Nedefinisano) {
-                            return (
-                                <option key={el} value={el}>{getStrukaDisplayName(el)}</option>
-                            )
-                        }
-                    }
-                    )}
-                </select>
-            </DropDown>
+            <label htmlFor="adresa">Ime Firme</label>
+            <input
+                className={errors.value ? `${classes.error}` : ""}
+                type="text"
+                id="adresa"
+                placeholder="Konkordija"
+                {...register("value", {
+                    required: "Ovo je obavezno polje",
+                    pattern: {
+                      value: /^[a-zA-Z\s]*$/,
+                      message: "Ime firme mora da zadrzi samo slova i razmake",
+                    },
+                    minLength: {
+                      value: 4,
+                      message: 'Mora barem 4 karaktera'
+                    },
+                    maxLength: {
+                      value: 30,
+                      message: 'Maksimum 30 karaktera'
+                    },
+                })}
+            />
             <p className={classes.pError}>
                 {errors.value?.message && <MdErrorOutline />}
                 {errors.value?.message}
@@ -73,6 +67,7 @@ function EditStruka({ close, updateUser, userData }: PropsValues) {
 
             <div className={classes.btnContainer}>
                 <button className='secondLink' onClick={close} type='button'>Cancel</button>
+
                 <button
                     disabled={isSubmitting}
                     className={
@@ -86,4 +81,4 @@ function EditStruka({ close, updateUser, userData }: PropsValues) {
     )
 }
 
-export default EditStruka;
+export default EditImeFirme;

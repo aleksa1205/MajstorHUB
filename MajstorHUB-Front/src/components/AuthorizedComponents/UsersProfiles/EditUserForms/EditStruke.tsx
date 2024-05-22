@@ -28,6 +28,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
         Object.keys(Struka)
               .filter(v => !isNaN(Number(v)))
     )
+    const [increment, setIncrement] = useState<number>(0);
 
     const [selectedFields, setSelectedFields] = useState<Array<Struka>>(
         userData.userType === UserType.Firma ? userData.struke : new Array()
@@ -41,7 +42,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
         if(selectedFields.includes(inputValue) || typeof inputValue === 'undefined' || inputValue === 0)
             return;
 
-        if(selectedFields.length < 3) {
+        if(selectedFields.length < 15) {
             clearErrors();
             setSelectedFields(prev => [...prev, inputValue]);
             //setError(null);
@@ -53,7 +54,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
             });
         }
 
-    }, [inputValue]);
+    }, [increment]);
 
     function deleteHandler(e : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const struka : Struka = parseInt(e.currentTarget.value);
@@ -97,7 +98,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
                         if(el !== Struka.Nedefinisano) {
                             const isIncluded = selectedFields.includes(el)
                             return (
-                                <option disabled={isIncluded} key={el} value={el}>{getStrukaDisplayName(el)}</option>
+                                <option onClick={() => setIncrement(prev => prev + 1)} disabled={isIncluded} key={el} value={el}>{getStrukaDisplayName(el)}</option>
                             )
                         }
                     }

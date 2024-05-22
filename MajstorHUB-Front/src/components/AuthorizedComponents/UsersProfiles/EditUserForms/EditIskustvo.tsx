@@ -8,7 +8,7 @@ import UserType from "../../../../lib/UserType";
 import RadioCard from "../../../Theme/RadioCard/RadioCard";
 
 type FromValues = {
-  value: Iskustvo;
+  value: string;
 };
 
 type PropsValues = {
@@ -22,8 +22,8 @@ function EditIskustvo({ close, updateUser, userData }: PropsValues) {
     defaultValues: {
       value:
         userData.userType !== UserType.Korisnik
-          ? userData.iskustvo
-          : Iskustvo.Nedefinisano,
+          ? userData.iskustvo.toString()
+          : Iskustvo.Nedefinisano.toString(),
     },
   });
   const { register, handleSubmit, formState } = form;
@@ -33,7 +33,7 @@ function EditIskustvo({ close, updateUser, userData }: PropsValues) {
 
   function onSubmit(formValues: FromValues) {
     const { value } = formValues;
-    updateUser(prev => ({...prev!, iskustvo: value}));
+    updateUser(prev => ({...prev!, iskustvo: parseInt(value)}));
   }
 
   return (

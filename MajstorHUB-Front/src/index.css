@@ -160,11 +160,13 @@ img {
 .secondaryButton {
   background-color: transparent;
   color: #f57624;
-  padding: 0.81rem 1.75rem;
+  padding: 0.9rem 1.75rem;
   border: 2px solid #f57624;
   /* border-radius: 10px; */
   border-radius: 100px;
   font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   text-transform: uppercase;

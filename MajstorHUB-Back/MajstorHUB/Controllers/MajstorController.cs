@@ -430,6 +430,8 @@ public class MajstorController : ControllerBase
             if (id is null)
                 return Unauthorized();
 
+            Console.WriteLine(majstor.Iskustvo);
+
             if (!UtilityCheck.IsValidEmail(majstor.Email))
                 return BadRequest("Format emaila pogresan");
 

@@ -103,6 +103,14 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="ime"
             {...register("ime", {
               required: "Ime je obavezno polje",
+              minLength: {
+                value: 4,
+                message: 'Mora barem 4 karaktera'
+              },
+              maxLength: {
+                value: 15,
+                message: 'Maksimum 15 karaktera'
+              },
               pattern: {
                 value: /^[a-zA-Z]+$/,
                 message: "Ime mora da zadrzi samo slova",
@@ -122,6 +130,14 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="prezime"
             {...register("prezime", {
               required: "Prezime je obavezno polje",
+              minLength: {
+                value: 4,
+                message: 'Mora barem 4 karaktera'
+              },
+              maxLength: {
+                value: 15,
+                message: 'Maksimum 15 karaktera'
+              },
               pattern: {
                 value: /^[a-zA-Z]+$/,
                 message: "Prezime mora da zadrzi samo slova",
@@ -195,8 +211,16 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           {...register("imeFirme", {
             required: "Ime firme je obavezno polje",
             pattern: {
-              value: /^[a-zA-Z]+$/,
-              message: "Ime firme mora da zadrzi samo slova",
+              value: /^[a-zA-Z\s]*$/,
+              message: "Ime firme mora da zadrzi samo slova i razmake",
+            },
+            minLength: {
+              value: 4,
+              message: 'Mora barem 4 karaktera'
+            },
+            maxLength: {
+              value: 30,
+              message: 'Maksimum 30 karaktera'
             },
           })}
         />
@@ -289,6 +313,10 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="email"
             {...register("email", {
               required: "Email je obavezno polje",
+              maxLength: {
+                value: 30,
+                message: 'Maksimalno 30 karaktera'
+              },
               pattern: {
                 value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
                 message: "Format email-a neispravan",
@@ -322,7 +350,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           <input
             placeholder="Minimim 8 karaktera"
             className={errors.sifra ? `${classes.error}` : ""}
-            type="text"
+            type="password"
             id="sifra"
             {...register("sifra", {
               required: "Sifra je obavezno polje",
@@ -343,7 +371,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           <label htmlFor="ponovoSifra">Ponovite Sifru</label>
           <input
             className={errors.ponovoSifra ? `${classes.error}` : ""}
-            type="text"
+            type="password"
             id="ponovoSifra"
             {...register("ponovoSifra", {
               required: "Unesite ponovo sifru",

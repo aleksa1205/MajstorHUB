@@ -59,11 +59,11 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
 
   return (
     <>
-      {message && (
+      {(message && typeof message === 'string') && (
         <div className="infoBox">
           <FaCircleInfo size="1.25rem" />
           <div>
-            <p>{typeof message === 'string' && message}</p>
+            <p>{message}</p>
           </div>
         </div>
       )}

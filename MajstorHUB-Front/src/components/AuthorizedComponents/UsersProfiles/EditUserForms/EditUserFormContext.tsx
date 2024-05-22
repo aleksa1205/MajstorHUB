@@ -10,6 +10,7 @@ import ModalAnimated from "../../../Theme/Modal/ModalAnimated";
 import EditCenaPoSatu from "./EditCenaPoSatu";
 import EditIskustvo from "./EditIskustvo";
 import EditStruke from "./EditStruke";
+import EditImeFirme from "./EditNaziv";
 
 type PropsValues = {
     formType: EditUserFormType,
@@ -22,6 +23,7 @@ type PropsValues = {
 export enum EditUserFormType {
     Nedefinisano,
     ImePrezime,
+    ImeFirme,
     Slika,
     Adresa,
     Opis,
@@ -66,6 +68,9 @@ function EditUserFormContext({ formType, close, updateUser, userData, style } : 
             break;
         case EditUserFormType.Struke:
             res = <EditStruke close={close} updateUser={updateUser} userData={userData} />
+            break;
+        case EditUserFormType.ImeFirme:
+            res = <EditImeFirme close={close} updateUser={updateUser} userData={userData} />
             break;
         default:
             break;
