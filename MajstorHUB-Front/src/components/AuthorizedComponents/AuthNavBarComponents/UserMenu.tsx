@@ -9,8 +9,11 @@ import useCurrUser from '../../../hooks/useCurrUser';
 import { Link } from 'react-router-dom';
 import { getProfileUrl } from '../../../lib/utils';
 
+type PropsValues = {
+    hideMenu: () => void;
+}
 
-function UserMenu() {
+function UserMenu({ hideMenu } : PropsValues) {
     const { auth } = useAuth();
     const logoutUser = useLogout();
     const { pictureUrl } = useCurrUser();
@@ -31,7 +34,7 @@ function UserMenu() {
                 </div>
 
                 <span>
-                    <Link className={classes.link} to={getProfileUrl(auth.userType, auth.userId)}>
+                    <Link className={classes.link} onClick={hideMenu} to={getProfileUrl(auth.userType, auth.userId)}>
                         <li className={classes.item}>
                             <FaUser />
                             <span>Vaš Profil</span>

@@ -19,6 +19,10 @@ function AuthNavBar() {
         setShowSidebar(false);
     }
 
+    function hideUserMenu() {
+        setShowUserMenu(false);
+    }
+
     // zatvara menu bar ako se klikne sa strane
     useEffect(() => {
         function handler(e : MouseEvent) {
@@ -54,7 +58,7 @@ function AuthNavBar() {
                             (<FaUserCircle onClick={() => setShowUserMenu(!showUserMenu)} className='iconButton' size='2rem' />)
                         }
                         
-                        { showUserMenu && <UserMenu /> }
+                        { showUserMenu && <UserMenu hideMenu={hideUserMenu} /> }
                     </div>
                 </div>
             </nav>

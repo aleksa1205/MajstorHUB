@@ -1,5 +1,4 @@
 import classes from './EditButton.module.css';
-import { MdOutlineEdit } from "react-icons/md";
 import { LuPencil } from "react-icons/lu";
 
 type PropsValues = {

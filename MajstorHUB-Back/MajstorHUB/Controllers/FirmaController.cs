@@ -425,6 +425,8 @@ public class FirmaController : ControllerBase
 
             if (!UtilityCheck.IsValidEmail(firma.Email))
                 return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidStruke(firma.Struke))
+                return BadRequest("Maksimalan broj struka za firmu je 15");
 
             var obj = await _firmaService.GetByEmail(firma.Email);
             if (obj != null && obj.Email != firma.Email)

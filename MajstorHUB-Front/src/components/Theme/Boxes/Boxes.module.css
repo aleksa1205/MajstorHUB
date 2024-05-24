@@ -1,0 +1,86 @@
+@import '../../../vars.css';
+
+/* Info, warrning, success, error boxovi */
+.infoBox,
+.warrningBox,
+.errorBox,
+.succBox {
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.infoBox button,
+.warrningBox button,
+.errorBox button,
+.succBox button {
+  padding: 1rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.infoBox > svg,
+.warrningBox > svg,
+.errorBox > svg,
+.succBox > svg {
+  margin-top: 1rem;
+}
+
+.infoBox > div > p:first-child,
+.warrningBox > div > p:first-child,
+.errorBox > div > p:first-child,
+.succBox > div > p:first-child {
+  font-weight: bold;
+}
+
+.infoBox {
+  background-color: #dde6f9;
+  color: var(--color-blue-700);
+  border-inline-color: var(--color-blue-500);
+}
+
+.infoBox > svg {
+  color: #1d60eb;
+}
+
+.infoBox button {
+  background-color: #1d60eb;
+  color: #dde6f9;
+}
+
+.infoBox button:hover {
+  background-color: #0e4ac6;
+}
+
+.infoBox button:active {
+  background-color: #093893;
+}
+
+.succBox {
+  background-color: var(--color-green-100);
+  color: var(--color-green-600);
+  border-inline-color: var(--color-green-600);
+}
+
+.warrningBox {
+  background-color: #f0efd2;
+  color: #beb706;
+  border-inline-color: #beb706;
+}
+
+.errorBox {
+  background-color: var(--color-red-100);
+  color: var(--color-red-500);
+  border-inline-color: var(--color-red-500);
+}

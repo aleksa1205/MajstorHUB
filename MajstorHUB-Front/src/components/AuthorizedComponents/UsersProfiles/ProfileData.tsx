@@ -7,46 +7,78 @@ import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import EditButton from "../../Theme/Buttons/EditButton";
-import { Iskustvo, Struka } from "../../../api/DTO-s/responseTypes";
+import { Iskustvo, getStrukaDisplayName, userDataType } from "../../../api/DTO-s/responseTypes";
 import { IoIosContact } from "react-icons/io";
 import { MdConstruction } from "react-icons/md";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
-import EditUserForm from "./EditUserForm";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import EditUserFormContext, { EditUserFormType } from "./EditUserForms/EditUserFormContext";
+import { easings, useTransition } from "@react-spring/web";
+import { FaEuroSign } from "react-icons/fa";
+import AddButton from "../../Theme/Buttons/AddButton";
+import useUserControllerAuth, { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";
+import InfoBox from "../../Theme/Boxes/InfoBox";
+import useLogout from "../../../hooks/useLogout";
+import { useErrorBoundary } from "react-error-boundary";
+import SuccessBox from "../../Theme/Boxes/SuccessBox";
+import useCurrUser from "../../../hooks/useCurrUser";
 
 type PropsValues = {
-    userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate
+    userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
+    userDataPriv: userDataType;
     setUserData : React.Dispatch<React.SetStateAction<userDataUpdateType | null>>;
     isCurrUser: boolean;
+    success: boolean;
+    setSuccess: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 type ContextValues = {
     userData: KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
+    userDataPriv: userDataType;
     isCurrUser: boolean;
-    setHeading: React.Dispatch<React.SetStateAction<string>>;
-    setDescription: React.Dispatch<React.SetStateAction<string>>;
-    setFieldName: React.Dispatch<React.SetStateAction<keyof KorisnikDataUpdate | keyof MajstorDataUpdate | keyof FirmaDataUpdate>>
     openModal: () => void;
+    setFormSelected: React.Dispatch<React.SetStateAction<EditUserFormType>>
 }
 
 const SectionContext = createContext<ContextValues | null>(null);
 
-function ProfileData({ userData, isCurrUser, setUserData } : PropsValues) {
+function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSuccess, success } : PropsValues) {
     const [showModal, setShowModal] = useState(false);
+    const [isChanged, setIsChanged] = useState<boolean>(false);
+    const [initialUserData, _] = useState<userDataUpdateType>(userData);
+    const [isUpdating, setIsUpdating] = useState<boolean>(false);
+    const [firstRun, setFirstRun] = useState<boolean>(true);
+    const logoutUser = useLogout();
+    const { showBoundary } = useErrorBoundary();
+    const { updateSelf } = useUserControllerAuth(userData.userType);
+    
+    const transition = useTransition(showModal, {
+        from: {t: 0, bot: '60%', scale: 0.9},
+        enter: {t: 1, bot: '50%', scale: 1},
+        leave: {t: 0, bot: '60%', scale: 0.9},
+        config: {duration: 350, easing: easings.easeInOutQuart}
+    })
 
-    const [heading, setHeading] = useState('');
-    const [description, setDescription] = useState('');
-    const [fieldName, setFieldName] = useState<keyof KorisnikDataUpdate | keyof MajstorDataUpdate | keyof FirmaDataUpdate>('ime');
+    const { refetchUser } = useCurrUser();
+
+    const [formSelected, setFormSelected] = useState<EditUserFormType>(EditUserFormType.Nedefinisano);
 
     const defaultValues : ContextValues = {
         isCurrUser: isCurrUser,
         openModal: openModal,
-        setDescription: setDescription,
-        setFieldName: setFieldName,
-        setHeading: setHeading,
-        userData: userData
-    } 
+        userData: userData,
+        userDataPriv: userDataPriv,
+        setFormSelected: setFormSelected
+    }
+
+    useEffect(() => {
+        if(initialUserData !== null) {
+            setIsChanged(JSON.stringify(userData) !== JSON.stringify(initialUserData))
+            
+            !firstRun ? setSuccess(false) : setFirstRun(false);
+        }
+    }, [userData, initialUserData])
 
     function closeModal() {
         setShowModal(false);
@@ -55,27 +87,78 @@ function ProfileData({ userData, isCurrUser, setUserData } : PropsValues) {
     function openModal() {
         setShowModal(true);
     }
+
+    async function saveHandler() {
+        try {
+            setIsUpdating(true);
+
+            await updateSelf(userData);
+            setSuccess(true);
+            setIsChanged(false);
+            refetchUser!();
+        } catch (error) {
+            if(error instanceof SessionEndedError) {
+                console.log('Ode sesija...');
+                logoutUser();
+            }
+            else
+                showBoundary(error);
+        }
+        finally {
+            setIsUpdating(false);
+        }
+    }
+
+    function resetHandler() {
+        setUserData(initialUserData);
+    }
     
     return (
         <>
-            {showModal && (
-                <EditUserForm userData={userData} setUserData={setUserData} description={description} heading={heading} fieldName={fieldName} closeModal={closeModal} />
-            )}
+            {transition((style, showModal) => {
+                return showModal ? (
+                    <EditUserFormContext style={style} formType={formSelected} close={closeModal} updateUser={setUserData} userData={userData} />
+                ) : null;
+            })}
 
             <div className="container">
+                {isChanged && (
+                    <InfoBox>
+                        <p>Imate nesačuvane promene</p>
+                    </InfoBox>
+                )}
+                {success && (
+                    <SuccessBox>
+                        <p>Promene uspešno sačuvane</p>
+                    </SuccessBox>
+                )}
                 <SectionContext.Provider value={defaultValues}>
                     <BasicInfoSection/>
                     <div className={classes.sectionContainer}>
                         <UserSpecificDataSection />
                         <div>
                             <Opis />
-                            {userData.userType !== UserType.Korisnik && 
-                                <Skills />
-                            }
+                                {userData.userType !== UserType.Korisnik && 
+                                    <Skills />
+                                }
                             {/* <Poslovi userData={userData} isCurrUser={isCurrUser} /> */}
                         </div>
                     </div>
                 </SectionContext.Provider>
+                {(isCurrUser && isChanged) && (
+                    <div className={classes.saveContainer}>
+                        <button
+                            onClick={saveHandler}
+                            disabled={isUpdating}
+                            className={
+                            "mainButtonSmall" + " " + `${isUpdating ? "button--loading" : ""}`
+                            }
+                        >
+                            <span className="button__text">Sačuvaj promene</span>
+                        </button>
+                        <button onClick={resetHandler} className="secondLink">Vrati Stare Vrednosti</button>
+                    </div>
+                )}
             </div>
         </>
     )
@@ -85,33 +168,22 @@ export default ProfileData;
 
 
 
-
-
 function BasicInfoSection() {
 
-    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+    const { isCurrUser, openModal, userData, setFormSelected } = useContext(SectionContext)!;
 
     function slikaHandler() {
-        setDescription("Promenite sliku na profilu");
-        setFieldName("slika");
-        setHeading("Promenite sliku");
-
+        setFormSelected(EditUserFormType.Slika)
         openModal();
     }
 
     function imePrezimeHandler() {
-        setDescription("Promenite vase ime i prezime");
-        setFieldName("ime");
-        setHeading("Promenite ime i prezime");
-
+        setFormSelected(EditUserFormType.ImePrezime)
         openModal();
     }
 
     function adresaHandler() {
-        setDescription("Promenite adresu");
-        setFieldName("adresa");
-        setHeading("Promenite adresu");
-
+        setFormSelected(EditUserFormType.Adresa)
         openModal();
     }
 
@@ -131,11 +203,22 @@ function BasicInfoSection() {
 
             <div className={classes.imePrezime}>
                 <div className={classes.containerWithButton}>
-                    {userData.userType === UserType.Firma ? 
-                        <p className={classes.naziv}>{userData.naziv}</p> :
-                        (<p className={classes.naziv}>{userData.ime} {userData.prezime}</p>)
+                    {userData.userType === UserType.Firma ? (
+                        <>
+                            <p className={classes.naziv}>{userData.naziv}</p>
+                            {isCurrUser && <EditButton onClick={() => {
+                                setFormSelected(EditUserFormType.ImeFirme);
+                                openModal();
+                            }} />}
+                        </>
+                        ) : (
+                            <>
+                                <p className={classes.naziv}>{userData.ime} {userData.prezime}</p>
+                                {isCurrUser && <EditButton onClick={imePrezimeHandler} />}
+                            </>
+                        )
                     }
-                    {isCurrUser && <EditButton onClick={imePrezimeHandler} />}
+
                 </div>
                 
                 <p className={`${classes.iconContainer} ${classes.userType}`}><MdOutlineVerifiedUser />{UserType[userData.userType]}</p>
@@ -147,7 +230,7 @@ function BasicInfoSection() {
 
             {isCurrUser &&
             <div className={classes.settings}>
-                <button className="mainButton">Podešavanja profila</button>
+                <button className="mainButtonSmall">Podešavanja profila</button>
             </div>
             }
 
@@ -157,10 +240,44 @@ function BasicInfoSection() {
 
 function UserSpecificDataSection() {
 
-    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+    const { isCurrUser, openModal, userData, setFormSelected, userDataPriv } = useContext(SectionContext)!;
 
     return (
         <section className={classes.userSpecificSec}>
+
+            <div>
+                <h4 className={classes.heading}>
+                    <FaEuroSign size='2rem' />
+                    Finansije
+                </h4>
+
+                {isCurrUser && (
+                    <div className={classes.containerWithButton}>
+                        <div className={classes.textWithInfo}>
+                            <span className={classes.bold}>Trenutno Stanje: </span>{' '}
+                            {userDataPriv.novacNaSajtu} din
+                            <span className={classes.iconInline}>
+                                <Tooltip infoText="Drugi korisnici ne mogu da vide ovo polje" width="250px">
+                                    <IoInformationCircleOutline size='1rem' />
+                                </Tooltip>
+                            </span>
+                        </div>
+                        <AddButton />
+                    </div>
+                )}
+
+                {userDataPriv.userType === UserType.Korisnik && (
+                    <div className={classes.containerWithButton}>
+                        <p><span className={classes.bold}>Ukupno potroseno: </span>  {userDataPriv.potroseno} din</p>
+                    </div>
+                )}
+
+                {(userDataPriv.userType === UserType.Majstor || userDataPriv.userType === UserType.Firma) && (
+                    <div className={classes.containerWithButton}>
+                        <p><span className={classes.bold}>Ukupno zaradjeno: </span>  {userDataPriv.zaradjeno} din</p>
+                    </div>
+                )}
+            </div>
 
             {userData.userType !== UserType.Korisnik && (
                 <div>
@@ -170,12 +287,18 @@ function UserSpecificDataSection() {
                     </h4>
                     <div className={classes.containerWithButton}>
                         <p><span className={classes.bold}>Iskustvo: </span> {Iskustvo[userData.iskustvo]}</p>
-                        {isCurrUser && <EditButton />}
+                        {isCurrUser && <EditButton onClick={() => {
+                            setFormSelected(EditUserFormType.Iskustvo);
+                            openModal();
+                        }} />}
                     </div>
 
                     <div className={classes.containerWithButton}>
                         <p><span className={classes.bold}>Cena po satu: </span> {userData.cenaPoSatu} din</p>
-                        {isCurrUser && <EditButton />}
+                        {isCurrUser && <EditButton onClick={() => {
+                            setFormSelected(EditUserFormType.CenaPoSatu);
+                            openModal();
+                        }} />}
                     </div>
                 </div>
             )}
@@ -200,7 +323,10 @@ function UserSpecificDataSection() {
                                 </Tooltip>
                             </span>
                         </div>
-                        {isCurrUser && <EditButton />}
+                        <EditButton onClick={() => {
+                            setFormSelected(EditUserFormType.BrojTelefona)
+                            openModal();
+                        }} />
                     </div>
                 )}
             </div>
@@ -217,7 +343,10 @@ function UserSpecificDataSection() {
                                 {formatDate(userData.datumRodjenja)}
                             </span>
                         </p>
-                        {isCurrUser && <EditButton />}
+                        {isCurrUser && <EditButton onClick={() => {
+                            setFormSelected(EditUserFormType.DatumRodjenja)
+                            openModal();
+                        }} />}
                     </div>
                 </div>
             )}
@@ -227,7 +356,7 @@ function UserSpecificDataSection() {
 
 function Opis() {
 
-    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+    const { isCurrUser, openModal, userData, setFormSelected } = useContext(SectionContext)!;
 
     function copyToClipboard() {
         alert("Link profila kopiran u clipboard");
@@ -241,33 +370,53 @@ function Opis() {
                     Opis
                 </h3>
                 <div>
-                    {isCurrUser && <EditButton />}
+                    {isCurrUser && <EditButton onClick={() => {
+                            setFormSelected(EditUserFormType.Opis)
+                            openModal();
+                        }} />}
                     <Tooltip width="150px" infoText="Kopiraj Link Profila">
                         <div onClick={copyToClipboard} className={classes.copyProfile}><IoLink size='1rem' /></div>
                     </Tooltip>
                 </div>
             </div>
-            {userData.opis}
+            <div className={classes.divOpis}>
+                {userData.opis}
+            </div>
         </section>
     )
 }
 
 function Skills() {
 
-    const { isCurrUser, openModal, setDescription, setFieldName, setHeading, userData } = useContext(SectionContext)!;
+    const { isCurrUser, openModal, userData, setFormSelected } = useContext(SectionContext)!;
 
     let headingText = userData.userType === UserType.Majstor ? 'Veština' : 'Veštine';
+
+    function strukaHandler() {
+        setFormSelected(EditUserFormType.Struka)
+        openModal();
+    }
+    function strukeHandler() {
+        setFormSelected(EditUserFormType.Struke)
+        openModal();
+    }
+
 
     return (
         <section className={classes.skillsSec}>
             <div className={classes.containerWithButton}>
                 <h3>{headingText}</h3>
-                {isCurrUser && <EditButton />}
+                {(userData.userType === UserType.Majstor && isCurrUser) && 
+                    <EditButton onClick={strukaHandler} />
+                }
+                {(userData.userType === UserType.Firma && isCurrUser) && 
+                    <EditButton onClick={strukeHandler} />
+                }
             </div>
             {userData.userType === UserType.Majstor && (
                 <div className={classes.vestine}>
                     <div className={classes.vestina}>
-                        {Struka[userData.struka]}
+                        {getStrukaDisplayName(userData.struka)}
                     </div>
                 </div>
             )}
@@ -278,7 +427,7 @@ function Skills() {
                         userData.struke.map(el => {
                             return (
                             <div key={el} className={classes.vestina}>
-                                {Struka[el]}
+                                {getStrukaDisplayName(el)}
                             </div>)
                         })
                     }

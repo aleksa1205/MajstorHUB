@@ -43,7 +43,7 @@ function AuthSidebar({ hideSidebar } : PropsValue) {
                 </div>
                 {showUserInfo && (
                     <ul className={classes.userInfoOptions}>
-                        <Link className={classes.link} to={getProfileUrl(auth.userType, auth.userId)}>
+                        <Link className={classes.link} onClick={hideSidebar} to={getProfileUrl(auth.userType, auth.userId)}>
                         <li>
                             <div>
                                     <FaUser />
