@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Authorization;
+using MajstorHUB.Requests.Filter;
 using MajstorHUB.Requests.Register;
 using System.Collections.Immutable;
 
@@ -473,11 +474,16 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Filter(FilterDTO filter)
+    public async Task<IActionResult> Filter(FilterFirmaDTO filter)
     {
         try
         {
-            var filterList = await _firmaService.Filter(filter.Ime, filter.Struka);
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _firmaService.Filter(filter);
             if (filterList.Count == 0)
             {
                 return NotFound("Firma sa zadatim nazivom i strukom nije pronadjena!\n");

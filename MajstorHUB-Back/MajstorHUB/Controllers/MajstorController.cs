@@ -1,4 +1,5 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Filter;
 using MajstorHUB.Requests.Register;
 using MajstorHUB.Services.MajstorService;
 
@@ -479,11 +480,16 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Filter(FilterDTO filter)
+    public async Task<IActionResult> Filter(FIlterMajstorDTO filter)
     {
         try
         {
-            var filterList = await _majstorService.Filter(filter.Ime, filter.Prezime, filter.Struka);
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _majstorService.Filter(filter);
             if (filterList.Count == 0)
             {
                 return NotFound("Majstor za zadatim imenom, prezimenom i strukom nije pronadjen!\n");

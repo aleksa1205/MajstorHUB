@@ -10,7 +10,7 @@ public interface IKorisnikService
     Task Update(string id, Korisnik korisnik);
     Task UpdateSelf(string id, KorisnikUpdateSelf korisnik);
     Task UpdateRefreshToken(string id, RefreshToken token);
-    Task<List<Korisnik>> Filter(string ime, string prezime);
+    Task<List<Korisnik>> Filter(FilterKorisnikDto korisnik);
     Task Delete(string id);
     Task DeleteRefreshToken(string id);
 }

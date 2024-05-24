@@ -21,10 +21,10 @@ export type GetKorisnikResponse  = GetUserResponse & {
 }
 
 export enum Struka {
-    Nedefinisano = 0,
-    Keramika = 1,
-    Moleraj = 2,
-    Fasada = 3,
+    Nedefinisano,
+    Keramika,
+    Moleraj,
+    Fasada,
     AdapdacijaProstora,
     Bastovan,
     Bojleri,

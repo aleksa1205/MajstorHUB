@@ -190,7 +190,7 @@ function BasicInfoSection() {
     return (
         <section className={classes.basicInfo}>
             <div className={classes.profileImage}>
-                {userData.slika !== '' ?
+                {(userData.slika !== '' && userData.slika !== null) ?
                     <img src={base64ToUrl(userData.slika)} alt="slika_korisnika" /> :
                     <FaUserAlt size='5rem' />
                 }

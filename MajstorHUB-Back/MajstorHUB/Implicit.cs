@@ -25,6 +25,7 @@ global using Microsoft.IdentityModel.Tokens;
 global using MajstorHUB.Requests;
 global using MajstorHUB.Requests.UpdateSelf;
 global using MajstorHUB.Requests.Register;
+global using MajstorHUB.Requests.Filter;
 global using MajstorHUB.Authorization;
 global using MajstorHUB.Models;
 global using MajstorHUB.Services.FirmaService;

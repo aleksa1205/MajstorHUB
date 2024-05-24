@@ -10,7 +10,7 @@ public interface IMajstorService
     Task Update(string id, Majstor majstor);
     Task UpdateSelf(string id, MajstorUpdateSelf majstor);
     Task UpdateRefreshToken(string id, RefreshToken token);
-    Task<List<Majstor>> Filter(string ime, string prezime, Struka struka);
+    Task<List<Majstor>> Filter(FIlterMajstorDTO majstor);
     Task Delete(string id);
     Task DeleteRefreshToken(string id);
 }

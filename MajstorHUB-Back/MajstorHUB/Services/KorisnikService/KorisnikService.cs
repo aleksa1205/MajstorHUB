@@ -1,5 +1,7 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Filter;
 using MajstorHUB.Utility;
+using Microsoft.OpenApi.Validations;
 namespace MajstorHUB.Services.KorisnikService;
 
 public class KorisnikService : IKorisnikService
@@ -89,30 +91,84 @@ public class KorisnikService : IKorisnikService
         await _korisnici.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Korisnik>> Filter(string ime, string prezime)
+    public async Task<List<Korisnik>> Filter(FilterKorisnikDto korisnik)
     {
-        //Ako je string prazan vrati sve
-        List<Korisnik> listaImena;
-        List<Korisnik> listaPrezimena;
+        var filterBuilder = Builders<Korisnik>.Filter;
 
-        if (ime == "")
+        var queryFilters = new List<FilterDefinition<Korisnik>>();
+        var opisFilters = new List<FilterDefinition<Korisnik>>();
+
+        if (!string.IsNullOrEmpty(korisnik.Query))
         {
-            listaImena = await _korisnici.Find(korisnik => true).ToListAsync();
-        }
-        else
-        {
-            listaImena = await _korisnici.Find(korisnik => korisnik.Ime.Contains(ime)).ToListAsync();
-        }
-        if (prezime == "")
-        {
-            listaPrezimena = await _korisnici.Find(korisnik => true).ToListAsync();
-        }
-        else
-        {
-            listaPrezimena = await _korisnici.Find(korisnik => korisnik.Prezime.Contains(prezime)).ToListAsync();
+            var words = korisnik.Query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var partFilter = filterBuilder.Or(
+                    filterBuilder.Regex(k => k.Ime, regex),
+                    filterBuilder.Regex(k => k.Prezime, regex),
+                    filterBuilder.Regex(k => k.Adresa, regex)
+                );
+
+                queryFilters.Add(partFilter);
+            }
         }
 
-        List<Korisnik> konacnaLista = listaImena.Intersect(listaPrezimena, new KorisnikComparer()).ToList();
-        return konacnaLista;
+        var queryFinalFilter = queryFilters.Count > 0
+            ? filterBuilder.And(queryFilters)
+            : filterBuilder.Empty;
+
+        if (!string.IsNullOrEmpty(korisnik.Opis))
+        {
+            var words = korisnik.Opis.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var filter = filterBuilder.Regex(k => k.Opis, regex);
+
+                opisFilters.Add(filter);
+            }
+        }
+
+        var opisFinalFilter = opisFilters.Count > 0
+            ? filterBuilder.Or(opisFilters) 
+            : filterBuilder.Empty;
+
+        var zaradjenoFilter = filterBuilder.Gte(x => x.Potroseno, korisnik.Potroseno);
+
+        var finalFilter = filterBuilder.And(queryFinalFilter, opisFinalFilter, zaradjenoFilter);
+
+        return await _korisnici.Find(finalFilter).ToListAsync();
     }
+
+    //public async Task<List<Korisnik>> Filter(string ime, string prezime)
+    //{
+    //    //Ako je string prazan vrati sve
+    //    List<Korisnik> listaImena;
+    //    List<Korisnik> listaPrezimena;
+
+    //    if (ime == "")
+    //    {
+    //        listaImena = await _korisnici.Find(korisnik => true).ToListAsync();
+    //    }
+    //    else
+    //    {
+    //        listaImena = await _korisnici.Find(korisnik => korisnik.Ime.Contains(ime)).ToListAsync();
+    //    }
+    //    if (prezime == "")
+    //    {
+    //        listaPrezimena = await _korisnici.Find(korisnik => true).ToListAsync();
+    //    }
+    //    else
+    //    {
+    //        listaPrezimena = await _korisnici.Find(korisnik => korisnik.Prezime.Contains(prezime)).ToListAsync();
+    //    }
+
+    //    List<Korisnik> konacnaLista = listaImena.Intersect(listaPrezimena, new KorisnikComparer()).ToList();
+    //    return konacnaLista;
+    //}
 }

@@ -1,4 +1,7 @@
-﻿using MajstorHUB.Utility;
+﻿using MajstorHUB.Models;
+using MajstorHUB.Utility;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
 namespace MajstorHUB.Services.MajstorService;
 
 public class MajstorService : IMajstorService
@@ -93,38 +96,99 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Majstor>> Filter(string ime, string prezime, Struka struka)
+    public async Task<List<Majstor>> Filter(FIlterMajstorDTO majstor)
     {
-        List<Majstor> listaImena;
-        List<Majstor> listaPrezimena;
-        List<Majstor> listaStruka;
+        var filterBuilder = Builders<Majstor>.Filter;
 
-        if (ime == "")
+        var queryFilters = new List<FilterDefinition<Majstor>>();
+        var opisFilters = new List<FilterDefinition<Majstor>>();
+
+        if (!string.IsNullOrEmpty(majstor.Query))
         {
-            listaImena = await _majstori.Find(_ => true).ToListAsync();
+            var words = majstor.Query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                var qRegex = new BsonRegularExpression(word, "i");
+                var qFilter = filterBuilder.Or(
+                    filterBuilder.Regex(x => x.Ime, qRegex),
+                    filterBuilder.Regex(x => x.Prezime, qRegex),
+                    filterBuilder.Regex(x => x.Adresa, qRegex),
+                    filterBuilder.Regex(x => x.Struka, qRegex)
+                );
+                queryFilters.Add(qFilter);
+            }
         }
-        else
+        var queryFinalFilter = queryFilters.Count > 0
+            ? filterBuilder.And(queryFilters)
+            : filterBuilder.Empty;
+
+
+        var iskustvoFilter = majstor.Iskustva.Count > 0
+            ? filterBuilder.In(x => x.Iskustvo, majstor.Iskustva)
+            : filterBuilder.Empty;
+
+        if (!string.IsNullOrEmpty(majstor.Opis))
         {
-            listaImena = await _majstori.Find(majstor => majstor.Ime.Contains(ime)).ToListAsync();
+            var words = majstor.Opis.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var filter = filterBuilder.Regex(k => k.Opis, regex);
+
+                opisFilters.Add(filter);
+            }
         }
-        if (prezime == "")
-        {
-            listaPrezimena = await _majstori.Find(_ => true).ToListAsync();
-        }
-        else
-        {
-            listaPrezimena = await _majstori.Find(majstor => majstor.Prezime.Contains(prezime)).ToListAsync();
-        }
-        if (struka == Struka.Nedefinisano)
-        {
-            listaStruka= await _majstori.Find(_ => true).ToListAsync();
-        }
-        else
-        {
-            listaStruka = await _majstori.Find(majstor => majstor.Struka == struka).ToListAsync();
-        }
-        List<Majstor> konacnaLista = listaImena.Intersect(listaPrezimena, new MajstorComparer()).ToList();
-        konacnaLista = konacnaLista.Intersect(listaImena, new MajstorComparer()).ToList();
-        return konacnaLista;
+        var opisFinalFilter = opisFilters.Count > 0
+            ? filterBuilder.Or(opisFilters)
+            : filterBuilder.Empty;
+
+        var cenaFilter = filterBuilder.Gte(x => x.CenaPoSatu, majstor.CenaPoSatu);
+        var zaradjenoFilter = filterBuilder.Gte(x => x.Zaradjeno, majstor.Zaradjeno);
+
+        var finalFilter = filterBuilder.And(queryFinalFilter,
+                                            iskustvoFilter, 
+                                            opisFinalFilter,
+                                            cenaFilter,
+                                            zaradjenoFilter);
+
+        return await _majstori.Find(finalFilter).ToListAsync();
     }
 }
+
+//    public async Task<List<Majstor>> Filter(string ime, string prezime, Struka struka)
+//    {
+//        List<Majstor> listaImena;
+//        List<Majstor> listaPrezimena;
+//        List<Majstor> listaStruka;
+
+//        if (ime == "")
+//        {
+//            listaImena = await _majstori.Find(_ => true).ToListAsync();
+//        }
+//        else
+//        {
+//            listaImena = await _majstori.Find(majstor => majstor.Ime.Contains(ime)).ToListAsync();
+//        }
+//        if (prezime == "")
+//        {
+//            listaPrezimena = await _majstori.Find(_ => true).ToListAsync();
+//        }
+//        else
+//        {
+//            listaPrezimena = await _majstori.Find(majstor => majstor.Prezime.Contains(prezime)).ToListAsync();
+//        }
+//        if (struka == Struka.Nedefinisano)
+//        {
+//            listaStruka= await _majstori.Find(_ => true).ToListAsync();
+//        }
+//        else
+//        {
+//            listaStruka = await _majstori.Find(majstor => majstor.Struka == struka).ToListAsync();
+//        }
+//        List<Majstor> konacnaLista = listaImena.Intersect(listaPrezimena, new MajstorComparer()).ToList();
+//        konacnaLista = konacnaLista.Intersect(listaImena, new MajstorComparer()).ToList();
+//        return konacnaLista;
+//    }

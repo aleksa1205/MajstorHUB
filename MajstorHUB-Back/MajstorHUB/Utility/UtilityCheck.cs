@@ -67,6 +67,13 @@ public class UtilityCheck
         return recenzent != recenzirani;
     }
 
+    public static bool IsValidQuery(string query)
+    {
+        var words = query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+        return query.Length <= 50 && words.Length <= 10;
+    }
+
     public static bool IsValidStruke(List<Struka> struke)
     {
         return struke.Count <= 15;
