@@ -10,9 +10,9 @@ public class Firma : User
     public required string Naziv { get; set; }
 
     [BsonElement("struke")]
+    [BsonRepresentation(BsonType.String)]
     public List<Struka> Struke { get; set; } = new List<Struka>();
 
-    [JsonIgnore]
     [BsonElement("zaradjeno_na_platformi")]
     public double Zaradjeno { get; set; } = 0;
 

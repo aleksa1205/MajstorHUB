@@ -1,7 +1,7 @@
 import { MdErrorOutline } from "react-icons/md";
 import classes from './EditUserForm.module.css'
 import { useForm } from "react-hook-form";
-import { FirmaDataUpdate, userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
+import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { Struka, getStrukaDisplayName } from "../../../../api/DTO-s/responseTypes";
 import { IoClose } from "react-icons/io5";
 import DropDown from "../../../Theme/DropDown/DropDown";
@@ -23,18 +23,16 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
     const { register, handleSubmit, formState, watch, setError, clearErrors } = form;
     const { errors, isSubmitting, isSubmitSuccessful } = formState;
 
-    const firmaData : FirmaDataUpdate | null = userData.userType === UserType.Firma ? userData : null;
-    const [sveStruke, setSveStrke] = useState<string[]>(
-        Object.keys(Struka)
-              .filter(v => !isNaN(Number(v)))
-    )
     const [increment, setIncrement] = useState<number>(0);
 
     const [selectedFields, setSelectedFields] = useState<Array<Struka>>(
-        userData.userType === UserType.Firma ? userData.struke : new Array()
+        userData.userType === UserType.Firma && userData.struke && userData.struke.length > 0 && userData.struke[0] !== Struka.Nedefinisano ? userData.struke : new Array()
     )
 
     if(isSubmitSuccessful) setTimeout(() => close(), 0);
+
+    const sveStruke = Object.keys(Struka)
+                            .filter(v => !isNaN(Number(v)));
 
     const inputValue = watch('value');
 

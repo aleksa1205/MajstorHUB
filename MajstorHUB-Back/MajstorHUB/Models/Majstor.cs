@@ -3,6 +3,7 @@
 public class Majstor : Korisnik
 {
     [BsonElement("struka")]
+    [BsonRepresentation(BsonType.String)]
     public Struka Struka { get; set; }
 
     [BsonElement("iskustvo")]
@@ -11,7 +12,6 @@ public class Majstor : Korisnik
     [BsonElement("cena_po_satu")]    
     public double CenaPoSatu { get; set; }
 
-    [JsonIgnore]
     [BsonElement("zaradjeno_na_platformi")]
     public double Zaradjeno { get; set; } = 0;
 }

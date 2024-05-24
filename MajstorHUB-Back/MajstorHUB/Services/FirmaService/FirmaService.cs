@@ -1,4 +1,5 @@
-﻿using MajstorHUB.Utility;
+﻿using MajstorHUB.Models;
+using MajstorHUB.Utility;
 namespace MajstorHUB.Services.FirmaService;
 
 public class FirmaService : IFirmaService
@@ -89,29 +90,90 @@ public class FirmaService : IFirmaService
         await _firme.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Firma>> Filter(string naziv, Struka struka)
+    public async Task<List<Firma>> Filter(FilterFirmaDTO firma)
     {
-        List<Firma> listaNaziva;
-        List<Firma> listaStruka;
+        var filterBuilder = Builders<Firma>.Filter;
 
-        if (naziv == "")
-        {
-            listaNaziva = await _firme.Find(_ => true).ToListAsync();
-        }
-        else
-        {
-            listaNaziva = await _firme.Find(firma => firma.Naziv.Contains(naziv)).ToListAsync();
-        }
-        if (struka == Struka.Nedefinisano)
-        {
-            listaStruka=await _firme.Find(_=>true).ToListAsync();
-        }
-        else
-        {
-            listaStruka = await _firme.Find(firma => firma.Struke.Contains(struka)).ToListAsync();
-        }
+        var queryFilters = new List<FilterDefinition<Firma>>();
+        var opisFilters = new List<FilterDefinition<Firma>>();
 
-        List<Firma> konacnaLista = listaNaziva.Intersect(listaStruka, new FirmaComparer()).ToList();
-        return konacnaLista;
+        if (!string.IsNullOrEmpty(firma.Query))
+        {
+            var words = firma.Query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+            foreach (var word in words)
+            {
+                var qRegex = new BsonRegularExpression(word, "i");
+                var qFilter = filterBuilder.Or(
+                    filterBuilder.Regex(x => x.Naziv, qRegex),
+                    filterBuilder.Regex(x => x.Adresa, qRegex),
+                    filterBuilder.Regex(x => x.Struke, qRegex)
+                );
+                queryFilters.Add(qFilter);
+            }
+        }
+        var queryFinalFilter = queryFilters.Count > 0
+            ? filterBuilder.And(queryFilters)
+            : filterBuilder.Empty;
+
+
+        var iskustvoFilter = firma.Iskustva.Count > 0
+            ? filterBuilder.In(x => x.Iskustvo, firma.Iskustva)
+            : filterBuilder.Empty;
+
+        if (!string.IsNullOrEmpty(firma.Opis))
+        {
+            var words = firma.Opis.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var filter = filterBuilder.Regex(k => k.Opis, regex);
+
+                opisFilters.Add(filter);
+            }
+        }
+        var opisFinalFilter = opisFilters.Count > 0
+            ? filterBuilder.Or(opisFilters)
+            : filterBuilder.Empty;
+
+        var cenaFilter = filterBuilder.Gte(x => x.CenaPoSatu, firma.CenaPoSatu);
+        var zaradjenoFilter = filterBuilder.Gte(x => x.Zaradjeno, firma.Zaradjeno);
+
+        var finalFilter = filterBuilder.And(queryFinalFilter,
+                                            opisFinalFilter,
+                                            iskustvoFilter,
+                                            cenaFilter,
+                                            zaradjenoFilter);
+
+        return await _firme.Find(finalFilter).ToListAsync();
     }
+
+    //public async Task<List<Firma>> Filter(string naziv, Struka struka)
+    //{
+    //    List<Firma> listaNaziva;
+    //    List<Firma> listaStruka;
+
+    //    if (naziv == "")
+    //    {
+    //        listaNaziva = await _firme.Find(_ => true).ToListAsync();
+    //    }
+    //    else
+    //    {
+    //        listaNaziva = await _firme.Find(firma => firma.Naziv.Contains(naziv)).ToListAsync();
+    //    }
+    //    if (struka == Struka.Nedefinisano)
+    //    {
+    //        listaStruka=await _firme.Find(_=>true).ToListAsync();
+    //    }
+    //    else
+    //    {
+    //        listaStruka = await _firme.Find(firma => firma.Struke.Contains(struka)).ToListAsync();
+    //    }
+
+    //    List<Firma> konacnaLista = listaNaziva.Intersect(listaStruka, new FirmaComparer()).ToList();
+    //    return konacnaLista;
+    //}
 }

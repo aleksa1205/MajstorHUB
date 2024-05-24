@@ -14,5 +14,5 @@ public interface IFirmaService
     Task UpdateRefreshToken(string id, RefreshToken token);
     Task Delete(string id);
     Task DeleteRefreshToken(string id);
-    Task<List<Firma>> Filter(string naziv, Struka struka);
+    Task<List<Firma>> Filter(FilterFirmaDTO firma);
 }
