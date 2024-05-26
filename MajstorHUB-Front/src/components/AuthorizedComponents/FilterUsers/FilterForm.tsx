@@ -32,6 +32,7 @@ type FormValues = {
 type PropsValues = {
   type: UserType;
   setUsers: React.Dispatch<React.SetStateAction<userDataType[]>>;
+  setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 type ContextValues = {
@@ -50,7 +51,7 @@ const formDefaultValues : FormValues = {
     zaradjeno: "0",
 }
 
-function FilterForm({ type, setUsers }: PropsValues) {
+function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
   const form = useForm<FormValues>({
     defaultValues: formDefaultValues
   });
@@ -65,11 +66,17 @@ function FilterForm({ type, setUsers }: PropsValues) {
   const [isReallySmall, setIsReallySmall] = useState(window.innerWidth < 550);
 
   useEffect(() => {
+    async function fetchDefault() {
+      await onSubmit(formDefaultValues);
+    }
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth < 1200);
       setIsReallySmall(window.innerWidth < 550);
     };
     window.addEventListener("resize", handleResize);
+
+    fetchDefault();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -122,8 +129,15 @@ function FilterForm({ type, setUsers }: PropsValues) {
     }
 
     try {
+      setIsFetching(true);
+      
       const data = await filter(request!);
-      if (data !== false) setUsers(data);
+      if(data === false)
+        setUsers(new Array())
+      else
+        setUsers(data);
+
+      setIsFetching(false);
     } catch (error) {
       if (error instanceof SessionEndedError) logoutUser();
       else showBoundary(error);
@@ -237,7 +251,7 @@ function QueryInput() {
         <input
           type="text"
           id="query"
-          placeholder="Pretraga"
+          placeholder="Primer: milos nis moleraj"
           {...register("query", {
             minLength: {
               value: 3,
@@ -275,7 +289,7 @@ function OpisInput({ isOpen }: InputProps) {
             <input
               type="text"
               id="opis"
-              placeholder="Opis"
+              placeholder="primer: Imam iskustvo sa fasadama vec 15 godina"
               {...register("opis", {
                 minLength: {
                   value: 3,

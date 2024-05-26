@@ -15,107 +15,113 @@ import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvi
 import Klijenti from "./routes/Filter/Klijenti.tsx";
 import Majstori from "./routes/Filter/Majstori.tsx";
 import Firme from "./routes/Filter/Firme.tsx";
+import RestoreScrollLayout from "./components/Layouts/RestoreScrollLayout.tsx";
 
 export const router = createBrowserRouter([
   {
-    element: (
-      <ErrorBoundaryProvider>
-        <RootLayout />
-      </ErrorBoundaryProvider>
-    ),
+    element: <RestoreScrollLayout />,
     children: [
       {
-        path: "/",
         element: (
           <ErrorBoundaryProvider>
-            <LandingPage />
+            <RootLayout />
           </ErrorBoundaryProvider>
         ),
+        children: [
+          {
+            path: "/",
+            element: (
+              <ErrorBoundaryProvider>
+                <LandingPage />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/login",
+            element: (
+              <ErrorBoundaryProvider>
+                <Login />
+              </ErrorBoundaryProvider>
+            ),
+            loader: loginLoader,
+          },
+          {
+            path: "/register",
+            element: (
+              <ErrorBoundaryProvider>
+                <Register />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          { path: "/success", element: <Success /> },
+        ],
+        errorElement: <ErrorPage />,
       },
-      {
-        path: "/login",
-        element: (
-          <ErrorBoundaryProvider>
-            <Login />
-          </ErrorBoundaryProvider>
-        ),
-        loader: loginLoader,
-      },
-      {
-        path: "/register",
-        element: (
-          <ErrorBoundaryProvider>
-            <Register />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      { path: "/success", element: <Success /> },
-    ],
-    errorElement: <ErrorPage />,
-  },
 
-  {
-    element: (
-      <ErrorBoundaryProvider>
-        <AuthorizedLayout />
-      </ErrorBoundaryProvider>
-    ),
-    children: [
       {
-        path: "/dashboard",
         element: (
           <ErrorBoundaryProvider>
-            <Dashboard />
+            <AuthorizedLayout />
           </ErrorBoundaryProvider>
         ),
-      },
-      {
-        path: "/klijenti",
-        element: (
-          <ErrorBoundaryProvider>
-            <Klijenti />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      {
-        path: "/majstori",
-        element: (
-          <ErrorBoundaryProvider>
-            <Majstori />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      {
-        path: "/firme",
-        element: (
-          <ErrorBoundaryProvider>
-            <Firme />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      {
-        path: "/klijenti/:id",
-        element: (
-          <ErrorBoundaryProvider>
-            <KlijentProfile />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      {
-        path: "/majstori/:id",
-        element: (
-          <ErrorBoundaryProvider>
-            <MajstorProfile />
-          </ErrorBoundaryProvider>
-        ),
-      },
-      {
-        path: "/firme/:id",
-        element: (
-          <ErrorBoundaryProvider>
-            <FirmaProfile />
-          </ErrorBoundaryProvider>
-        ),
+        children: [
+          {
+            path: "/dashboard",
+            element: (
+              <ErrorBoundaryProvider>
+                <Dashboard />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/klijenti",
+            element: (
+              <ErrorBoundaryProvider>
+                <Klijenti />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/majstori",
+            element: (
+              <ErrorBoundaryProvider>
+                <Majstori />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/firme",
+            element: (
+              <ErrorBoundaryProvider>
+                <Firme />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/klijenti/:id",
+            element: (
+              <ErrorBoundaryProvider>
+                <KlijentProfile />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/majstori/:id",
+            element: (
+              <ErrorBoundaryProvider>
+                <MajstorProfile />
+              </ErrorBoundaryProvider>
+            ),
+          },
+          {
+            path: "/firme/:id",
+            element: (
+              <ErrorBoundaryProvider>
+                <FirmaProfile />
+              </ErrorBoundaryProvider>
+            ),
+          },
+        ],
       },
     ],
   },

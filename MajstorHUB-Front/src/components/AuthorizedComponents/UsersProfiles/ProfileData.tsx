@@ -14,7 +14,6 @@ import { IoInformationCircleOutline } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
 import { createContext, useContext, useEffect, useState } from "react";
 import EditUserFormContext, { EditUserFormType } from "./EditUserForms/EditUserFormContext";
-import { easings, useTransition } from "@react-spring/web";
 import { FaEuroSign } from "react-icons/fa";
 import AddButton from "../../Theme/Buttons/AddButton";
 import useUserControllerAuth, { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";

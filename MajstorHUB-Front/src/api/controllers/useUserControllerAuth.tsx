@@ -125,6 +125,19 @@ function useUserControllerAuth(type : UserType) {
                 );
 
                 const data : userDataType[] = response.data;
+                data.forEach(el => {
+                    switch (type) {
+                        case UserType.Korisnik:
+                            el.userType = UserType.Korisnik
+                            break;
+                        case UserType.Majstor:
+                            el.userType = UserType.Majstor;
+                            break
+                        case UserType.Firma:
+                            el.userType = UserType.Firma;
+                            break
+                    }
+                })
                 return data;
             } catch (error) {
                 if(isAxiosError(error) && error.name === 'CanceledError') {

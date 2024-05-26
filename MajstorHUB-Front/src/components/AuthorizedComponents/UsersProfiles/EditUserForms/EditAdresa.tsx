@@ -31,32 +31,37 @@ function EditAdresa({ close, updateUser, userData }: PropsValues) {
     return (
         <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
             <div className={classes.header}>
-                <h3>Promenite adresu</h3>
+                <h3>Promenite lokaciju</h3>
                 <IoClose onClick={close} size='2rem' />
             </div>
     
-            <p>Molimo vas da unesete adresu u sledećem formatu: </p>
+            <p>Lokacija može da bude: </p>
             <ul>
-                <li>Ime Mesta</li>
-                <li>Broj ulice (ukoliko je imate)</li>
-                <li>Broj zgrade i broj stana (ukoliko stanujete)</li>
+                <li>Grad</li>
+                <li>Selo</li>
+                <li>Mesto</li>
+                <li>Optština</li>
             </ul>
             
-            <label htmlFor="adresa">Adresa</label>
+            <label htmlFor="adresa">Lokacija</label>
             <input
                 className={errors.value ? `${classes.error}` : ""}
                 type="text"
                 id="adresa"
-                placeholder="Niš, Aleksandra Medvedeva 14"
+                placeholder="Niš"
                 {...register("value", {
                     required: 'Ovo je obavezno polje',
                     minLength: {
-                        value: 5,
-                        message: "Adresa mora da ima barem 5 karaktera"
+                        value: 2,
+                        message: "Lokacija mora da ima barem 2 karaktera"
                     },
                     maxLength: {
-                        value: 30,
-                        message: "Adresa ne moze da bude duza od 30 karaktera"
+                        value: 15,
+                        message: "Lokacija ne moze da bude duza od 15 karaktera"
+                    },
+                    pattern: {
+                        value: /^[a-zA-Z]+$/,
+                        message: "Lokacija mora da zadrzi samo slova",
                     },
                 })}
             />
