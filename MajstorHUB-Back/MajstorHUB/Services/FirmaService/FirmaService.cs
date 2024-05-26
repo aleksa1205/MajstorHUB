@@ -5,22 +5,46 @@ namespace MajstorHUB.Services.FirmaService;
 public class FirmaService : IFirmaService
 {
     private readonly IMongoCollection<Firma> _firme;
+    private readonly ProjectionDefinition<Firma, GetFirmaResponse> _getProjection;
 
     public FirmaService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _firme = db.GetCollection<Firma>(settings.FirmeCollectionName);
+
+
+        _getProjection = Builders<Firma>.Projection.Expression(f => new GetFirmaResponse
+        {
+            Adresa = f.Adresa,
+            BrojTelefona = f.BrojTelefona,
+            DatumKreiranjaNaloga = f.DatumKreiranjaNaloga,
+            Email = f.Email,
+            Id = f.Id,
+            NovacNaSajtu = f.NovacNaSajtu,
+            Opis = f.Opis,
+            Slika = f.Slika,
+            Naziv = f.Naziv,
+            PIB = f.PIB,
+            CenaPoSatu = f.CenaPoSatu,
+            Iskustvo = f.Iskustvo,
+            Struke = f.Struke,
+            Zaradjeno = f.Zaradjeno
+        });
     }
 
     public async Task<List<Firma>> GetAll()
     {
         return await _firme.Find(firma => true).ToListAsync();
-
     }
 
     public async Task<Firma> GetById(string id)
     {
         return await _firme.Find(firma => firma.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<GetFirmaResponse> GetByIdDto(string id)
+    {
+        return await _firme.Find(firma => firma.Id == id).Project(_getProjection).FirstOrDefaultAsync();
     }
 
     public async Task<Firma> GetByEmail(string email)
@@ -90,7 +114,7 @@ public class FirmaService : IFirmaService
         await _firme.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Firma>> Filter(FilterFirmaDTO firma)
+    public async Task<List<GetFirmaResponse>> Filter(FilterFirmaDTO firma)
     {
         var filterBuilder = Builders<Firma>.Filter;
 
@@ -148,7 +172,7 @@ public class FirmaService : IFirmaService
                                             cenaFilter,
                                             zaradjenoFilter);
 
-        return await _firme.Find(finalFilter).ToListAsync();
+        return await _firme.Find(finalFilter).Project(_getProjection).ToListAsync();
     }
 
     //public async Task<List<Firma>> Filter(string naziv, Struka struka)

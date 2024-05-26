@@ -23,6 +23,7 @@ import useLogout from "../../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import SuccessBox from "../../Theme/Boxes/SuccessBox";
 import useCurrUser from "../../../hooks/useCurrUser";
+import useModalAnimation from "../../../hooks/useModalAnimation";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -44,7 +45,6 @@ type ContextValues = {
 const SectionContext = createContext<ContextValues | null>(null);
 
 function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSuccess, success } : PropsValues) {
-    const [showModal, setShowModal] = useState(false);
     const [isChanged, setIsChanged] = useState<boolean>(false);
     const [initialUserData, _] = useState<userDataUpdateType>(userData);
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -53,12 +53,7 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
     const { showBoundary } = useErrorBoundary();
     const { updateSelf } = useUserControllerAuth(userData.userType);
     
-    const transition = useTransition(showModal, {
-        from: {t: 0, bot: '60%', scale: 0.9},
-        enter: {t: 1, bot: '50%', scale: 1},
-        leave: {t: 0, bot: '60%', scale: 0.9},
-        config: {duration: 350, easing: easings.easeInOutQuart}
-    })
+    const { closeModal, openModal, transition } = useModalAnimation();
 
     const { refetchUser } = useCurrUser();
 
@@ -79,14 +74,6 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
             !firstRun ? setSuccess(false) : setFirstRun(false);
         }
     }, [userData, initialUserData])
-
-    function closeModal() {
-        setShowModal(false);
-    }
-
-    function openModal() {
-        setShowModal(true);
-    }
 
     async function saveHandler() {
         try {

@@ -5,6 +5,7 @@ import BasicSidebar from './BasicSiderbar';
 import { useState } from 'react';
 import useLogout from '../../hooks/useLogout';
 import useAuth from '../../hooks/useAuth';
+import logo from '../../../pictures/Logo/LogoTransparent2.png'
 
 function NavBar() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -28,7 +29,9 @@ function NavBar() {
                     <IoMenu onClick={toggleSidebar} className={classes.dropDown} size='2rem' /> :
                     <IoClose  onClick={toggleSidebar} className={classes.dropDown} size='2rem' />
                 }
-                <Link to='/' onClick={hideSidebar} className={classes.logo}>MajstorHUB</Link>
+                <Link to='/' onClick={hideSidebar} className={classes.logo}>
+                    <img className={classes.logo} src={logo} alt="MajstorHUB" />
+                </Link>
                 <Link to='/register' onClick={hideSidebar} className={`${classes.register} link`}>Registruj Se</Link>
                 <div className={classes.optionsContainer}>
                     <span>

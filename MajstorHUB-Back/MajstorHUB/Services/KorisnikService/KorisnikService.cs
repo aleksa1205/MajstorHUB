@@ -7,11 +7,29 @@ namespace MajstorHUB.Services.KorisnikService;
 public class KorisnikService : IKorisnikService
 {
     private readonly IMongoCollection<Korisnik> _korisnici;
+    private readonly ProjectionDefinition<Korisnik, GetKorisnikResponse> _getProjection;
 
     public KorisnikService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
+
+        _getProjection = Builders<Korisnik>.Projection.Expression(x => new GetKorisnikResponse
+        {
+            Adresa = x.Adresa,
+            BrojTelefona = x.BrojTelefona,
+            DatumKreiranjaNaloga = x.DatumKreiranjaNaloga,
+            Email = x.Email,
+            Id = x.Id,
+            NovacNaSajtu = x.NovacNaSajtu,
+            Opis = x.Opis,
+            Slika = x.Slika,
+            JMBG = x.JMBG,
+            DatumRodjenja = x.DatumRodjenja,
+            Ime = x.Ime,
+            Prezime = x.Prezime,
+            Potroseno = x.Potroseno
+        });
     }
 
     public async Task<List<Korisnik>> GetAll()
@@ -22,6 +40,11 @@ public class KorisnikService : IKorisnikService
     public async Task<Korisnik> GetById(string id)
     {
         return await _korisnici.Find(korisnik => korisnik.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<GetKorisnikResponse> GetByIdDto(string id)
+    {
+        return await _korisnici.Find(korisnik => korisnik.Id == id).Project(_getProjection).FirstOrDefaultAsync();
     }
 
     public async Task<Korisnik> GetByJmbg(string jmbg)
@@ -91,7 +114,7 @@ public class KorisnikService : IKorisnikService
         await _korisnici.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Korisnik>> Filter(FilterKorisnikDto korisnik)
+    public async Task<List<GetKorisnikResponse>> Filter(FilterKorisnikDto korisnik)
     {
         var filterBuilder = Builders<Korisnik>.Filter;
 
@@ -138,11 +161,13 @@ public class KorisnikService : IKorisnikService
             ? filterBuilder.Or(opisFilters) 
             : filterBuilder.Empty;
 
-        var zaradjenoFilter = filterBuilder.Gte(x => x.Potroseno, korisnik.Potroseno);
+        var zaradjenoFilter = korisnik.Potroseno > -1
+            ? filterBuilder.Gte(x => x.Potroseno, korisnik.Potroseno)
+            : filterBuilder.Eq(x => x.Potroseno, 0);
 
         var finalFilter = filterBuilder.And(queryFinalFilter, opisFinalFilter, zaradjenoFilter);
 
-        return await _korisnici.Find(finalFilter).ToListAsync();
+        return await _korisnici.Find(finalFilter).Project(_getProjection).ToListAsync();
     }
 
     //public async Task<List<Korisnik>> Filter(string ime, string prezime)

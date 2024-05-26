@@ -5,10 +5,11 @@ import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 type SliderPropsValue = {
     children : React.ReactNode;
     text : string;
+    isOpen?: boolean
 }
 
-function DropDownSlider({ children, text } : SliderPropsValue) {
-    const [showList, setShowList] = useState(false);
+function DropDownSlider({ children, text, isOpen } : SliderPropsValue) {
+    const [showList, setShowList] = useState(isOpen ?? false);
 
     return (
         <div className={classes.main}>

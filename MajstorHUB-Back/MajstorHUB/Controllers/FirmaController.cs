@@ -56,8 +56,6 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(Roles.Firma)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,29 +85,11 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            var firma = await _firmaService.GetById(id);
+            var firma = await _firmaService.GetByIdDto(id);
             if (firma == null)
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
 
-            var getResponse = new GetFirmaResponse
-            {
-                DatumKreiranjaNaloga = firma.DatumKreiranjaNaloga,
-                Email = firma.Email,
-                Naziv = firma.Naziv,
-                NovacNaSajtu = firma.NovacNaSajtu,
-                PIB = firma.PIB,
-                Adresa = firma.Adresa,
-                BrojTelefona = firma.BrojTelefona,
-                Id = firma.Id,
-                Opis = firma.Opis,
-                Slika = firma.Slika,
-                Struke = firma.Struke, 
-                Zaradjeno = firma.Zaradjeno,
-                Iskustvo = firma.Iskustvo,
-                CenaPoSatu = firma.CenaPoSatu,
-            };
-
-            return Ok(getResponse);
+            return Ok(firma);
         }
         catch (Exception e)
         {
@@ -470,6 +450,7 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("Filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -488,6 +469,7 @@ public class FirmaController : ControllerBase
             {
                 return NotFound("Firma sa zadatim nazivom i strukom nije pronadjena!\n");
             }
+
             return Ok(filterList);
         }
         catch(Exception e)

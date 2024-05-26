@@ -89,28 +89,11 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var korisnik = await _korisnikService.GetById(id);
+            var korisnik = await _korisnikService.GetByIdDto(id);
             if (korisnik == null)
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
-
-            var getResponse = new GetKorisnikResponse
-            {
-                Id = korisnik.Id,
-                Ime = korisnik.Ime,
-                Prezime = korisnik.Prezime,
-                Email = korisnik.Email,
-                Adresa = korisnik.Adresa,
-                DatumKreiranjaNaloga = korisnik.DatumKreiranjaNaloga,
-                JMBG = korisnik.JMBG,
-                NovacNaSajtu = korisnik.NovacNaSajtu,
-                BrojTelefona = korisnik.BrojTelefona,
-                DatumRodjenja = korisnik.DatumRodjenja,
-                Opis = korisnik.Opis,
-                Potroseno = korisnik.Potroseno,
-                Slika = korisnik.Slika
-            };
             
-            return Ok(getResponse);
+            return Ok(korisnik);
         }
         catch (Exception e)
         {
@@ -468,6 +451,7 @@ public class KorisnikController : ControllerBase
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
+
             await _korisnikService.Delete(id);
             return Ok($"Korisnik sa ID-em {id} je uspesno obrisan!\n");
         }
@@ -477,6 +461,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("Filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -495,6 +480,7 @@ public class KorisnikController : ControllerBase
             {
                 return NotFound("Ne postoji ni jedan korisnik sa zadatim parametrima\n");
             }
+
             return Ok(filterList);
         }
         catch(Exception e)

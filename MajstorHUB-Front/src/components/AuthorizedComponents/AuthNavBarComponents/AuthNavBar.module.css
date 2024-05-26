@@ -34,10 +34,18 @@
 }
 
 .logo {
-    font-size: 1.5em;
+    font-size: 1.5rem;
     color: #f57624;
     font-weight: 900;
     text-decoration: none;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo {
+    height: 75%;
 }
 
 span {

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import classes from "./Modal.module.css";
+import { useEffect, useState } from "react";
+import classes from "./ModalAnimated.module.css";
 import { animated } from "@react-spring/web";
 
 type PropsValues = {
@@ -9,6 +9,19 @@ type PropsValues = {
 };
 
 function ModalAnimated({ children, onClose, style }: PropsValues) {
+
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 700);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -28,8 +41,15 @@ function ModalAnimated({ children, onClose, style }: PropsValues) {
       <animated.dialog
         style={{
           opacity: style.t.to((value: string) => value),
-          top: style.bot.to((value: string) => value),
-          transform: style.scale.to((value: number) => `translate(-50%, -50%) scale(${value})`),
+          top: isSmallScreen
+               ? ''
+               : style.bot.to((value: string) => value),
+          bottom: isSmallScreen
+                  ? style.botSmall.to((value: string) => value)
+                  : '',
+          transform: isSmallScreen 
+                     ? 'translate(-50%, 0)'
+                     : style.scale.to((value: number) => `translate(-50%, -50%) scale(${value})`),
         }}
         open
         className={classes.modal}

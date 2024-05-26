@@ -4,6 +4,7 @@
     align-content: center;
     /* height: calc(100vh - 220px);
     margin-top: 96px; */
+    overflow: hidden;
 }
 
 hr {

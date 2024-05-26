@@ -7,6 +7,7 @@ import { FaUserCircle } from "react-icons/fa";
 import UserMenu from './UserMenu';
 import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Theme/Loaders/DottedLoader';
+import logo from '../../../../pictures/Logo/LogoTransparent2.png';
 
 function AuthNavBar() {
     const [showSidebar, setShowSidebar] = useState(false);
@@ -44,7 +45,9 @@ function AuthNavBar() {
                     <IoMenu onClick={() => setShowSidebar(!showSidebar)} className={classes.dropDown} size='2rem' /> :
                     <IoClose  onClick={() => setShowSidebar(!showSidebar)} className={classes.dropDown} size='2rem' />
                 }
-                <Link to='/' onClick={hideSidebar} className={classes.logo}>MajstorHUB</Link>
+                <Link to='/' onClick={hideSidebar} className={classes.logo}>
+                    <img className={classes.logo} src={logo} alt="MajstorHUB" />
+                </Link>
                 <div className={classes.optionsContainer}>
                     <Link to='/klijenti' onClick={hideSidebar} className='link'>Pretraži Klijente</Link>
                     <Link to='/majstori' onClick={hideSidebar} className='link'>Pretraži Majstore</Link>

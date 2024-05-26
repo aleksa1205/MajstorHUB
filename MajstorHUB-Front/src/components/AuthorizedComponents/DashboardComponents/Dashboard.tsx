@@ -4,11 +4,7 @@ function Dashboard() {
 
     return (
         <div className="container">
-            <main className={classes.main}>
-                <div className="contentContainer">
-                    <h1>Tekst</h1>
-                </div>
-            </main>
+            <h1>Tekst</h1>
         </div>
     )
 }

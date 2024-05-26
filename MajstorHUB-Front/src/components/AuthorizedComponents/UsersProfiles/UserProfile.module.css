@@ -13,5 +13,6 @@
 @media (width <= 600px) {
     .main > div {
         padding-inline: 0 !important;
+        overflow: hidden;
     }
 }

@@ -83,54 +83,57 @@ function EditSlika({ close, updateUser, userData }: PropsValues) {
         <IoClose onClick={close} size="2rem" />
       </div>
 
-      <div className={classes.imageContentContainer}>
-        {isCropping ? (
-          <div className={classes.marginBot}>
-            <Hamster />
-          </div>
-        ) : image !== null ? (
-          <img className={classes.previewImage} src={image} alt="image" />
-        ) : (
-          <div className={classes.placeholderContainer}>
-            <div className={classes.imagePlaceholder}>
-              <span>Izaberite sliku</span>
+      <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
+        <div className={classes.imageContentContainer}>
+          {isCropping ? (
+            <div className={classes.marginBot}>
+              <Hamster />
             </div>
-          </div>
-        )}
+          ) : image !== null ? (
+            <img className={classes.previewImage} src={image} alt="image" />
+          ) : (
+            <div className={classes.placeholderContainer}>
+              <div className={classes.imagePlaceholder}>
+                <span>Izaberite sliku</span>
+              </div>
+            </div>
+          )}
 
-        <p>
-          Mora biti vaša prava slika, na slici treba da vam se vidi celo lice a
-          preporuka je da pozadina bude jedne boje i da pravi kontrast u odnosu
-          na vaše lice
-        </p>
-        <input
-          className={classes.inputfile}
-          type="file"
-          accept="image/png, image/jpeg"
-          id="slika"
-          {...register("value", {
-            required: "Ovo je obavezno polje",
-            validate: function (fieldValue) {
-              const info = fieldValue[0].size <= 204800;
-              return info || "Slika je veća od 200KB";
-            },
-          })}
-        />
-        <p className={classes.pError}>
-          {errors.value?.message && <MdErrorOutline />}
-          {errors.value?.message}
-        </p>
+          <p>
+            Mora biti vaša prava slika, na slici treba da vam se vidi celo lice a
+            preporuka je da pozadina bude jedne boje i da pravi kontrast u odnosu
+            na vaše lice
+          </p>
+          <input
+            className={classes.inputfile}
+            type="file"
+            accept="image/png, image/jpeg"
+            id="slika"
+            {...register("value", {
+              required: "Ovo je obavezno polje",
+              validate: function (fieldValue) {
+                const info = fieldValue[0].size <= 204800;
+                return info || "Slika je veća od 200KB";
+              },
+            })}
+          />
+          <p className={classes.pError}>
+            {errors.value?.message && <MdErrorOutline />}
+            {errors.value?.message}
+          </p>
+        </div>
+
+        {isLoading && <p>Učitavanje profilne slike...</p>}
+
+        <InfoBox>
+          <p>Slika se automatski kropuje na 1:1</p>
+          <p>
+            U narednim verzijama moći će te vi da kropujete sliku kada je
+            postavljate
+          </p>
+        </InfoBox>
       </div>
 
-      {isLoading && <p>Učitavanje profilne slike...</p>}
-
-      <InfoBox>
-        <p>Slika se automatski kropuje na 1:1</p>
-        <p>
-          U narednim verzijama moći će te vi da kropujete sliku kada je
-          postavljate
-        </p>
-      </InfoBox>
       <div className={classes.btnContainer}>
         {typeof inputValue !== "undefined" && inputValue.length !== 0 ? (
           <>
