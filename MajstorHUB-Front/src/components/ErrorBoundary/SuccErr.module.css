@@ -1,5 +1,3 @@
-@import '../../vars.css';
-
 .main {
     height: calc(100vh - 192px);
     display: flex;

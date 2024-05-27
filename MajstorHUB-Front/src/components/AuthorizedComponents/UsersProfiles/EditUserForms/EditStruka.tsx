@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { Struka, getStrukaDisplayName } from "../../../../api/DTO-s/responseTypes";
 import { IoClose } from "react-icons/io5";
-import DropDown from "../../../Theme/DropDown/DropDown";
+import DropDown from "../../../Theme/DropDown/DDSelect";
 import UserType from "../../../../lib/UserType";
 
 type FromValues = {

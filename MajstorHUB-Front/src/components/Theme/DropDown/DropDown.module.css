@@ -1,39 +1,71 @@
-.selectDropdown,
-.selectDropdown * {
+.main {
+  /* background-color: var(--color-blue-200); */
+  padding: 1rem 0;
+  position: relative;
+}
+
+.heading {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 0.4rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.15s ease-in-out;
+}
+.heading:hover {
+  border-color: var(--color-neutral-900);
+}
+.heading:active {
+    border-color: var(--color-main-500);
+    background-color: var(--color-main-25);
+}
+
+.heading p {
   margin: 0;
-  padding: 0;
-  position: relative;
-  box-sizing: border-box;
+  font-weight: bold;
 }
-.selectDropdown {
-  position: relative;
-  background-color: #E6E6E6;
-  border-radius: 4px;
-}
-.selectDropdown select {
-  font-size: 1rem;
-  font-weight: normal;
-  max-width: 100%;
-  padding: 8px 24px 8px 10px;
-  border: none;
-  background-color: transparent;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  appearance: none;
-}
-.selectDropdown select:active, .selectDropdown select:focus {
-  outline: none;
-  box-shadow: none;
-}
-.selectDropdown:after {
-  content: "";
+
+.main ul {
   position: absolute;
-  top: 50%;
-  right: 8px;
-  width: 0;
-  height: 0;
-  margin-top: -2px;
-  border-top: 5px solid #aaa;
-  border-right: 5px solid transparent;
-  border-left: 5px solid transparent;
+  top: 70px;
+  background-color: white;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 5px;
+  z-index: 3;
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.158);
+
+  padding: 1.5rem;
+  margin: 0;
+
+  /* Allow the list items to expand independently */
+  width: max-content;
+  min-width: 100%; /* Ensure the list is at least as wide as the parent */
+  white-space: nowrap; /* Prevent line breaks */
+  overflow: hidden; /* Hide overflowing content */
+}
+
+.main ul li {
+  font-weight: 300;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+.arrow {
+  transition: all 0.2s ease-in-out;
+  transform: rotate(180deg);
+}
+
+.arrowDown {
+  transform: rotate(360deg);
+}
+
+.item {
+  list-style-type: none;
+  cursor: default;
+  padding-inline: 1rem;
+  margin-top: 1rem;
 }

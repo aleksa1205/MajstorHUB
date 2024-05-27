@@ -117,6 +117,7 @@ public class FirmaService : IFirmaService
     public async Task<List<GetFirmaResponse>> Filter(FilterFirmaDTO firma)
     {
         var filterBuilder = Builders<Firma>.Filter;
+        var sortBuilder = Builders<Firma>.Sort;
 
         var queryFilters = new List<FilterDefinition<Firma>>();
         var opisFilters = new List<FilterDefinition<Firma>>();
@@ -172,7 +173,9 @@ public class FirmaService : IFirmaService
                                             cenaFilter,
                                             zaradjenoFilter);
 
-        return await _firme.Find(finalFilter).Project(_getProjection).ToListAsync();
+        var sortZaradjeno = sortBuilder.Descending(x => x.Zaradjeno);
+
+        return await _firme.Find(finalFilter).Sort(sortZaradjeno).Project(_getProjection).ToListAsync();
     }
 
     //public async Task<List<Firma>> Filter(string naziv, Struka struka)

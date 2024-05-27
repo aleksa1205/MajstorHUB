@@ -167,7 +167,10 @@ public class KorisnikService : IKorisnikService
 
         var finalFilter = filterBuilder.And(queryFinalFilter, opisFinalFilter, zaradjenoFilter);
 
-        return await _korisnici.Find(finalFilter).Project(_getProjection).ToListAsync();
+        var sortBuilder = Builders<Korisnik>.Sort;
+        var potroseno = sortBuilder.Descending(x => x.Potroseno);
+
+        return await _korisnici.Find(finalFilter).Sort(potroseno).Project(_getProjection).ToListAsync();
     }
 
     //public async Task<List<Korisnik>> Filter(string ime, string prezime)

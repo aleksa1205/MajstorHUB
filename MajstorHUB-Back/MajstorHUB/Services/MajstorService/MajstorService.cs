@@ -122,9 +122,15 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
+    public delegate double Sorting(Majstor x);
+    public static double GetValue(Majstor x)
+    {
+        return x.Zaradjeno;
+    }
     public async Task<List<GetMajstorResponse>> Filter(FIlterMajstorDTO majstor)
     {
         var filterBuilder = Builders<Majstor>.Filter;
+        var sortBuilder = Builders<Majstor>.Sort;
 
         var queryFilters = new List<FilterDefinition<Majstor>>();
         var opisFilters = new List<FilterDefinition<Majstor>>();
@@ -180,7 +186,9 @@ public class MajstorService : IMajstorService
                                             cenaFilter,
                                             zaradjenoFilter);
 
-        return await _majstori.Find(finalFilter).Project(_getProjection).ToListAsync();
+        var sortZaradjeno = sortBuilder.Descending(x => x.Zaradjeno);
+
+        return await _majstori.Find(finalFilter).Sort(sortZaradjeno).Project(_getProjection).ToListAsync();
     }
 }
 

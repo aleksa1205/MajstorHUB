@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import useLogout from "../../../hooks/useLogout";
 import { FaUser } from 'react-icons/fa';
 import useAuth from '../../../hooks/useAuth';
-import UserType, { userToPath } from '../../../lib/UserType';
+import UserType from '../../../lib/UserType';
 import { useState } from 'react';
 import { BiLogOut } from 'react-icons/bi';
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
