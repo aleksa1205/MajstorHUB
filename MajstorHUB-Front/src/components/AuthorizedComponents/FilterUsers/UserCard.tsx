@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 import { GetFirmaResponse, GetMajstorResponse, Iskustvo, Struka, getStrukaDisplayName, userDataType } from '../../../api/DTO-s/responseTypes';
 import classes from './UserCard.module.css'
-import { base64ToUrl, getProfileUrl } from '../../../lib/utils';
+import { base64ToUrl, formatDouble, getProfileUrl } from '../../../lib/utils';
 import {  FaUserCircle } from 'react-icons/fa';
 import UserType from '../../../lib/UserType';
 import { Link } from 'react-router-dom';
@@ -80,22 +80,12 @@ function FirstRow() {
 function SecondRow() {
     const { userData } = useContext(CardContext)!;
 
-    function formatiraj(broj : number, append : string) : string {
-        let msg = '';
-        if(broj === 0)
-            msg = '0 din';
-        else if(broj > 1000)
-            msg = `${Math.floor(broj / 1000)}K+ din`;
-        else
-            msg = `${Math.floor((broj / 100)) * 100}+ din`
-        
-        return msg + ' ' + append;
-    }
+
 
     return (
         <div className={`${classes.secRow} ${classes.row}`}>
             {userData.userType === UserType.Korisnik && (
-                <p>{formatiraj(userData.potroseno, 'potrošeno')}</p>
+                <p>{formatDouble(userData.potroseno, 'potrošeno')}</p>
             )}
 
             {userData.userType !== UserType.Korisnik && (
@@ -103,7 +93,7 @@ function SecondRow() {
                     {userData.cenaPoSatu ? (
                         <p>{Math.floor(userData.cenaPoSatu)} din cena/sat</p>
                     ) : <></>}
-                    <p>{formatiraj(userData.zaradjeno, 'zarađeno')}</p>
+                    <p>{formatDouble(userData.zaradjeno, 'zarađeno')}</p>
                 </>
             )}
         </div>

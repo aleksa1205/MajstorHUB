@@ -21,6 +21,10 @@
   margin-bottom: 1rem;
 }
 
+.error {
+  border-color: #e5212c !important;
+}
+
 .main {
   display: flex;
   align-items: center;

@@ -72,7 +72,8 @@ public class KorisnikService : IKorisnikService
             .Set("broj_telefona", korisnik.BrojTelefona)
             .Set("ime", korisnik.Ime)
             .Set("prezime", korisnik.Prezime)
-            .Set("datum_rodjenja", korisnik.DatumRodjenja);
+            .Set("datum_rodjenja", korisnik.DatumRodjenja)
+            .Set("oglasi", korisnik.OglasiId);
         await _korisnici.UpdateOneAsync(filter, update);
     }
 
@@ -88,6 +89,15 @@ public class KorisnikService : IKorisnikService
             .Set("ime", korisnik.Ime)
             .Set("prezime", korisnik.Prezime)
             .Set("datum_rodjenja", korisnik.DatumRodjenja);
+        await _korisnici.UpdateOneAsync(filter, update);
+    }
+
+    public async Task UpdateMoney(string id, double amount)
+    {
+        var filter = Builders<Korisnik>.Filter.Eq(x => x.Id, id);
+        var update = Builders<Korisnik>.Update
+            .Inc(x => x.NovacNaSajtu, amount);
+
         await _korisnici.UpdateOneAsync(filter, update);
     }
 

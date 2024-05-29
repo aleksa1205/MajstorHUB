@@ -1,5 +1,5 @@
 import classes from './UserMenu.module.css'
-import { FaUser } from "react-icons/fa";
+import { FaMoneyBill, FaUser } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import useAuth from '../../../hooks/useAuth';
 import UserType  from '../../../lib/UserType';
@@ -16,7 +16,7 @@ type PropsValues = {
 function UserMenu({ hideMenu } : PropsValues) {
     const { auth } = useAuth();
     const logoutUser = useLogout();
-    const { pictureUrl } = useCurrUser();
+    const { pictureUrl, userData } = useCurrUser();
 
     return (
         <div className={classes.mainDiv} >
@@ -28,7 +28,7 @@ function UserMenu({ hideMenu } : PropsValues) {
                         (<FaUser size='3rem' />)
                     }
                     <div>
-                        <p className={classes.imePrezime}>{auth.naziv}</p>
+                        <p className={classes.imePrezime}>{userData?.userType !== UserType.Firma ? `${userData?.ime} ${userData?.prezime}` : userData?.naziv}</p>
                         <p className={classes.role}>{auth.userType != UserType.Nedefinisano ? UserType[auth.userType] : 'Role'}</p>
                     </div>
                 </div>
@@ -44,6 +44,15 @@ function UserMenu({ hideMenu } : PropsValues) {
                         <IoSettingsSharp />
                         <span>Podešavanja Profila</span>
                     </li>
+                </span>
+
+                <span>
+                    <Link className={classes.link} onClick={hideMenu} to='/novac'>
+                        <li className={classes.item}>
+                            <FaMoneyBill />
+                            <span>Stanje</span>
+                        </li>
+                    </Link>
                 </span>
 
                 <span onClick={async () => await logoutUser()}>

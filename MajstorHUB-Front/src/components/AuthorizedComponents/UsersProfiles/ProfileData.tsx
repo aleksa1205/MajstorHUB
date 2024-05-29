@@ -1,7 +1,7 @@
 import UserType from "../../../lib/UserType";
 import { KorisnikDataUpdate, FirmaDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import classes from './ProfileData.module.css'
-import { base64ToUrl, formatDate } from "../../../lib/utils";
+import { base64ToUrl, formatDate, formatDouble } from "../../../lib/utils";
 import { FaUserAlt } from "react-icons/fa";
 import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
@@ -241,7 +241,7 @@ function UserSpecificDataSection() {
                     <div className={classes.containerWithButton}>
                         <div className={classes.textWithInfo}>
                             <span className={classes.bold}>Trenutno Stanje: </span>{' '}
-                            {userDataPriv.novacNaSajtu} din
+                            {Math.round(userDataPriv.novacNaSajtu)} din
                             <span className={classes.iconInline}>
                                 <Tooltip infoText="Drugi korisnici ne mogu da vide ovo polje" width="250px">
                                     <IoInformationCircleOutline size='1rem' />
@@ -254,13 +254,19 @@ function UserSpecificDataSection() {
 
                 {userDataPriv.userType === UserType.Korisnik && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno potroseno: </span>  {userDataPriv.potroseno} din</p>
+                        <p><span className={classes.bold}>Ukupno potroseno: </span> {' '}
+                        { isCurrUser 
+                          ? `${Math.round(userDataPriv.potroseno)} din` 
+                          : formatDouble(userDataPriv.potroseno, 'potroseno') }</p>
                     </div>
                 )}
 
                 {(userDataPriv.userType === UserType.Majstor || userDataPriv.userType === UserType.Firma) && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno zaradjeno: </span>  {userDataPriv.zaradjeno} din</p>
+                        <p><span className={classes.bold}>Ukupno zaradjeno: </span> {' '}
+                         { isCurrUser
+                           ? `${Math.round(userDataPriv.zaradjeno)} din`
+                           : formatDouble(userDataPriv.zaradjeno, 'potroseno')}</p>
                     </div>
                 )}
             </div>

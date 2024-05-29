@@ -1,0 +1,5 @@
+@media (width >= 900px) {
+  .nav {
+    display: none;
+  }
+}

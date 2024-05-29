@@ -161,6 +161,66 @@ function useUserControllerAuth(type : UserType) {
                     throw Error('Unexpected Error - ' + error);
                 }
             }
+        },
+        deposit: async function(amount : number) : Promise<boolean> {
+            try {
+                await axiosPrivate.patch(`${UserType[type]}/Deposit`,
+                    JSON.stringify(amount),
+                    {headers: {'Content-Type': 'application/json'}}
+                );
+
+                return true;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 401:
+                            throw new SessionEndedError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
+        },
+        withdraw: async function(amount : number) : Promise<boolean> {
+            try {
+                await axiosPrivate.patch(`${UserType[type]}/Withdraw`,
+                    JSON.stringify(amount),
+                    {headers: {'Content-Type': 'application/json'}}
+                );
+
+                return true;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 401:
+                            throw new SessionEndedError();
+                        case 406:
+                            throw new Error('Nemate pravo da skinete vise novca sa racuna nego sto imate');
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
         }
     }
 

@@ -7,6 +7,10 @@
     margin-bottom: 1rem;
 }
 
+.error {
+  border-color: #e5212c !important;
+}
+
 .main {
   display: flex;
   align-items: center;
@@ -250,6 +254,11 @@
   .btnContainer > button:first-child,
   .btnContainer > label:first-child {
     order: 0;
+  }
+
+  .previewImage,
+  .placeholderContainer {
+    width: 60%;
   }
 
   .imageContentContainer {

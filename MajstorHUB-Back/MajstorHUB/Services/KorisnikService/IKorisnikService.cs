@@ -10,6 +10,7 @@ public interface IKorisnikService
     Task Create(Korisnik korisnik);
     Task Update(string id, Korisnik korisnik);
     Task UpdateSelf(string id, KorisnikUpdateSelf korisnik);
+    Task UpdateMoney(string id, double amount);
     Task UpdateRefreshToken(string id, RefreshToken token);
     Task<List<GetKorisnikResponse>> Filter(FilterKorisnikDto korisnik);
     Task Delete(string id);

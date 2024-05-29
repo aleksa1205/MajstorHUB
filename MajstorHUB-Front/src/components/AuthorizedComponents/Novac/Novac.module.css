@@ -1,0 +1,43 @@
+.main {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 1rem;
+  padding: 2rem;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 1rem;
+  height: calc(100vh - 77px);
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.section2 {
+  margin-top: 5rem;
+}
+
+.gray {
+  color: var(--color-neutral-400);
+  font-weight: 400;
+}
+
+.options {
+  display: flex;
+  gap: 2rem;
+}
+
+@media (width <= 700px) {
+  .options {
+    flex-direction: column;
+  }
+}

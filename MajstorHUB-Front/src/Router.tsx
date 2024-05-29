@@ -16,12 +16,15 @@ import Klijenti from "./routes/Filter/Klijenti.tsx";
 import Majstori from "./routes/Filter/Majstori.tsx";
 import Firme from "./routes/Filter/Firme.tsx";
 import RestoreScrollLayout from "./components/Layouts/RestoreScrollLayout.tsx";
+import Novac, {loader as NovacLoader} from "./routes/Novac.tsx";
 
 export const router = createBrowserRouter([
   {
+    errorElement: <ErrorPage />,
     element: <RestoreScrollLayout />,
     children: [
       {
+        errorElement: <ErrorPage />,
         element: (
           <ErrorBoundaryProvider>
             <RootLayout />
@@ -55,10 +58,10 @@ export const router = createBrowserRouter([
           },
           { path: "/success", element: <Success /> },
         ],
-        errorElement: <ErrorPage />,
       },
 
       {
+        errorElement: <ErrorPage />,
         element: (
           <ErrorBoundaryProvider>
             <AuthorizedLayout />
@@ -72,6 +75,15 @@ export const router = createBrowserRouter([
                 <Dashboard />
               </ErrorBoundaryProvider>
             ),
+          },
+          {
+            path: "/novac",
+            element: (
+              <ErrorBoundaryProvider>
+                <Novac />
+              </ErrorBoundaryProvider>
+            ),
+            loader: NovacLoader,
           },
           {
             path: "/klijenti",

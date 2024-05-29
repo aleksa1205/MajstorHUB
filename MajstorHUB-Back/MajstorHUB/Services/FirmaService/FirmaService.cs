@@ -104,6 +104,14 @@ public class FirmaService : IFirmaService
 
         await _firme.UpdateOneAsync(filter, update);
     }
+   public async Task UpdateMoney(string id, double amount)
+    {
+        var filter = Builders<Firma>.Filter.Eq(x => x.Id, id);
+        var update = Builders<Firma>.Update
+            .Inc(x => x.NovacNaSajtu, amount);
+
+        await _firme.UpdateOneAsync(filter, update);
+    }
 
     public async Task DeleteRefreshToken(string id)
     {

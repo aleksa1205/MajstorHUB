@@ -69,7 +69,7 @@ span {
     width: 2rem;
 }
 
-@media (width <= 900px) {
+@media (width <= 1000px) {
     header span {
         display: none;
     }

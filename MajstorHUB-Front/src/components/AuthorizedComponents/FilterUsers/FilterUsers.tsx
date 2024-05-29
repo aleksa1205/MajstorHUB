@@ -34,7 +34,7 @@ function FilterUsers({type} : PropsValues) {
                 </div>
             )}
             <div className={classes.userCards}>
-                {users.map(user => {
+                {!isFetching && users.map(user => {
                     return <UserCard key={user.id} userData={user} currUserId={auth.userId} />
                 })}
             </div>

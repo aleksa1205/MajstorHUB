@@ -99,6 +99,15 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateMoney(string id, double amount)
+    {
+        var filter = Builders<Majstor>.Filter.Eq(x => x.Id, id);
+        var update = Builders<Majstor>.Update
+            .Inc(x => x.NovacNaSajtu, amount);
+
+        await _majstori.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _majstori.DeleteOneAsync(majstor => majstor.Id == id);

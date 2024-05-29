@@ -458,6 +458,9 @@ img {
 
 .sidebar {
   height: calc(100vh - 77px);
+  position: absolute;
+  left: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   padding-inline: 2rem;
@@ -491,8 +494,8 @@ img {
   margin-bottom: 3rem;
 }
 
-@media (width >= 900px) {
+/* @media (width >= 900px) {
   .sidebar {
     display: none;
   }
-}
+} */

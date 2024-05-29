@@ -7,7 +7,8 @@ function useModalAnimation() {
         from: {t: 0, bot: '60%', scale: 0.9, botSmall: '-35%'},
         enter: {t: 1, bot: '50%', scale: 1, botSmall: '0'},
         leave: {t: 0, bot: '60%', scale: 0.9, botSmall: '-35%'},
-        config: {duration: 400, easing: easings.easeInOutQuart}
+        config: {mass: 5, tension: 1000, friction: 80, clamp: true}
+        // config: {duration: 400, easing: easings.easeInOutQuart}
     })
 
     function closeModal() {
