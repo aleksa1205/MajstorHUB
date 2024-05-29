@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { Struka, getStrukaDisplayName } from "../../../../api/DTO-s/responseTypes";
 import { IoClose } from "react-icons/io5";
-import DropDown from "../../../Theme/DropDown/DropDown";
+import DropDown from "../../../Theme/DropDown/DDSelect";
 import { useEffect, useState } from "react";
 import UserType from "../../../../lib/UserType";
 
@@ -77,6 +77,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
+            <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
             <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
             <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
             
@@ -123,6 +124,8 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
             }
             </div>
 
+            </div>
+            
             <div className={classes.btnContainer}>
                 <button className='secondLink' onClick={close} type='button'>Cancel</button>
                 <button

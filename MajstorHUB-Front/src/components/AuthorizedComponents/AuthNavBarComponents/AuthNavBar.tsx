@@ -7,17 +7,15 @@ import { FaUserCircle } from "react-icons/fa";
 import UserMenu from './UserMenu';
 import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Theme/Loaders/DottedLoader';
+import logo from '../../../../pictures/Logo/LogoTransparent2.png';
+import useNavSidebarAnim from '../../../hooks/useNavSidebarAnim';
 
 function AuthNavBar() {
-    const [showSidebar, setShowSidebar] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const { transition, hideSidebar, toggleSidebar,  showSidebar } = useNavSidebarAnim();
     const { pictureUrl, isFetching } = useCurrUser();
-
-    function hideSidebar() {
-        setShowSidebar(false);
-    }
 
     function hideUserMenu() {
         setShowUserMenu(false);
@@ -41,11 +39,14 @@ function AuthNavBar() {
         <header className={classes.header}>
             <nav className={`container ${classes.nav}`}>
                 {!showSidebar ? 
-                    <IoMenu onClick={() => setShowSidebar(!showSidebar)} className={classes.dropDown} size='2rem' /> :
-                    <IoClose  onClick={() => setShowSidebar(!showSidebar)} className={classes.dropDown} size='2rem' />
+                    <IoMenu onClick={toggleSidebar} className={classes.dropDown} size='2rem' /> :
+                    <IoClose onClick={toggleSidebar} className={classes.dropDown} size='2rem' />
                 }
-                <Link to='/' onClick={hideSidebar} className={classes.logo}>MajstorHUB</Link>
+                <Link to='/' onClick={hideSidebar} className={classes.logo}>
+                    <img className={classes.logo} src={logo} alt="MajstorHUB" />
+                </Link>
                 <div className={classes.optionsContainer}>
+                    <Link to='/dashboard' onClick={hideSidebar} className='link'>Dashboard</Link>
                     <Link to='/klijenti' onClick={hideSidebar} className='link'>Pretraži Klijente</Link>
                     <Link to='/majstori' onClick={hideSidebar} className='link'>Pretraži Majstore</Link>
                     <Link to='/firme' onClick={hideSidebar} className='link'>Pretraži Firme</Link>
@@ -62,7 +63,11 @@ function AuthNavBar() {
                     </div>
                 </div>
             </nav>
-            { showSidebar && <AuthSidebar hideSidebar={hideSidebar} /> }
+            {transition((style, show) => {
+                return show ? (
+                    <AuthSidebar style={style} hideSidebar={hideSidebar} />
+                ) : null;
+            })}
         </header>
     )
 }

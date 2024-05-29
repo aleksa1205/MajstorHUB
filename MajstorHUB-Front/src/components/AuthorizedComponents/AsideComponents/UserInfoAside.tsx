@@ -28,7 +28,7 @@ function UserInfoAside() {
                         (<FaUser size='2rem' />)
                     }
                     <div>
-                        <p>{auth.naziv}</p>
+                        <p>{userData?.userType !== UserType.Firma ? `${userData?.ime} ${userData?.prezime}` : userData?.naziv}</p>
                         <p>{auth.userType !== UserType.Nedefinisano ? UserType[auth.userType] : ''}</p>
                     </div>
                 </Link>

@@ -1,9 +1,9 @@
-import classes from "../components/AuthComponents/RegisterComponents/Regsiter.module.css";
-import RegisterOptions from "../components/AuthComponents/RegisterComponents/RegisterOptions";
-import RegisterForm from "../components/AuthComponents/RegisterComponents/RegisterForm";
+import classes from "../../components/AuthComponents/RegisterComponents/Regsiter.module.css";
+import RegisterOptions from "../../components/AuthComponents/RegisterComponents/RegisterOptions";
+import RegisterForm from "../../components/AuthComponents/RegisterComponents/RegisterForm";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UserType from "../lib/UserType";
+import UserType from "../../lib/UserType";
 
 function Register() {
   const navigate = useNavigate();

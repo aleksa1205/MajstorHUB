@@ -1,22 +1,41 @@
 import { Link } from "react-router-dom";
 import useLogout from "../../hooks/useLogout";
 import useAuth from "../../hooks/useAuth";
+import classes from './BasicSidebar.module.css';
+import { SpringValue, animated } from "@react-spring/web";
+import { useEffect, useState } from "react";
 
 type PropsValue = {
-    setShowSidebar : React.Dispatch<React.SetStateAction<boolean>>;
+  hideSidebar: () => void;
+  style: any;
 }
 
-function BasicSidebar({ setShowSidebar } : PropsValue) {
+function BasicSidebar({ hideSidebar, style } : PropsValue) {
     const LogoutUser = useLogout();
     const { auth } = useAuth();
     const isLoggedIn = auth.userId !== '';
 
-    function hideSidebar() {
-        setShowSidebar(false);
-    }
+    useEffect(() => {
+      const handleResize = () => {
+        if(window.innerWidth >= 900)
+          hideSidebar();
+      };
+  
+      window.addEventListener("resize", handleResize);
+  
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+      document.body.style.overflow = "hidden";
+  
+      return () => {
+        document.body.style.overflow = "auto";
+      };
+    }, []);
 
   return (
-    <nav className="sidebar">
+    <animated.nav style={style} className={`sidebar ${classes.nav}`}>
       <div>
         {isLoggedIn && (
             <Link to="/dashboard" onClick={hideSidebar} className="link sidebar-item">
@@ -47,7 +66,7 @@ function BasicSidebar({ setShowSidebar } : PropsValue) {
       <Link to="/register" onClick={hideSidebar} className="mainButton">
         Registruj se
       </Link>
-    </nav>
+    </animated.nav>
   );
 }
 

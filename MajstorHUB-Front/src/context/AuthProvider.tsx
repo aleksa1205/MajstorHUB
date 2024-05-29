@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: PropsValue) => {
   const [auth, setAuth] = useState<AuthValues>(emptyAuthValue);
   const { showBoundary } = useErrorBoundary();
 
-  const logTestUser : boolean = false;
+  const logTestUser : boolean = true;
 
   useEffect(() => {
     if(logTestUser)

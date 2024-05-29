@@ -7,11 +7,32 @@ namespace MajstorHUB.Services.MajstorService;
 public class MajstorService : IMajstorService
 {
     private readonly IMongoCollection<Majstor> _majstori;
+    private readonly ProjectionDefinition<Majstor, GetMajstorResponse> _getProjection;
 
     public MajstorService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _majstori = db.GetCollection<Majstor>(settings.MajstoriCollectionName);
+
+        _getProjection = Builders<Majstor>.Projection.Expression(x => new GetMajstorResponse
+        {
+            Adresa = x.Adresa,
+            BrojTelefona = x.BrojTelefona,
+            DatumKreiranjaNaloga = x.DatumKreiranjaNaloga,
+            Email = x.Email,
+            Id = x.Id,
+            NovacNaSajtu = x.NovacNaSajtu,
+            Opis = x.Opis,
+            Slika = x.Slika,
+            JMBG = x.JMBG,
+            Ime = x.Ime,
+            Prezime = x.Prezime,
+            CenaPoSatu = x.CenaPoSatu,
+            DatumRodjenja = x.DatumRodjenja,
+            Iskustvo = x.Iskustvo,
+            Struka = x.Struka,
+            Zaradjeno = x.Zaradjeno
+        });
     }
 
     public async Task<List<Majstor>> GetAll()
@@ -22,6 +43,11 @@ public class MajstorService : IMajstorService
     public async Task<Majstor> GetById(string id)
     {
         return await _majstori.Find(majstor => majstor.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<GetMajstorResponse> GetByIdDto(string id)
+    {
+        return await _majstori.Find(majstor => majstor.Id == id).Project(_getProjection).FirstOrDefaultAsync();
     }
 
     public async Task<Majstor> GetByJmbg(string jmbg)
@@ -73,6 +99,15 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateMoney(string id, double amount)
+    {
+        var filter = Builders<Majstor>.Filter.Eq(x => x.Id, id);
+        var update = Builders<Majstor>.Update
+            .Inc(x => x.NovacNaSajtu, amount);
+
+        await _majstori.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _majstori.DeleteOneAsync(majstor => majstor.Id == id);
@@ -96,9 +131,15 @@ public class MajstorService : IMajstorService
         await _majstori.UpdateOneAsync(filter, update);
     }
 
-    public async Task<List<Majstor>> Filter(FIlterMajstorDTO majstor)
+    public delegate double Sorting(Majstor x);
+    public static double GetValue(Majstor x)
+    {
+        return x.Zaradjeno;
+    }
+    public async Task<List<GetMajstorResponse>> Filter(FIlterMajstorDTO majstor)
     {
         var filterBuilder = Builders<Majstor>.Filter;
+        var sortBuilder = Builders<Majstor>.Sort;
 
         var queryFilters = new List<FilterDefinition<Majstor>>();
         var opisFilters = new List<FilterDefinition<Majstor>>();
@@ -154,7 +195,9 @@ public class MajstorService : IMajstorService
                                             cenaFilter,
                                             zaradjenoFilter);
 
-        return await _majstori.Find(finalFilter).ToListAsync();
+        var sortZaradjeno = sortBuilder.Descending(x => x.Zaradjeno);
+
+        return await _majstori.Find(finalFilter).Sort(sortZaradjeno).Project(_getProjection).ToListAsync();
     }
 }
 

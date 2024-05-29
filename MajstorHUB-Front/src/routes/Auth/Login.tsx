@@ -1,12 +1,12 @@
-import classes from '../components/AuthComponents/LoginComponents/Login.module.css'
+import classes from '../../components/AuthComponents/LoginComponents/Login.module.css'
 import { useState } from "react";
-import LoginEmailForm from "../components/AuthComponents/LoginComponents/LoginEmailForm";
-import UserType from "../lib/UserType";
-import LoginSelectUser from "../components/AuthComponents/LoginComponents/LoginSelectUser";
-import LoginPasswordForm from "../components/AuthComponents/LoginComponents/LoginPasswordForm";
+import LoginEmailForm from "../../components/AuthComponents/LoginComponents/LoginEmailForm";
+import UserType from "../../lib/UserType";
+import LoginSelectUser from "../../components/AuthComponents/LoginComponents/LoginSelectUser";
+import LoginPasswordForm from "../../components/AuthComponents/LoginComponents/LoginPasswordForm";
 import { Navigate, redirect } from 'react-router-dom';
-import { isLoggedIn } from '../lib/utils';
-import useAuth from '../hooks/useAuth';
+import { isLoggedIn } from '../../lib/utils';
+import useAuth from '../../hooks/useAuth';
 
 export function loader({ request } : any) {
     // Proveriti da li je korisnik logovan, ako jeste ne rendereuj ovu komponentu

@@ -1,5 +1,3 @@
-@import '../../vars.css';
-
 .tooltipContainer {
     display: flex;
     flex-direction: column;

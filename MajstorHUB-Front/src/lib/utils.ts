@@ -64,6 +64,18 @@ export function formatBase64(file : string) {
     return file.split(',')[1].replace(/\s/g, '');
 }
 
+export function formatDouble(broj : number, append : string) : string {
+    let msg = '';
+    if(broj === 0)
+        msg = '0 din';
+    else if(broj > 1000)
+        msg = `${Math.floor(broj / 1000)}K+ din`;
+    else
+        msg = `${Math.floor((broj / 100)) * 100}+ din`
+    
+    return msg + ' ' + append;
+}
+
 export function getProfileUrl(userType : UserType, id : string) : string {
     let url : string = '';
     if(userType === UserType.Nedefinisano)

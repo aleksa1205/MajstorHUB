@@ -45,6 +45,8 @@
   font: inherit;
   padding: 0.5rem;
   border: none !important;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
   /* border-radius: 7px;
   border: 2px solid #efded3;
   transition: all 0.15s ease-in-out; */
@@ -99,6 +101,6 @@
 @media (width < 600px) {
   .form {
     width: auto;
-    padding: 1rem 3rem;
+    padding: 1rem 2rem;
   }
 }

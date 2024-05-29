@@ -1,8 +1,9 @@
 import UserType, { userToPath } from "../../lib/UserType";
 import { isAxiosError } from "axios";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse } from '../DTO-s/responseTypes';
+import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, userDataType } from '../DTO-s/responseTypes';
 import { userDataUpdateType } from "../DTO-s/updateSelfTypes";
+import { FilterDTO } from "../DTO-s/FilterRequest";
 
 export class SessionEndedError  extends Error {
     constructor(message?: string) {
@@ -103,6 +104,112 @@ function useUserControllerAuth(type : UserType) {
                     switch(error.response.status) {
                         case 401:
                             throw new SessionEndedError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
+        },
+
+        filter: async function(filter : FilterDTO) : Promise<false | userDataType[]>  {
+            try {
+                const response = await axiosPrivate.post(`${UserType[type]}/Filter`,
+                    JSON.stringify(filter),
+                    { headers: {'Content-Type': 'application/json'} }
+                );
+
+                const data : userDataType[] = response.data;
+                data.forEach(el => {
+                    switch (type) {
+                        case UserType.Korisnik:
+                            el.userType = UserType.Korisnik
+                            break;
+                        case UserType.Majstor:
+                            el.userType = UserType.Majstor;
+                            break
+                        case UserType.Firma:
+                            el.userType = UserType.Firma;
+                            break
+                    }
+                })
+                return data;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 404:
+                            return false;
+                        case 401:
+                            throw new SessionEndedError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
+        },
+        deposit: async function(amount : number) : Promise<boolean> {
+            try {
+                await axiosPrivate.patch(`${UserType[type]}/Deposit`,
+                    JSON.stringify(amount),
+                    {headers: {'Content-Type': 'application/json'}}
+                );
+
+                return true;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 401:
+                            throw new SessionEndedError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
+        },
+        withdraw: async function(amount : number) : Promise<boolean> {
+            try {
+                await axiosPrivate.patch(`${UserType[type]}/Withdraw`,
+                    JSON.stringify(amount),
+                    {headers: {'Content-Type': 'application/json'}}
+                );
+
+                return true;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 401:
+                            throw new SessionEndedError();
+                        case 406:
+                            throw new Error('Nemate pravo da skinete vise novca sa racuna nego sto imate');
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

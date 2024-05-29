@@ -89,28 +89,11 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var korisnik = await _korisnikService.GetById(id);
+            var korisnik = await _korisnikService.GetByIdDto(id);
             if (korisnik == null)
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
-
-            var getResponse = new GetKorisnikResponse
-            {
-                Id = korisnik.Id,
-                Ime = korisnik.Ime,
-                Prezime = korisnik.Prezime,
-                Email = korisnik.Email,
-                Adresa = korisnik.Adresa,
-                DatumKreiranjaNaloga = korisnik.DatumKreiranjaNaloga,
-                JMBG = korisnik.JMBG,
-                NovacNaSajtu = korisnik.NovacNaSajtu,
-                BrojTelefona = korisnik.BrojTelefona,
-                DatumRodjenja = korisnik.DatumRodjenja,
-                Opis = korisnik.Opis,
-                Potroseno = korisnik.Potroseno,
-                Slika = korisnik.Slika
-            };
             
-            return Ok(getResponse);
+            return Ok(korisnik);
         }
         catch (Exception e)
         {
@@ -455,6 +438,84 @@ public class KorisnikController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Deposit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Deposit([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 500)
+                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+
+            var postojecaFirma = await _korisnikService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _korisnikService.UpdateMoney(id, amount);
+            return Ok($"Korisnik sa ID-em {id} je uspesno uplatio novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Withdraw")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Withdraw([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 1000)
+                return BadRequest("Ne mozete isplatiti manje od 1000\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+
+            var postojecaFirma = await _korisnikService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            if ((postojecaFirma.NovacNaSajtu - amount) < 0)
+            {
+                return new ObjectResult("Ne mozete skinuti vise nego sto imate na racunu")
+                {
+                    StatusCode = StatusCodes.Status406NotAcceptable
+                };
+            }
+
+            await _korisnikService.UpdateMoney(id, -amount);
+            return Ok($"Korisnik sa ID-em {id} je uspesno podigao novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -468,6 +529,7 @@ public class KorisnikController : ControllerBase
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
+
             await _korisnikService.Delete(id);
             return Ok($"Korisnik sa ID-em {id} je uspesno obrisan!\n");
         }
@@ -477,6 +539,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("Filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -495,6 +558,7 @@ public class KorisnikController : ControllerBase
             {
                 return NotFound("Ne postoji ni jedan korisnik sa zadatim parametrima\n");
             }
+
             return Ok(filterList);
         }
         catch(Exception e)

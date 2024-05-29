@@ -1,5 +1,3 @@
-@import '../../../../vars.css';
-
 .pError {
     color: #e5212c;
     display: flex;
@@ -9,6 +7,10 @@
     margin-bottom: 1rem;
 }
 
+.error {
+  border-color: #e5212c !important;
+}
+
 .main {
   display: flex;
   align-items: center;
@@ -16,7 +18,7 @@
 }
 
 .form {
-  padding: 2rem 2rem;
+  padding: 1.5rem 2rem;
   width: 46rem;
 }
 
@@ -25,7 +27,7 @@
 }
 
 .header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -159,7 +161,7 @@
 }
 
 .btnContainer {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     display: flex;
     gap: 1rem;
     flex-direction: row-reverse;
@@ -239,6 +241,11 @@
   border: none;
 }
 
+.scroll {
+  overflow: scroll;
+  height: 400px;
+}
+
 @media (width <= 46rem) {
   .btnContainer {
     display: grid;
@@ -247,6 +254,11 @@
   .btnContainer > button:first-child,
   .btnContainer > label:first-child {
     order: 0;
+  }
+
+  .previewImage,
+  .placeholderContainer {
+    width: 60%;
   }
 
   .imageContentContainer {

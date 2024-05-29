@@ -9,7 +9,7 @@
 
 .link {
     text-decoration: none;
-    margin: 0;
+    margin: 0 0rem;
     color: black;
 }
 
@@ -48,6 +48,7 @@
 }
 
 .userInfoOptions {
+    margin-top: 0rem;
     padding: 0;
 }
 
@@ -59,7 +60,7 @@
 }
 
 .userInfoOptions li:first-child {
-    margin-top: -1.5rem;
+    /* margin-top: -1.5rem; */
 }
 
 .userInfoOptions li:hover {
@@ -74,4 +75,10 @@
 
 .userInfoOptions li > div > p {
     margin: 0;
+}
+
+@media (width <= 1000) {
+    .nav {
+        display: block !important;
+    }
 }

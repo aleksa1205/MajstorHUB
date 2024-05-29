@@ -88,33 +88,13 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            var majstor =  await _majstorService.GetById(id);
+            var majstor =  await _majstorService.GetByIdDto(id);
             if (majstor == null)
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
 
-            var getResponse = new GetMajstorResponse
-            {
-                JMBG = majstor.JMBG,
-                DatumRodjenja = majstor.DatumRodjenja,
-                Ime = majstor.Ime,
-                Prezime = majstor.Prezime,
-                DatumKreiranjaNaloga = majstor.DatumKreiranjaNaloga,
-                Email = majstor.Email,
-                NovacNaSajtu = majstor.NovacNaSajtu,
-                Slika = majstor.Slika,
-                Adresa = majstor.Adresa,
-                BrojTelefona = majstor.BrojTelefona,
-                CenaPoSatu = majstor.CenaPoSatu,
-                Id = majstor.Id,
-                Iskustvo = majstor.Iskustvo,
-                Opis = majstor.Opis,
-                Struka = majstor.Struka,
-                Zaradjeno = majstor.Zaradjeno
-            };
-
-            return Ok(getResponse);
+            return Ok(majstor);
         }
         catch(Exception ex)
         {
@@ -455,6 +435,83 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
+    [HttpPatch("Deposit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Deposit([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 500)
+                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+
+            var postojecaFirma = await _majstorService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
+            }
+
+            await _majstorService.UpdateMoney(id, amount);
+            return Ok($"Majstor sa ID-em {id} je uspesno uplatio novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Withdraw")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Withdraw([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 1000)
+                return BadRequest("Ne mozete isplatiti manje od 1000\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+
+            var postojecaFirma = await _majstorService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
+            }
+
+            if ((postojecaFirma.NovacNaSajtu - amount) < 0)
+            {
+                return new ObjectResult("Ne mozete skinuti vise nego sto imate na racunu")
+                {
+                    StatusCode = StatusCodes.Status406NotAcceptable
+                };
+            }
+
+            await _majstorService.UpdateMoney(id, -amount);
+            return Ok($"Majstor sa ID-em {id} je uspesno podigao novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -476,6 +533,7 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("Filter")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -494,6 +552,7 @@ public class MajstorController : ControllerBase
             {
                 return NotFound("Majstor za zadatim imenom, prezimenom i strukom nije pronadjen!\n");
             }
+
             return Ok(filterList);
         }
         catch(Exception e)

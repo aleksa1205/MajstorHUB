@@ -2,23 +2,17 @@ import classes from './NavBar.module.css';
 import { Link } from 'react-router-dom';
 import { IoMenu, IoClose } from "react-icons/io5";
 import BasicSidebar from './BasicSiderbar';
-import { useState } from 'react';
 import useLogout from '../../hooks/useLogout';
 import useAuth from '../../hooks/useAuth';
+import logo from '../../../pictures/Logo/LogoTransparent2.png'
+import useNavSidebarAnim from '../../hooks/useNavSidebarAnim';
 
 function NavBar() {
-    const [showSidebar, setShowSidebar] = useState(false);
     const logoutUser = useLogout();
     const { auth } = useAuth();
     const isLoggedIn = auth.userId !== '';
 
-    function hideSidebar() {
-        setShowSidebar(false);
-    }
-
-    function toggleSidebar() {
-        setShowSidebar(!showSidebar);
-    }
+    const { showSidebar, transition, toggleSidebar, hideSidebar } = useNavSidebarAnim();
 
 
     return (
@@ -28,7 +22,9 @@ function NavBar() {
                     <IoMenu onClick={toggleSidebar} className={classes.dropDown} size='2rem' /> :
                     <IoClose  onClick={toggleSidebar} className={classes.dropDown} size='2rem' />
                 }
-                <Link to='/' onClick={hideSidebar} className={classes.logo}>MajstorHUB</Link>
+                <Link to='/' onClick={hideSidebar} className={classes.logo}>
+                    <img className={classes.logo} src={logo} alt="MajstorHUB" />
+                </Link>
                 <Link to='/register' onClick={hideSidebar} className={`${classes.register} link`}>Registruj Se</Link>
                 <div className={classes.optionsContainer}>
                     <span>
@@ -48,7 +44,11 @@ function NavBar() {
                     <Link to='/register' className="mainButton">Registruj se</Link>
                 </div>
             </nav>
-            { showSidebar && <BasicSidebar setShowSidebar={setShowSidebar} /> }
+            {transition((style, show) => {
+                return show ? (
+                    <BasicSidebar style={style} hideSidebar={hideSidebar} />
+                ) : null;
+            })}
         </header>
     );
 }

@@ -1,7 +1,7 @@
 import UserType from "../../../lib/UserType";
 import { KorisnikDataUpdate, FirmaDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import classes from './ProfileData.module.css'
-import { base64ToUrl, formatDate } from "../../../lib/utils";
+import { base64ToUrl, formatDate, formatDouble } from "../../../lib/utils";
 import { FaUserAlt } from "react-icons/fa";
 import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
@@ -14,7 +14,6 @@ import { IoInformationCircleOutline } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
 import { createContext, useContext, useEffect, useState } from "react";
 import EditUserFormContext, { EditUserFormType } from "./EditUserForms/EditUserFormContext";
-import { easings, useTransition } from "@react-spring/web";
 import { FaEuroSign } from "react-icons/fa";
 import AddButton from "../../Theme/Buttons/AddButton";
 import useUserControllerAuth, { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";
@@ -23,6 +22,7 @@ import useLogout from "../../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import SuccessBox from "../../Theme/Boxes/SuccessBox";
 import useCurrUser from "../../../hooks/useCurrUser";
+import useModalAnimation from "../../../hooks/useModalAnimation";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -44,7 +44,6 @@ type ContextValues = {
 const SectionContext = createContext<ContextValues | null>(null);
 
 function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSuccess, success } : PropsValues) {
-    const [showModal, setShowModal] = useState(false);
     const [isChanged, setIsChanged] = useState<boolean>(false);
     const [initialUserData, _] = useState<userDataUpdateType>(userData);
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -53,12 +52,7 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
     const { showBoundary } = useErrorBoundary();
     const { updateSelf } = useUserControllerAuth(userData.userType);
     
-    const transition = useTransition(showModal, {
-        from: {t: 0, bot: '60%', scale: 0.9},
-        enter: {t: 1, bot: '50%', scale: 1},
-        leave: {t: 0, bot: '60%', scale: 0.9},
-        config: {duration: 350, easing: easings.easeInOutQuart}
-    })
+    const { closeModal, openModal, transition } = useModalAnimation();
 
     const { refetchUser } = useCurrUser();
 
@@ -79,14 +73,6 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
             !firstRun ? setSuccess(false) : setFirstRun(false);
         }
     }, [userData, initialUserData])
-
-    function closeModal() {
-        setShowModal(false);
-    }
-
-    function openModal() {
-        setShowModal(true);
-    }
 
     async function saveHandler() {
         try {
@@ -255,7 +241,7 @@ function UserSpecificDataSection() {
                     <div className={classes.containerWithButton}>
                         <div className={classes.textWithInfo}>
                             <span className={classes.bold}>Trenutno Stanje: </span>{' '}
-                            {userDataPriv.novacNaSajtu} din
+                            {Math.round(userDataPriv.novacNaSajtu)} din
                             <span className={classes.iconInline}>
                                 <Tooltip infoText="Drugi korisnici ne mogu da vide ovo polje" width="250px">
                                     <IoInformationCircleOutline size='1rem' />
@@ -268,13 +254,19 @@ function UserSpecificDataSection() {
 
                 {userDataPriv.userType === UserType.Korisnik && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno potroseno: </span>  {userDataPriv.potroseno} din</p>
+                        <p><span className={classes.bold}>Ukupno potroseno: </span> {' '}
+                        { isCurrUser 
+                          ? `${Math.round(userDataPriv.potroseno)} din` 
+                          : formatDouble(userDataPriv.potroseno, 'potroseno') }</p>
                     </div>
                 )}
 
                 {(userDataPriv.userType === UserType.Majstor || userDataPriv.userType === UserType.Firma) && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno zaradjeno: </span>  {userDataPriv.zaradjeno} din</p>
+                        <p><span className={classes.bold}>Ukupno zaradjeno: </span> {' '}
+                         { isCurrUser
+                           ? `${Math.round(userDataPriv.zaradjeno)} din`
+                           : formatDouble(userDataPriv.zaradjeno, 'potroseno')}</p>
                     </div>
                 )}
             </div>

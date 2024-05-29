@@ -81,13 +81,69 @@ public class OglasController : ControllerBase
     {
         try
         {
-            var korisnik = _korisnikService.GetById(oglas.KorisnikId);
+            var korisnik = await _korisnikService.GetById(oglas.KorisnikId);
             if (korisnik is null)
                 return NotFound($"Korisnik sa ID-em {oglas.KorisnikId} ne postoji!\n");
             await _oglasService.Create(oglas);
             return Ok($"Oglas sa ID-em {oglas.Id} uspesno dodat!\n");
         }
         catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPost("Postavi")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PostaviOglas(CreateOglasDTO oglasDto)
+    {
+        try
+        {
+            var korisnikId = HttpContext.User.Identity?.Name;
+            if (korisnikId is null)
+                return BadRequest("Nemate ID u tokenu");
+
+            var korisnik = await _korisnikService.GetById(korisnikId);
+            if (korisnik is null)
+                return NotFound($"Korisnik sa ID-em {korisnikId} ne postoji");
+
+            if (oglasDto.Iskustvo == Iskustvo.Nedefinisano)
+                return BadRequest("Iskustvo ne moze da bude nedefinisano");
+
+            if (oglasDto.DuzinaPosla == DuzinaPosla.Nedefinisano)
+                return BadRequest("Duzina posla ne moze da bude nedefinisana");
+
+            if (oglasDto.Struke.Count == 0)
+                return BadRequest("Lista struka ne moze da bude prazna");
+
+            if (oglasDto.Cena < 500 || oglasDto.Cena > 1000000)
+                return BadRequest("Cena oglasa mora da bude izmedju 500 i 1000000 dinara");
+
+            var oglas = new Oglas
+            {
+                Cena = oglasDto.Cena,
+                KorisnikId = korisnikId,
+                Naslov = oglasDto.Naslov,
+                Opis = oglasDto.Opis,
+                DuzinaPosla = oglasDto.DuzinaPosla,
+                Iskustvo = oglasDto.Iskustvo,
+                Lokacija = oglasDto.Lokacija,
+                Struke = oglasDto.Struke
+            };
+
+            await _oglasService.Create(oglas);
+
+            korisnik.OglasiId.Add(oglas.Id!);
+            await _korisnikService.Update(korisnikId, korisnik);
+
+            return Ok($"Oglas sa ID-em {oglas.Id} uspesno dodat!\n");
+
+        }
+        catch (Exception ex)
         {
             return BadRequest(ex.Message);
         }
