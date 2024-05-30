@@ -4,6 +4,7 @@
     align-content: center;
     /* height: calc(100vh - 220px);
     margin-top: 96px; */
+    overflow: hidden;
 }
 
 hr {
@@ -39,7 +40,7 @@ hr {
 .form h3 {
     margin-bottom: 1.75rem;
     text-align: center;
-    font-family: Caveat, Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-family: Kalam, Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
 }
 
 .form label {
@@ -91,10 +92,4 @@ hr {
 
 .errorCheckBox {
   border-color: #e5212c !important;
-}
-
-@media (width < 680px) {
-  .form {
-    width: none !important;
-  }
 }

@@ -1,4 +1,7 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Filter;
+using MajstorHUB.Requests.Register;
+using MajstorHUB.Requests.UpdateSelf;
 using System.Runtime.Intrinsics.X86;
 
 namespace MajstorHUB.Controllers;
@@ -54,6 +57,8 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,6 +80,7 @@ public class KorisnikController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -83,9 +89,10 @@ public class KorisnikController : ControllerBase
     {
         try
         {
-            var korisnik = await _korisnikService.GetById(id);
+            var korisnik = await _korisnikService.GetByIdDto(id);
             if (korisnik == null)
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            
             return Ok(korisnik);
         }
         catch (Exception e)
@@ -174,13 +181,17 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [HttpPost("Login/{email}/{password}")]
+    [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Login(string email, string password)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(LoginDTO loginDto)
     {
         try
         {
+            string email = loginDto.Email;
+            string password = loginDto.Password;
+
             if (!UtilityCheck.IsValidEmail(email))
                 return BadRequest("Pogresna format email-a!");
 
@@ -192,10 +203,18 @@ public class KorisnikController : ControllerBase
 
             if (!hashPassword)
             {
-                return BadRequest("Pogresna sifra!\n");
+                return Unauthorized("Pogresna sifra!\n");
             }
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
+
+            List<string> roles = new List<string>();
+
+            foreach(var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
 
             var refresh = new RefreshToken
             {
@@ -208,9 +227,12 @@ public class KorisnikController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = korisnik.Ime + ' ' + korisnik.Prezime,
+                UserId = korisnik.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                RefreshToken = refresh
+                RefreshToken = refresh,
+                Roles = roles
             });
         }
         catch (Exception e)
@@ -231,7 +253,7 @@ public class KorisnikController : ControllerBase
             var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
-                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+                return Unauthorized("Nemas token"); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
 
             // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
             // sekude od datuma 01.01.1970 00:00:00
@@ -242,19 +264,29 @@ public class KorisnikController : ControllerBase
                 .AddSeconds(expiryDateUnix);
 
             if (expiryDateTimeUtc > DateTime.UtcNow)
-                return Unauthorized();
+                return Unauthorized("Refresh token jos nije istekao");
 
             var korisnik = await _korisnikService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-            if (korisnik is null ||
-                korisnik.RefreshToken?.JwtId != jwtId ||
-                korisnik.RefreshToken.TokenValue != model.RefreshToken ||
-                korisnik.RefreshToken.Expiry < DateTime.UtcNow
-                )
-                    return Unauthorized();
+            if (korisnik is null)
+                return Unauthorized("Ne mozemo da nadjemo korisnika sa tim id-em u bazi");
+            if (korisnik.RefreshToken?.JwtId != jwtId)
+                return Unauthorized("Refresh token nije vezan za taj JWT");
+            if (korisnik.RefreshToken.TokenValue != model.RefreshToken)
+                    return Unauthorized("Refresh token se ne poklapa sa onim u bazi");
+            if (korisnik.RefreshToken.Expiry < DateTime.UtcNow)
+                return Unauthorized("Refresh token je istekao, ne smes ovaj endpoint da zoves tako");
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
 
             var refresh = new RefreshToken
             {
@@ -267,9 +299,11 @@ public class KorisnikController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = korisnik.Ime + ' ' + korisnik.Prezime,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = refresh,
-                Expiration = token.ValidTo
+                Expiration = token.ValidTo,
+                Roles = roles
             });
         }
         catch (Exception e)
@@ -347,7 +381,8 @@ public class KorisnikController : ControllerBase
                 return BadRequest("JMBG mora da zadrzi 13 broja");
             if ((await _korisnikService.GetByJmbg(korisnik.JMBG)) != null)
                 return BadRequest($"Korisnik sa JMBG-om {korisnik.JMBG} vec postoji!\n");
-            if ((await _korisnikService.GetByEmail(korisnik.Email)) != null)
+            var obj = await _korisnikService.GetByEmail(korisnik.Email);
+            if (obj != null && obj.Email != korisnik.Email)
                 return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
 
             var postojeciKorisnik = await _korisnikService.GetById(id);
@@ -357,6 +392,122 @@ public class KorisnikController : ControllerBase
             }
             await _korisnikService.Update(id, korisnik);
             return Ok($"Korisnik sa ID-em {id} je uspesno azuriran!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(KorisnikUpdateSelf korisnik)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            if (!UtilityCheck.IsValidEmail(korisnik.Email))
+                return BadRequest("Format emaila pogresan");
+
+            var obj = await _korisnikService.GetByEmail(korisnik.Email);
+            if (obj != null && obj.Email != korisnik.Email)
+                return BadRequest($"Korisnik sa Email-om {korisnik.Email} vec postoji!\n");
+
+            var postojeciKorisnik = await _korisnikService.GetById(id);
+            if (postojeciKorisnik == null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _korisnikService.UpdateSelf(id, korisnik);
+            return Ok($"Korisnik sa ID-em {id} je uspesno azuriran!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Deposit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Deposit([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 500)
+                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+
+            var postojecaFirma = await _korisnikService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _korisnikService.UpdateMoney(id, amount);
+            return Ok($"Korisnik sa ID-em {id} je uspesno uplatio novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Withdraw")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Withdraw([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 1000)
+                return BadRequest("Ne mozete isplatiti manje od 1000\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+
+            var postojecaFirma = await _korisnikService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            if ((postojecaFirma.NovacNaSajtu - amount) < 0)
+            {
+                return new ObjectResult("Ne mozete skinuti vise nego sto imate na racunu")
+                {
+                    StatusCode = StatusCodes.Status406NotAcceptable
+                };
+            }
+
+            await _korisnikService.UpdateMoney(id, -amount);
+            return Ok($"Korisnik sa ID-em {id} je uspesno podigao novac!\n");
         }
         catch (Exception e)
         {
@@ -378,10 +529,39 @@ public class KorisnikController : ControllerBase
             {
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
             }
+
             await _korisnikService.Delete(id);
             return Ok($"Korisnik sa ID-em {id} je uspesno obrisan!\n");
         }
         catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPost("Filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Filter(FilterKorisnikDto filter)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _korisnikService.Filter(filter);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Ne postoji ni jedan korisnik sa zadatim parametrima\n");
+            }
+
+            return Ok(filterList);
+        }
+        catch(Exception e)
         {
             return BadRequest(e.Message);
         }

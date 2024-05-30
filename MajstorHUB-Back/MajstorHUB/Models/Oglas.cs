@@ -10,19 +10,31 @@ public class Oglas
     [BsonElement("korisnik")]
     public required string KorisnikId { get; set; }
 
+    //[BsonElement("prijave")]
+    //public List<Prijava> Prijave { get; set; }
+
     [BsonElement("naslov")]
     public required string Naslov { get; set; }
 
-    [BsonElement("trazeno_iskustvo")]
+    [BsonElement("iskustvo")]
     public Iskustvo Iskustvo { get; set; } = Iskustvo.Nedefinisano;
 
-    [BsonElement("tip")]
-    public required Struka Tip { get; set; }
+    [BsonElement("struke")]
+    public List<Struka> Struke { get; set; } = [];
 
     [BsonElement("opis")]
-    public required string Opis{ get; set; }
+    public required string Opis { get; set; }
+
+    [BsonElement("cena")]
+    public required double Cena { get; set; }
+
+    [BsonElement("duzina_posla")]
+    public DuzinaPosla DuzinaPosla { get; set; } = DuzinaPosla.Nedefinisano;
+
+    [BsonElement("lokacija")]
+    public string? Lokacija { get; set; }
 
     [JsonIgnore]
     [BsonElement("datum_kreiranja")]
-    public DateTime DatumPostavljanja { get; set; } = DateTime.Now;
+    public DateTime DatumKreiranja { get; set; } = DateTime.Now;
 }

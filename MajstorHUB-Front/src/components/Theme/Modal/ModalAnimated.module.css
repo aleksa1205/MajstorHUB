@@ -1,0 +1,45 @@
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}
+
+
+.fullScreenContainer {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    z-index: 999;
+}
+
+.modal {
+  position: fixed;
+  margin: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  justify-content: center;
+
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: 0;
+  z-index: 999;
+}
+
+@media (width <= 46rem) {
+  .modal {
+    width: 100vw;
+  }
+}
+@media (width < 700px) {
+  .modal {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}

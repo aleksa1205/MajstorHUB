@@ -1,0 +1,12 @@
+.main {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 1rem;
+}
+
+@media (width <= 900px) {
+    .main {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}

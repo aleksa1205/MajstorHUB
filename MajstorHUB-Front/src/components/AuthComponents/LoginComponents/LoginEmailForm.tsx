@@ -1,53 +1,57 @@
 import classes from "./LoginEmailForm.module.css";
-import { Link } from "react-router-dom";
+import { Link, useLoaderData, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MdErrorOutline } from "react-icons/md";
-import UserType, { pathToUser } from "../../../lib/UserType";
+import UserType from "../../../lib/UserType";
 import { CiUser } from "react-icons/ci";
-import { ServerBaseUrl } from "../../../lib/ServerBaseUrl";
 import { useState } from "react";
 import { IoIosWarning } from "react-icons/io";
+import useUserController from "../../../api/controllers/useUserController";
+import { FaCircleInfo } from "react-icons/fa6";
+import { useErrorBoundary } from "react-error-boundary";
 
 type FromValues = {
   email: string;
 };
 
 type PropsValues = {
-  setUserTypesFound : React.Dispatch<React.SetStateAction<UserType[]>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>
-}
+  setUserTypesFound: React.Dispatch<React.SetStateAction<UserType[]>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+};
 
 function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
-  const [emailExists, setEmailExists] = useState(true);
+  const { emailExists } = useUserController();
+  const {showBoundary} = useErrorBoundary();
+  const navigate = useNavigate();
+  const message = useLoaderData();
+
+  const [doesEmailExists, setDoesEmailExists] = useState(true);
 
   const form = useForm<FromValues>();
   const { register, handleSubmit, formState } = form;
   const { errors, isSubmitting } = formState;
 
-  async function onSubmit(formData : FromValues) {
+  async function onSubmit(formData: FromValues) {
     const { email } = formData;
-    const userTypesPath = ['Korisnik', 'Majstor', 'Firma'];
-    let userTypesFound : Array<UserType> = [];
+    const userTypesArr = [UserType.Korisnik, UserType.Majstor, UserType.Firma];
+    let userTypesFound: Array<UserType> = [];
 
     // Puni niz tipovima usera koji imaju prosledjen email u bazi
-    try {
-      for(const i in userTypesPath) {
-        const url : string = `${ServerBaseUrl}/${userTypesPath[i]}/EmailExists/${email}`;
-        const response = await fetch(url);
-        if(!response.ok) console.log('Greska pri fetch-u');
-        else {
-          const data = await response.json();
-          if(data) userTypesFound.push(pathToUser(userTypesPath[i]));
-        }
+
+    for (const type of userTypesArr) {
+      let data;
+      try {
+        data = await emailExists(type, email);
+      } catch (error) {
+        showBoundary(error);
       }
-    } catch (error) {
-      console.log(error);
+
+      if (data) userTypesFound.push(type);
     }
 
-    if(userTypesFound.length == 0)
-      setEmailExists(false);
+    if (userTypesFound.length == 0) setDoesEmailExists(false);
     else {
-      setEmailExists(true);
+      setDoesEmailExists(true);
       setEmail(email);
       setUserTypesFound(userTypesFound);
     }
@@ -55,18 +59,38 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
 
   return (
     <>
-      {!emailExists && (
-        <div className='warrningBox'>
-          <IoIosWarning size='1.25rem' className={classes.warningIcon} />
+      {(message && typeof message === 'string') && (
+        <div className="infoBox">
+          <FaCircleInfo size="1.25rem" />
+          <div>
+            <p>{message}</p>
+          </div>
+        </div>
+      )}
+
+      {!doesEmailExists && (
+        <div className="warrningBox">
+          <IoIosWarning size="1.25rem" className={classes.warningIcon} />
           <div>
             <p>Email koji ste uneli ne postoji</p>
           </div>
         </div>
       )}
-      <form className={`${classes.form}`} noValidate onSubmit={handleSubmit(onSubmit)}>
+
+      <form
+        className={`${classes.form}`}
+        noValidate
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <h3>Ulogujte se na MajstorHub</h3>
         <div className={classes.formControl}>
-          <div className={classes.inputGroup + ' ' + `${errors.email ? `${classes.error}` : ""}`}>
+          <div
+            className={
+              classes.inputGroup +
+              " " +
+              `${errors.email ? `${classes.error}` : ""}`
+            }
+          >
             <CiUser size="2rem" className={classes.inputIcon} />
             <input
               type="text"
@@ -84,23 +108,25 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
               })}
             />
           </div>
-          <p>
+          <p className={classes.pError}>
             {errors.email?.message && <MdErrorOutline />}
             {errors.email?.message}
           </p>
         </div>
 
         <div className={`${classes.center} ${classes.formControl}`}>
-          <button disabled={isSubmitting} className={"mainButton" + ' ' + `${isSubmitting ? 'button--loading' : ''}`}>
+          <button
+            disabled={isSubmitting}
+            className={
+              "mainButton" + " " + `${isSubmitting ? "button--loading" : ""}`
+            }
+          >
             <span className="button__text">Nastavi</span>
           </button>
         </div>
         <div className={`${classes.register} ${classes.formControl}`}>
           <p className="separator">Nemate Nalog?</p>
-          <Link
-            to="/register"
-            className='secondaryButton'
-          >
+          <Link to="/register" className="secondaryButton">
             Registrujte Se
           </Link>
         </div>

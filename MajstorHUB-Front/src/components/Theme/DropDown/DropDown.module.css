@@ -1,0 +1,71 @@
+.main {
+  /* background-color: var(--color-blue-200); */
+  padding: 1rem 0;
+  position: relative;
+}
+
+.heading {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 8px;
+  padding: 0.75rem;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: 0.4rem;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.15s ease-in-out;
+}
+.heading:hover {
+  border-color: var(--color-neutral-900);
+}
+.heading:active {
+    border-color: var(--color-main-500);
+    background-color: var(--color-main-25);
+}
+
+.heading p {
+  margin: 0;
+  font-weight: bold;
+}
+
+.main ul {
+  position: absolute;
+  top: 70px;
+  background-color: white;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 5px;
+  z-index: 3;
+  box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.158);
+
+  padding: 1.5rem;
+  margin: 0;
+
+  /* Allow the list items to expand independently */
+  width: max-content;
+  min-width: 100%; /* Ensure the list is at least as wide as the parent */
+  white-space: nowrap; /* Prevent line breaks */
+  overflow: hidden; /* Hide overflowing content */
+}
+
+.main ul li {
+  font-weight: 300;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+.arrow {
+  transition: all 0.2s ease-in-out;
+  transform: rotate(180deg);
+}
+
+.arrowDown {
+  transform: rotate(360deg);
+}
+
+.item {
+  list-style-type: none;
+  cursor: default;
+  padding-inline: 1rem;
+  margin-top: 1rem;
+}

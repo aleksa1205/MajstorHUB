@@ -1,4 +1,6 @@
 ﻿using MajstorHUB.Authorization;
+using MajstorHUB.Requests.Filter;
+using MajstorHUB.Requests.Register;
 using System.Collections.Immutable;
 
 namespace MajstorHUB.Controllers;
@@ -54,7 +56,6 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [Authorize]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -66,6 +67,7 @@ public class FirmaController : ControllerBase
             var firme = await _firmaService.GetAll();
             if (firme.Count == 0)
                 return NotFound("Nijedna firma ne postoji u bazi!\n");
+
             return Ok(firme);
         }
         catch (Exception e)
@@ -74,6 +76,7 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,9 +85,10 @@ public class FirmaController : ControllerBase
     {
         try
         {
-            var firma = await _firmaService.GetById(id);
+            var firma = await _firmaService.GetByIdDto(id);
             if (firma == null)
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+
             return Ok(firma);
         }
         catch (Exception e)
@@ -168,13 +172,17 @@ public class FirmaController : ControllerBase
         }
     }
 
-    [HttpPost("Login/{email}/{password}")]
+    [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Login(string email, string password)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(LoginDTO loginDto)
     {
         try
         {
+            string email = loginDto.Email;
+            string password = loginDto.Password;
+
             if (!UtilityCheck.IsValidEmail(email))
                 return BadRequest("Pogresan format email-a!");
 
@@ -186,10 +194,18 @@ public class FirmaController : ControllerBase
 
             if (!hashPassword)
             {
-                return BadRequest("Pogresna sifra!\n");
+                return Unauthorized("Pogresna sifra!\n");
             }
 
             var token = new JwtProvider(_configuration).Generate(firma);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
 
             var refresh = new RefreshToken
             {
@@ -202,9 +218,12 @@ public class FirmaController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = firma.Naziv,
+                UserId = firma.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                RefreshToken = refresh
+                RefreshToken = refresh,
+                Roles = roles
             });
 
         }
@@ -226,7 +245,7 @@ public class FirmaController : ControllerBase
             var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
-                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
 
             // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
             // sekude od datuma 01.01.1970 00:00:00
@@ -250,6 +269,15 @@ public class FirmaController : ControllerBase
                     return Unauthorized();
 
             var token = jwtProvider.Generate(firma);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
+
             var newRefreshToken = new RefreshToken
             {
                 TokenValue = RefreshProvider.GenerateRefreshToken(),
@@ -261,9 +289,11 @@ public class FirmaController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = firma.Naziv,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
-                Expiration = token.ValidTo
+                Expiration = token.ValidTo,
+                Roles = roles
             });
         }
         catch (Exception e)
@@ -358,6 +388,126 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Firma)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(FirmaUpdateSelf firma)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            if (!UtilityCheck.IsValidEmail(firma.Email))
+                return BadRequest("Format emaila pogresan");
+            if (!UtilityCheck.IsValidStruke(firma.Struke))
+                return BadRequest("Maksimalan broj struka za firmu je 15");
+
+            var obj = await _firmaService.GetByEmail(firma.Email);
+            if (obj != null && obj.Email != firma.Email)
+                return BadRequest($"Firma sa Email-om {firma.Email} vec postoji!\n");
+
+            var postojecaFirma = await _firmaService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+            }
+
+            await _firmaService.UpdateSelf(id, firma);
+            return Ok($"Firma sa ID-em {id} je uspesno azurirana!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Firma)]
+    [HttpPatch("Deposit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Deposit([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 500)
+                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+
+            var postojecaFirma = await _firmaService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+            }
+
+            await _firmaService.UpdateMoney(id, amount);
+            return Ok($"Firma sa ID-em {id} je uspesno uplatila novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Firma)]
+    [HttpPatch("Withdraw")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    public async Task<IActionResult> Withdraw([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 1000)
+                return BadRequest("Ne mozete isplatiti manje od 1000\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+
+            var postojecaFirma = await _firmaService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+            }
+
+            if ((postojecaFirma.NovacNaSajtu - amount) < 0)
+            {
+                return new ObjectResult("Ne mozete skinuti vise nego sto imate na racunu")
+                {
+                    StatusCode = StatusCodes.Status406NotAcceptable
+                };
+
+            }
+
+            await _firmaService.UpdateMoney(id, -amount);
+            return Ok($"Firma sa ID-em {id} je uspesno podigla novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -375,6 +525,34 @@ public class FirmaController : ControllerBase
             return Ok($"Firma sa ID-em {id} je uspesno obrisana!\n");
         }
         catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPost("Filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Filter(FilterFirmaDTO filter)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _firmaService.Filter(filter);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Firma sa zadatim nazivom i strukom nije pronadjena!\n");
+            }
+
+            return Ok(filterList);
+        }
+        catch(Exception e)
         {
             return BadRequest(e.Message);
         }

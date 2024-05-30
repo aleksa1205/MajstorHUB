@@ -1,0 +1,85 @@
+.mainDiv {
+    position: absolute;
+    right: 0;
+    top: 40px;
+
+    display: flex;
+    flex-direction: column;
+    width: 15rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.158);
+    background-color: white;
+}
+
+.link {
+    text-decoration: none;
+    color: black;
+}
+
+.userInfo {
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+    align-items: center;
+}
+
+.userInfo > div > p {
+    margin: 0;
+}
+
+.userInfo img {
+    width: 4rem;
+    border-radius: 100%;
+}
+
+.imePrezime {
+    font-weight: bold;
+}
+    
+.triangle {
+    width: 0;
+    height: 0;
+    border: 17px solid transparent;
+    border-top: 0;
+    border-bottom: 30px solid white;
+    position: absolute;
+    z-index: 1;
+    overflow: hidden;
+
+    right: 0px;
+    top: -15px;
+}
+
+.mainDiv > ul {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    z-index: 3;
+}
+
+.item {
+    display: flex;
+    gap: 1rem;
+}
+
+.mainDiv > ul > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid #c2c8d2;
+}
+
+.item {
+    list-style-type: none;
+    margin: 0;
+    padding: 1rem 1rem 1rem 1rem;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.item:hover {
+    background-color: #faf4f0;
+}

@@ -1,0 +1,72 @@
+.main {
+    height: calc(100vh - 192px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.success {
+    background-color: #d9f2e3;
+    color: #038839;
+    border-inline: 5px solid #038839;
+    border-radius: 20px;
+    padding: 5rem;
+}
+
+.succes h3, .error h3 {
+    margin: 2rem 0 2rem 0;
+}
+
+.error {
+    background-color: #f6dcdd;
+    color: #bb121c;
+    border-inline: 5px solid #bb121c;
+    border-radius: 20px;
+    padding: 5rem;
+}
+
+.errorButton, 
+.errorButton2 {
+    padding: 1rem;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    text-decoration: none;
+    border-radius: 100px;
+    font-weight: bold;
+    transition: all 0.15s ease-in-out;
+    margin-right: 1rem;
+}
+
+.errorButton {
+    background-color: var(--color-red-700);
+    color: var(--color-red-100);
+}
+
+.errorButton:hover {
+    background-color: var(--color-red-600);
+}
+
+.errorButton2 {
+    background-color: var(--color-red-500);
+    color: var(--color-red-100);
+}
+.errorButton2:hover {
+    background-color: var(--color-red-400);
+}
+
+.link {
+    color: #0dd75f;
+    transition: all 0.1s ease-in-out;
+}
+
+.link:hover {
+    color: #038839;
+}
+
+@media (width < 840px) {
+    .error, .success {
+        padding: 3rem;
+    }
+}

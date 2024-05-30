@@ -7,15 +7,17 @@ public class Korisnik : User
     public required string JMBG { get; set; }
 
     [BsonElement("ime")]
-    public required string Ime { get; set; }
+    public string? Ime { get; set; }
 
     [BsonElement("prezime")]
-    public required string Prezime { get; set; }
+    public string? Prezime { get; set; }
 
     [BsonElement("datum_rodjenja")]
     public DateTime? DatumRodjenja { get; set; }
 
-    [JsonIgnore]
     [BsonElement("potroseno_na_sajtu")]
     public double Potroseno { get; set; } = 0;
+
+    [BsonElement("oglasi")]
+    public List<string> OglasiId { get; set; } = [];
 }

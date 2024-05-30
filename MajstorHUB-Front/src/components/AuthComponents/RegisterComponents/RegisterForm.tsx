@@ -1,10 +1,12 @@
 import classes from "./RegisterForm.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 import { MdErrorOutline } from "react-icons/md";
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
-import UserType from "../../../lib/UserType";
+import UserType, { userToPath } from "../../../lib/UserType";
+import useUserController from "../../../api/controllers/useUserController";
+import { useErrorBoundary } from "react-error-boundary";
 
 type FormValues = {
   ime?: string;
@@ -39,38 +41,18 @@ type PropsValue = {
 };
 
 function RegisterForm({ formType, setSelected }: PropsValue) {
+  const { emailExists, jmbgExists, pibExists, register: registerUser } = useUserController();
+  const { showBoundary } = useErrorBoundary();
+  const navigate = useNavigate();
+
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState, watch } = form;
   const { errors, isSubmitting } = formState;
-
-  let formTypeString: string;
-  let userUrl: string;
-  switch (formType) {
-    case UserType.Korisnik:
-      formTypeString = "Klijent";
-      userUrl = "https://localhost:7163/Korisnik";
-      break;
-    case UserType.Majstor:
-      formTypeString = "Majstor";
-      userUrl = "https://localhost:7163/Majstor";
-      break;
-    case UserType.Firma:
-      formTypeString = "Firma";
-      userUrl = "https://localhost:7163/Firma";
-      break;
-    default:
-      formTypeString = "Nepoznato";
-      userUrl = "Nepoznato";
-      console.error("Prosledjen pogresan tip forme");
-      break;
-  }
 
   const password = watch("sifra");
 
   const onSubmit = async (formData: FormValues) => {
     // console.log("Form submitted", formData);
-
-    const url = `${userUrl}/register`;
     let sendData : FirmaDto | KorisnikDto;
 
     if(formType == UserType.Korisnik || formType == UserType.Majstor) {
@@ -91,29 +73,15 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       }
     }
 
+    let data;
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sendData)
-      });
-
-      console.log(response.status);
-      const data = await response.text();
-
-      if(response.status == 200) {
-        setSelected(UserType.Uspesno);
-      }
-      else {
-        console.error(data);
-        setSelected(UserType.Neuspesno);
-      }
+      data = await registerUser(formType, sendData);
       
     } catch (error) {
-      console.error(error);
+      showBoundary(error);
     }
+    
+    navigate('/success');
   };
 
   // Specificne form control-e za svakog vrsta usera
@@ -135,6 +103,14 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="ime"
             {...register("ime", {
               required: "Ime je obavezno polje",
+              minLength: {
+                value: 4,
+                message: 'Mora barem 4 karaktera'
+              },
+              maxLength: {
+                value: 15,
+                message: 'Maksimum 15 karaktera'
+              },
               pattern: {
                 value: /^[a-zA-Z]+$/,
                 message: "Ime mora da zadrzi samo slova",
@@ -154,6 +130,14 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="prezime"
             {...register("prezime", {
               required: "Prezime je obavezno polje",
+              minLength: {
+                value: 4,
+                message: 'Mora barem 4 karaktera'
+              },
+              maxLength: {
+                value: 15,
+                message: 'Maksimum 15 karaktera'
+              },
               pattern: {
                 value: /^[a-zA-Z]+$/,
                 message: "Prezime mora da zadrzi samo slova",
@@ -191,11 +175,22 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               message: "JMBG mora da sadrži samo brojeve",
             },
             validate: async (fieldValue) => {
-              const url = `${userUrl}/JmbgExists/${fieldValue}`;
-              const response = await fetch(url);
-              const data = await response.json();
-              console.log('Cekaj kenjam (jmbg)');
+              let data;
+              
+              try {
+                if(typeof fieldValue === 'string')
+                  data = await jmbgExists(formType, fieldValue)                
+              } catch (error) {
+                showBoundary(error);
+              }
+              
               return !data || 'JMBG vec postoji';
+              
+              // const url = `${userUrl}/JmbgExists/${fieldValue}`;
+              // const response = await fetch(url);
+              // const data = await response.json();
+              // console.log('Cekaj kenjam (jmbg)');
+              // return !data || 'JMBG vec postoji';
             }
           })}
         />
@@ -205,7 +200,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         </p>
       </div>
     );
-  } else {
+  } else if(formType == UserType.Firma) {
     imeFirmeFormControl = (
       <div className={classes.formControl}>
         <label htmlFor="imeFirme">Ime Firme</label>
@@ -216,8 +211,16 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           {...register("imeFirme", {
             required: "Ime firme je obavezno polje",
             pattern: {
-              value: /^[a-zA-Z]+$/,
-              message: "Ime firme mora da zadrzi samo slova",
+              value: /^[a-zA-Z\s]*$/,
+              message: "Ime firme mora da zadrzi samo slova i razmake",
+            },
+            minLength: {
+              value: 4,
+              message: 'Mora barem 4 karaktera'
+            },
+            maxLength: {
+              value: 30,
+              message: 'Maksimum 30 karaktera'
             },
           })}
         />
@@ -251,11 +254,23 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
               message: "PIB mora da sadrži samo brojeve",
             },
             validate: async (fieldValue) => {
-              console.log('Cekaj kenjam (pib)');
-              const url = `${userUrl}/PibExists/${fieldValue}`;
-              const response = await fetch(url);
-              const data = await response.json();
-              return !data || 'PIb vec postoji';
+              let data;
+              
+              try {
+                if(typeof fieldValue === 'string')
+                  data = await pibExists(formType, fieldValue)
+                
+              } catch (error) {
+                showBoundary(error);
+              }
+              
+              return !data || 'PIB vec postoji';
+
+              // console.log('Cekaj kenjam (pib)');
+              // const url = `${userUrl}/PibExists/${fieldValue}`;
+              // const response = await fetch(url);
+              // const data = await response.json();
+              // return !data || 'PIb vec postoji';
             }
           })}
         />
@@ -274,7 +289,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         className={`container ${classes.form}`}
         noValidate
       >
-        <h3>Pridruži se kao {formTypeString}</h3>
+        <h3>Pridruži se kao {userToPath(formType)}</h3>
         <hr />
 
         {(formType == UserType.Korisnik || formType == UserType.Majstor) && (
@@ -298,16 +313,29 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             id="email"
             {...register("email", {
               required: "Email je obavezno polje",
+              maxLength: {
+                value: 30,
+                message: 'Maksimalno 30 karaktera'
+              },
               pattern: {
                 value: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
                 message: "Format email-a neispravan",
               },
               validate: async (fieldValue) => {
-                console.log('Cekaj kenjam (email)');
-                const url = `${userUrl}/EmailExists/${fieldValue}`;
-                const response = await fetch(url);
-                const data = await response.json();
+                let data;
+                try {
+                  data = await emailExists(formType, fieldValue)
+                } catch (error) {
+                  showBoundary(error);
+                }
+                
                 return !data || 'Email vec postoji';
+
+                // console.log('Cekaj kenjam (email)');
+                // const url = `${userUrl}/EmailExists/${fieldValue}`;
+                // const response = await fetch(url);
+                // const data = await response.json();
+                // return !data || 'Email vec postoji';
               }
             })}
           />
@@ -322,7 +350,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           <input
             placeholder="Minimim 8 karaktera"
             className={errors.sifra ? `${classes.error}` : ""}
-            type="text"
+            type="password"
             id="sifra"
             {...register("sifra", {
               required: "Sifra je obavezno polje",
@@ -343,7 +371,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           <label htmlFor="ponovoSifra">Ponovite Sifru</label>
           <input
             className={errors.ponovoSifra ? `${classes.error}` : ""}
-            type="text"
+            type="password"
             id="ponovoSifra"
             {...register("ponovoSifra", {
               required: "Unesite ponovo sifru",
@@ -404,12 +432,3 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
 }
 
 export default RegisterForm;
-
-/*
-  const response = await fetch(
-  `https://localhost:7163/Korisnik/GetByEmail/${fieldValue}`
-  );
-  const data = await response.json();
-  console.log(response);
-  return data.length == 0 || "Email je vec postoji";
-*/

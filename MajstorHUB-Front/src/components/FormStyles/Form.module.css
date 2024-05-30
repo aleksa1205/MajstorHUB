@@ -1,0 +1,125 @@
+.pError {
+  color: #e5212c;
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.error {
+  border-color: #e5212c !important;
+}
+
+.form select {
+  width: 100%;
+}
+
+.form h3 {
+  margin: 0;
+  margin-bottom: 4rem;
+}
+
+.form ul {
+  margin-top: 0;
+  font-weight: 300;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: bold;
+}
+
+.inputGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  margin-right: 1rem;
+
+  min-width: 26rem;
+
+  border-radius: 100px;
+  border: 2px solid #efded3;
+  transition: all 0.15s ease-in-out;
+}
+
+.inputIcon {
+  padding: 0.5rem;
+  padding-right: 0;
+}
+
+.form input {
+  display: block;
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+  border: none !important;
+  /* border-radius: 7px;
+        border: 2px solid #efded3;
+        transition: all 0.15s ease-in-out; */
+}
+
+.form input:focus {
+  outline: none;
+}
+
+.inputGroup:hover {
+  border-color: #f5aa7a;
+}
+
+.inputGroup:has(> input:focus) {
+  border-color: #f57624;
+}
+
+.form textarea {
+  border: 2px solid var(--color-main-100);
+  border-radius: 7px;
+  width: 100%;
+  font: inherit;
+  resize: vertical;
+  transition: border 0.15s ease-in-out;
+  line-height: 1.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.form input:hover,
+.form textarea:hover {
+  border-color: #f5aa7a;
+}
+
+.form input:disabled {
+  cursor: not-allowed;
+  background-color: var(--color-main-100);
+  color: var(--color-neutral-300);
+}
+.form input:hover:disabled {
+  border-color: var(--color-main-100);
+}
+
+.form input:focus,
+.form textarea:focus {
+  outline: none;
+  border-color: #f57624;
+}
+
+.btnContainer {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-direction: row-reverse;
+}
+
+@media (width <= 46rem) {
+  .btnContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .btnContainer > button:first-child,
+  .btnContainer > label:first-child {
+    order: 0;
+  }
+}

@@ -1,4 +1,6 @@
 ﻿using MajstorHUB.Models;
+using MajstorHUB.Requests.Filter;
+using MajstorHUB.Requests.Register;
 using MajstorHUB.Services.MajstorService;
 
 namespace MajstorHUB.Controllers;
@@ -54,6 +56,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,6 +79,7 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -83,11 +88,12 @@ public class MajstorController : ControllerBase
     {
         try
         {
-            var majstor =  await _majstorService.GetById(id);
+            var majstor =  await _majstorService.GetByIdDto(id);
             if (majstor == null)
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
+
             return Ok(majstor);
         }
         catch(Exception ex)
@@ -175,13 +181,17 @@ public class MajstorController : ControllerBase
         }
     }
 
-    [HttpPost("Login/{email}/{password}")]
+    [HttpPost("Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Login(string email, string password)
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Login(LoginDTO loginDto)
     {
         try
         {
+            string email = loginDto.Email;
+            string password = loginDto.Password;
+
             if (!UtilityCheck.IsValidEmail(email))
                 return BadRequest("Pogresna format email-a!");
 
@@ -193,10 +203,18 @@ public class MajstorController : ControllerBase
 
             if (!hashPassword)
             {
-                return BadRequest("Pogresna sifra!\n");
+                return Unauthorized("Pogresna sifra!\n");
             }
 
             var token = new JwtProvider(_configuration).Generate(majstor);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
 
             var refresh = new RefreshToken
             {
@@ -209,9 +227,12 @@ public class MajstorController : ControllerBase
 
             return Ok(new LoginResponse
             {
+                Naziv = majstor.Ime + ' ' + majstor.Prezime,
+                UserId = majstor.Id!,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
-                RefreshToken = refresh
+                RefreshToken = refresh,
+                Roles = roles
             });
         }
         catch (Exception e)
@@ -232,7 +253,7 @@ public class MajstorController : ControllerBase
             var principal = jwtProvider.GetPrincipalFromExpiredToken(model.JwtToken);
 
             if (principal?.Identity?.Name is null)
-                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan zbog bezbednosnih razloga
+                return Unauthorized(); // ne prikazuje se greska korisniku zasto nije autorizovan iz bezbednosnih razloga
 
             // Provera datuma access tokena, malo je komplikovano jer se datum isteka tokena pamti kao
             // sekude od datuma 01.01.1970 00:00:00
@@ -245,31 +266,42 @@ public class MajstorController : ControllerBase
             if (expiryDateTimeUtc > DateTime.UtcNow)
                 return Unauthorized();
 
-            var firma = await _majstorService.GetById(principal.Identity.Name);
+            var majstor = await _majstorService.GetById(principal.Identity.Name);
             var jwtId = principal.Claims.Single(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
 
-            if (firma is null ||
-                firma.RefreshToken?.JwtId != jwtId ||
-                firma.RefreshToken.TokenValue != model.RefreshToken ||
-                firma.RefreshToken.Expiry < DateTime.UtcNow
+            if (majstor is null ||
+                majstor.RefreshToken?.JwtId != jwtId ||
+                majstor.RefreshToken.TokenValue != model.RefreshToken ||
+                majstor.RefreshToken.Expiry < DateTime.UtcNow
                 )
                 return Unauthorized();
 
-            var token = jwtProvider.Generate(firma);
+            var token = jwtProvider.Generate(majstor);
+
+            List<string> roles = new List<string>();
+
+            foreach (var claim in token.Claims)
+            {
+                if (claim.Type == "Role")
+                    roles.Add(claim.Value);
+            }
+
             var newRefreshToken = new RefreshToken
             {
                 TokenValue = RefreshProvider.GenerateRefreshToken(),
                 Expiry = DateTime.UtcNow.Add(new JwtOptions(_configuration).RefreshTokenLifetime),
                 JwtId = token.Id
             };
-            await _majstorService.UpdateRefreshToken(firma.Id!, newRefreshToken);
+            await _majstorService.UpdateRefreshToken(majstor.Id!, newRefreshToken);
 
 
             return Ok(new LoginResponse
             {
+                Naziv = majstor.Ime + ' ' + majstor.Prezime,
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
-                Expiration = token.ValidTo
+                Expiration = token.ValidTo,
+                Roles = roles
             });
         }
         catch (Exception e)
@@ -363,6 +395,123 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
+    [HttpPut("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateSelf(MajstorUpdateSelf majstor)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+
+            if (id is null)
+                return Unauthorized();
+
+            Console.WriteLine(majstor.Iskustvo);
+
+            if (!UtilityCheck.IsValidEmail(majstor.Email))
+                return BadRequest("Format emaila pogresan");
+
+            var obj = await _majstorService.GetByEmail(majstor.Email);
+            if (obj != null && obj.Email != majstor.Email)
+                return BadRequest($"Majstor sa Email-om {majstor.Email} vec postoji!\n");
+
+            var postojeciMajstor = await _majstorService.GetById(id);
+            if (postojeciMajstor is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            }
+
+            await _majstorService.UpdateSelf(id, majstor);
+            return Ok($"Majstor sa ID-em {id} je uspesno azuriran!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Majstor)]
+    [HttpPatch("Deposit")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Deposit([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 500)
+                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+
+            var postojecaFirma = await _majstorService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
+            }
+
+            await _majstorService.UpdateMoney(id, amount);
+            return Ok($"Majstor sa ID-em {id} je uspesno uplatio novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("Withdraw")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Withdraw([FromBody] double amount)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+
+            if (amount < 1000)
+                return BadRequest("Ne mozete isplatiti manje od 1000\n");
+            if (amount > 200000)
+                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+
+            var postojecaFirma = await _majstorService.GetById(id);
+            if (postojecaFirma is null)
+            {
+                return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
+            }
+
+            if ((postojecaFirma.NovacNaSajtu - amount) < 0)
+            {
+                return new ObjectResult("Ne mozete skinuti vise nego sto imate na racunu")
+                {
+                    StatusCode = StatusCodes.Status406NotAcceptable
+                };
+            }
+
+            await _majstorService.UpdateMoney(id, -amount);
+            return Ok($"Majstor sa ID-em {id} je uspesno podigao novac!\n");
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -381,6 +530,34 @@ public class MajstorController : ControllerBase
         catch(Exception ex)
         {
             return BadRequest(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [HttpPost("Filter")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Filter(FIlterMajstorDTO filter)
+    {
+        try
+        {
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _majstorService.Filter(filter);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Majstor za zadatim imenom, prezimenom i strukom nije pronadjen!\n");
+            }
+
+            return Ok(filterList);
+        }
+        catch(Exception e)
+        {
+            return BadRequest(e.Message);
         }
     }
 }

@@ -1,4 +1,4 @@
-import classes from "../components/SuccErr.module.css";
+import classes from "../components/ErrorBoundary/SuccErr.module.css";
 import { Link } from "react-router-dom";
 import { FaCircleCheck } from "react-icons/fa6";
 

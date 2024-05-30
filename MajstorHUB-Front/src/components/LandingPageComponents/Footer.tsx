@@ -15,25 +15,25 @@ function Footer() {
                     <div>
                         <h3>Navigacija</h3>
                         <ul> 
-                            <li className='link'>Home</li>
-                            <li className='link'>Prijava</li>
-                            <li className='link'>Registracija</li>
+                            <li className='linkLight'>Home</li>
+                            <li className='linkLight'>Prijava</li>
+                            <li className='linkLight'>Registracija</li>
                         </ul>
                     </div>
 
                     <div>
                         <h3>Kontakt</h3>
                         <ul className={classes.contact}>
-                            <li className='link'>Instagram</li>
-                            <li className='link'>LinkedIn</li>
-                            <li className='link'>+381 61 2345678</li>
-                            <li className='link'>+381 18 1235647</li>
+                            <li className='linkLight'>Instagram</li>
+                            <li className='linkLight'>LinkedIn</li>
+                            <li className='linkLight'>+381 61 2345678</li>
+                            <li className='linkLight'>+381 18 1235647</li>
                         </ul>
                     </div>
                 </div>
 
                 <hr />
-                <p>Copyright © MajstorHUB 2024</p>
+                <p>Copyright © MajstorHUB 2024 - Perić Aleksa 18826, Cvetković Jovan 18981</p>
             </div>
         </footer>
     );

@@ -1,9 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Lugrasimo&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Lugrasimo&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap');
+@import '/src/vars.css';
 
 * {
   box-sizing: border-box;
 }
+
+/* html, body {
+  overflow-x: hidden;
+} */
 
 :root {
   min-height: 100vh;
@@ -62,26 +68,42 @@ img {
   padding-inline: 2rem;
 }
 
-.mainButton {
+@media (width <= 600px) {
+  .container {
+    padding-inline: 1rem;
+  }
+}
+
+/* ------------------------------------ Dugmici ------------------------------------ */
+
+.mainButton,
+.mainButtonSmall {
   background-color: #f57624;
-  /* color: #efded3; */
   color: white;
-  padding: 0.9rem 1.75rem;
-  border: none;
-  /* border-radius: 10px; */
   border-radius: 100px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.1s ease-in-out;
-  text-transform: uppercase;
   text-decoration: none;
   font-family: inherit;
   font-size: inherit;
+  text-align: center;
+  border: none;
 }
 
-/* Dugmici */
+.mainButton {
+  padding: 0.9rem 1.75rem;
+  text-transform: uppercase;
+}
 
-.mainButton:has(> .button__text), .secondaryButton:has(> .button__text), .lightButton:has(> .button__text) {
+.mainButtonSmall {
+  padding: 0.7rem 1.65rem;
+}
+
+.mainButton:has(> .button__text), 
+.secondaryButton:has(> .button__text), 
+.lightButton:has(> .button__text),
+.mainButtonSmall:has(> .button__text) {
   position: relative;
   display: flex;
   justify-content: center;
@@ -122,39 +144,54 @@ img {
   }
 }
 
-.mainButton:hover {
+.mainButton:hover,
+.mainButtonSmall:hover {
   background-color: #ca560c;
 }
 
-.mainButton:active {
+.mainButton:active,
+.mainButtonSmall:active {
   background-color: #8a3a06;
 }
 
-.mainButton:disabled {
+.mainButton:disabled,
+.mainButtonSmall:disabled {
   background-color: #c2c8d2;
   cursor: not-allowed;
 }
 
-.secondaryButton {
+.secondaryButton,
+.secondaryButtonSmall {
   background-color: transparent;
   color: #f57624;
-  padding: 0.81rem 1.75rem;
   border: 2px solid #f57624;
   /* border-radius: 10px; */
   border-radius: 100px;
   font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
-  text-transform: uppercase;
   text-decoration: none;
 }
 
-.secondaryButton:hover {
+.secondaryButton {
+  padding: 0.9rem 1.75rem;
+  text-transform: uppercase;
+}
+
+.secondaryButtonSmall {
+  padding: 0.575rem 1.65rem;
+}
+
+.secondaryButton:hover,
+.secondaryButtonSmall:hover {
   background-color: #f57624;
   color: white;
 }
 
-.secondaryButton:active {
+.secondaryButton:active,
+.secondaryButtonSmall:active {
   background-color: #8a3a06;
   border-color: #8a3a06;
 }
@@ -182,7 +219,9 @@ img {
 }
 
 .link {
-  background-color: none;
+  background-color: transparent;
+  font-size: inherit;
+  font-family: inherit;
   /* color: #efded3; */
   color: black;
   cursor: pointer;
@@ -191,7 +230,6 @@ img {
   text-decoration: none;
   /* margin: auto; */
   border: none;
-  background-color: none;
 }
 
 .link:hover {
@@ -203,14 +241,15 @@ img {
 }
 
 .secondLink {
-  background-color: none;
+  background-color: transparent;
+  font-size: inherit;
+  font-family: inherit;
   color: #f57624;
   cursor: pointer;
   transition: color 0.1s ease-in-out;
   font-weight: 400;
   /* margin: auto; */
   border: none;
-  background-color: none;
 }
 
 .secondLink:hover {
@@ -219,6 +258,28 @@ img {
 
 .secondLink:active {
   color: #8a3a06;
+}
+
+.linkLight {
+  background-color: transparent;
+  font-size: inherit;
+  font-family: inherit;
+  /* color: #efded3; */
+  color: var(--color-neutral-100);
+  cursor: pointer;
+  transition: color 0.1s ease-in-out;
+  font-weight: 400;
+  text-decoration: none;
+  /* margin: auto; */
+  border: none;
+}
+
+.linkLight:hover {
+  color: #f57624;
+}
+
+.linkLight:active {
+  color: #ca560c;
 }
 
 .blockMargins {
@@ -315,6 +376,7 @@ img {
   grid-template-columns: repeat(3, 1fr);
   align-items: center !important;
   column-gap: 1rem !important;
+  text-align: center !important;
 }
 
 .separator::before, .separator::after {
@@ -339,6 +401,7 @@ img {
 .warrningBox button {
   padding: 1rem;
   margin-right: 1rem;
+  margin-top: 1rem;
   border: none;
   border-radius: 10px;
   font-weight: bold;
@@ -387,3 +450,61 @@ img {
   color: #beb706;
   border-inline-color: #beb706;
 }
+
+/* ------------------------------------ Nav Bar ------------------------------------ */
+.iconButton {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+.iconButton:hover {
+  color: #f57624;
+}
+.iconButton:active {
+  color: #ca560c;
+}
+
+/* ------------------------------------ Sidebar ------------------------------------ */
+
+.sidebar {
+  height: calc(100vh - 77px);
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 2rem;
+  background-color: white;
+  /* background-color: rgba(255, 255, 255, 0.925);
+  backdrop-filter: blur(10px); */
+}
+
+@media (width <= 600px) {
+  .sidebar {
+    padding-inline: 1rem;
+  }
+}
+
+.sidebar > div {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.sidebar-item {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px solid transparent;
+  border-color: #c2c8d2;
+  text-align: left;
+}
+
+.sidebar-item:last-child {
+  border-bottom: 1px solid #c2c8d2;
+  margin-bottom: 3rem;
+}
+
+/* @media (width >= 900px) {
+  .sidebar {
+    display: none;
+  }
+} */

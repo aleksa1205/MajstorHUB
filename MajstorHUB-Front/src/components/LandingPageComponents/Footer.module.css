@@ -1,7 +1,8 @@
 footer {
-    background-color: #efded3;
-    color: #3a1700;
+    background-color: var(--color-neutral-800);
+    color: var(--color-neutral-100);
     padding: 2rem;
+    margin-top: 5rem;
 }
 
 footer h3 {
@@ -33,7 +34,6 @@ footer ul {
 footer ul li {
     font-size: 1rem;
     font-weight: 300;
-    color: #3a1700;
     line-height: 2rem;
 }
 

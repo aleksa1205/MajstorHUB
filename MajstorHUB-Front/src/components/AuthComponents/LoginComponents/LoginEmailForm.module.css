@@ -9,7 +9,7 @@
   margin-bottom: 1rem;
 }
 
-.formControl p {
+.pError {
   color: #e5212c;
   display: flex;
   gap: 0.3rem;
@@ -45,6 +45,8 @@
   font: inherit;
   padding: 0.5rem;
   border: none !important;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
   /* border-radius: 7px;
   border: 2px solid #efded3;
   transition: all 0.15s ease-in-out; */
@@ -88,4 +90,17 @@
   color: black;
   font-weight: 300;
   margin-bottom: 2rem;
+}
+
+.nisteViBtn {
+  width: 100%;
+  font-weight: bold;
+  margin-top: 2rem;
+}
+
+@media (width < 600px) {
+  .form {
+    width: auto;
+    padding: 1rem 2rem;
+  }
 }

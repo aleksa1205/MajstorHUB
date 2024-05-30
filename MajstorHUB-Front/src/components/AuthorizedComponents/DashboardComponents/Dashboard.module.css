@@ -1,0 +1,60 @@
+.firstBlock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+}
+.firstBlock h3 {
+    margin: 0;
+}
+.firstBlock button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: .5rem;
+}
+.firstBlock a {
+    text-decoration: none;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.sectionCard {
+    border: 2px solid var(--color-main-800);
+    border-radius: 8px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 2rem;
+}
+.sectionCard:hover {
+    background-color: var(--color-main-25);
+    border-color: var(--color-main-500);
+}
+.sectionCard h3 {
+    margin: 0;
+}
+.sectionCard p {
+    font-size: 1.1rem;
+}
+.sectionCard a {
+    text-decoration: none;
+    color: var(--color-main-900);
+}
+.sectionCard div {
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+@media (width <= 1000px) {
+    .main {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}
