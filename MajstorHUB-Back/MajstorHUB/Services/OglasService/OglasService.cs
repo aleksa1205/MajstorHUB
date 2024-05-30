@@ -39,6 +39,20 @@ public class OglasService : IOglasService
         await _oglasi.UpdateOneAsync(filter, update);
     }
 
+    public async Task UpdateSelf(OglasUpdateSelf oglas)
+    {
+        var filter = Builders<Oglas>.Filter.Eq(og => og.Id, oglas.Id);
+        var update = Builders<Oglas>.Update
+            .Set("naslov", oglas.Naslov)
+            .Set("iskustvo", oglas.Iskustvo)
+            .Set("struke", oglas.Struke)
+            .Set("opis", oglas.Opis)
+            .Set("cena", oglas.Cena)
+            .Set("duzina_posla", oglas.DuzinaPosla)
+            .Set("lokacija", oglas.Lokacija);
+        await _oglasi.UpdateOneAsync(filter, update);
+    }
+
     public async Task Delete(string id)
     {
         await _oglasi.DeleteOneAsync(oglas => oglas.Id == id);

@@ -113,6 +113,43 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [HttpPatch("UpdateSelf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateSelf(OglasUpdateSelf oglas)
+    {
+        try
+        {
+            var id = HttpContext.User.Identity?.Name;
+            if (id is null)
+                return Unauthorized();
+            var korisnik = await _korisnikService.GetById(id);
+            if(korisnik is null)
+            {
+                return NotFound($"Korisnik sa ID-em {id} ne postoji!");
+            }
+            if (!korisnik.OglasiId.Contains(oglas.Id))
+            {
+                return Unauthorized();
+            }
+            var postojeciOglas = await _oglasService.GetById(oglas.Id);
+            if(postojeciOglas is null)
+            {
+                return NotFound($"Oglas sa ID-em {oglas.Id} ne postoji!\n");
+            }
+            await _oglasService.UpdateSelf(oglas);
+            return Ok($"Oglas sa ID-em {oglas.Id} je uspesno azuriran!\n");
+        }
+        catch(Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
