@@ -10,4 +10,5 @@ public class MajstorHUBDatabaseSettings
     public string SifreCollectionName { get; set; } = null!;
     public string OglasiCollectionName { get; set; } = null!;
     public string RecenzijeCollectionName { get; set; } = null!;
+    public string PosloviCollectionName { get; set; } = null!;
 }
