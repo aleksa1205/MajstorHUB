@@ -28,20 +28,20 @@ function NavBar() {
                 <Link to='/register' onClick={hideSidebar} className={`${classes.register} link`}>Registruj Se</Link>
                 <div className={classes.optionsContainer}>
                     <span>
-                        <Link to='/login' className="link">Pronađi Posao</Link>
-                        <Link to='/login' className="link">Pronađi Izvodjače</Link>
+                        <Link to='/login' onClick={hideSidebar} className="link">Pronađi Posao</Link>
+                        <Link to='/login' onClick={hideSidebar} className="link">Pronađi Izvodjače</Link>
                     </span>
                     {isLoggedIn ? 
                         <>
-                            <Link to='/dashboard' className={`link ${classes.dashboard}`}>Dashboard</Link>
+                            <Link onClick={hideSidebar} to='/dashboard' className={`link ${classes.dashboard}`}>Dashboard</Link>
                             <button onClick={async () => {
                                 hideSidebar();
                                 await logoutUser();
                             }} className='link'>Izloguj se</button>
                         </> :
-                            <Link to='/login' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>
+                            <Link onClick={hideSidebar} to='/login' className={`secondaryButton ${classes.loginButton}`}>Uloguj se</Link>
                     }
-                    <Link to='/register' className="mainButton">Registruj se</Link>
+                    <Link to='/register' onClick={hideSidebar} className="mainButton">Registruj se</Link>
                 </div>
             </nav>
             {transition((style, show) => {

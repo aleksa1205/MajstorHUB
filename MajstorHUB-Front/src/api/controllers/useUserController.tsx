@@ -99,6 +99,7 @@ function useUserController() {
         
                 const data : LoginResponse = response.data;
                 data.refreshToken.expiry = new Date(data.refreshToken.expiry);
+                data.expiration = new Date(data.expiration);
         
                 return data;
         

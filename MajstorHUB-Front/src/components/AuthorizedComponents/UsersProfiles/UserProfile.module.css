@@ -13,4 +13,8 @@
         padding-inline: 0 !important;
         overflow: hidden;
     }
+
+    .main section {
+        border-inline: 0;
+    }
 }

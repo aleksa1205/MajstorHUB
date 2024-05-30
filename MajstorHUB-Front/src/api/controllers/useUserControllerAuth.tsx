@@ -5,10 +5,17 @@ import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, userDataType
 import { userDataUpdateType } from "../DTO-s/updateSelfTypes";
 import { FilterDTO } from "../DTO-s/FilterRequest";
 
-export class SessionEndedError  extends Error {
+export class SessionEndedError extends Error {
     constructor(message?: string) {
         super(message || 'Unauthorized');
         this.name = 'UnauthorizedError';
+    }
+}
+
+export class WrongAuthDataError extends Error {
+    constructor(message?: string) {
+        super(message || 'Auth data od server and client are not the same');
+        this.name = 'WrongAuthDataError'
     }
 }
 
@@ -25,7 +32,7 @@ function useUserControllerAuth(type : UserType) {
                     console.log(error.response.status);
                     switch(error.response.status) {
                         case 401:
-                            throw Error('Pokusavas da se izlogujes a nemas token');
+                            throw new WrongAuthDataError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

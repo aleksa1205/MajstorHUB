@@ -81,7 +81,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
             <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
             <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
             
-            <label htmlFor="struka">Struka</label>
+            <label htmlFor="struka">Struke</label>
             <DropDown>
                 <select
                     className={errors.value ? `${classes.error}` : ""}
@@ -117,7 +117,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
                     <div key={el} className={classes.vestina}>
                         {getStrukaDisplayName(el)}
                         <button type="button" onClick={deleteHandler} value={el}>
-                            <IoClose  size='1.3rem' />
+                            <IoClose size='1.3rem' />
                         </button>
                     </div>)
                 })

@@ -1,17 +1,12 @@
 import { useState } from "react";
 import classes from "../components/AuthorizedComponents/Novac/Novac.module.css";
-import formCl from "../components/FormStyles/Form.module.css";
 import Hamster from "../components/Theme/Loaders/Hamster";
 import RadioCard from "../components/Theme/RadioCard/RadioCard";
 import useCurrUser from "../hooks/useCurrUser";
 import { useLoaderData } from "react-router-dom";
-import { MdErrorOutline } from "react-icons/md";
-import { useForm } from "react-hook-form";
-import { CiMoneyBill } from "react-icons/ci";
-import useUserControllerAuth, { SessionEndedError } from "../api/controllers/useUserControllerAuth";
-import useAuth from "../hooks/useAuth";
-import { useErrorBoundary } from "react-error-boundary";
-import useLogout from "../hooks/useLogout";
+import UplatiNovac from "../components/AuthorizedComponents/Novac/UplatiNovac";
+import IsplatiNovac from "../components/AuthorizedComponents/Novac/IsplatiNovac";
+import SuccessBox from "../components/Theme/Boxes/SuccessBox";
 
 export function loader({ request }: any) {
   const url = new URL(request.url);
@@ -25,28 +20,40 @@ function Novac() {
   if (izborString === "uplata") izbor = 0;
   else if (izborString === "podizanje") izbor = 1;
   const [selected, setSelected] = useState<number>(izbor);
+  const [succMessage, setSuccMessage] = useState<string>('');
 
   function changeHandler(e: React.ChangeEvent<HTMLInputElement>) {
     const value = parseInt(e.currentTarget.value);
 
     setSelected(value);
+    setSuccMessage('')
   }
 
   return (
     <div className="container">
+      {succMessage !== '' && (
+        <SuccessBox >
+          <p>{succMessage}</p>
+        </SuccessBox>
+      )}
+
       {isFetching && (
         <div className={classes.center}>
           <Hamster />
         </div>
       )}
+
       {!isFetching && (
         <main className={`${classes.main}`}>
+
           <h3>Trenutno Stanje na Profilu</h3>
 
           <p>
             <span className={classes.bold}>Trenutno novca</span>
           </p>
-          <p className={classes.gray}>{Math.round(userData!.novacNaSajtu)} dinara</p>
+          <p className={classes.gray}>
+            {Math.round(userData!.novacNaSajtu)} dinara
+          </p>
 
           <div className={classes.section}>
             <p>
@@ -81,10 +88,18 @@ function Novac() {
           </div>
 
           {selected === 0 && (
-            <UplatiNovac currAmount={userData!.novacNaSajtu} refetch={refetchUser!} />
+            <UplatiNovac
+              currAmount={userData!.novacNaSajtu}
+              refetch={refetchUser!}
+              setSuccMessage={setSuccMessage}
+            />
           )}
           {selected === 1 && (
-            <IsplatiNovac currAmount={userData!.novacNaSajtu} refetch={refetchUser!} />
+            <IsplatiNovac
+              currAmount={userData!.novacNaSajtu}
+              refetch={refetchUser!}
+              setSuccMessage={setSuccMessage}
+            />
           )}
         </main>
       )}
@@ -93,219 +108,3 @@ function Novac() {
 }
 
 export default Novac;
-
-type FormValues = {
-  value: number;
-};
-
-type PropsValues = {
-  currAmount: number;
-  refetch: (() => void)
-};
-
-function UplatiNovac({ currAmount, refetch }: PropsValues) {
-  const form = useForm<FormValues>({mode: 'onChange'});
-  const { register, formState, handleSubmit, watch, setValue, clearErrors } = form;
-  const { errors, isValid } = formState;
-
-  const logoutUser = useLogout();
-  const { auth } = useAuth();
-  const { deposit } = useUserControllerAuth(auth.userType);
-  const { showBoundary } = useErrorBoundary();
-
-  const amount = watch("value");
-
-  async function onSubmit(values: FormValues) {
-    const { value } = values;
-    try {
-        await deposit(value);
-        refetch();
-    } catch (error) {
-        if(error instanceof SessionEndedError)
-            logoutUser();
-        else
-            showBoundary(error);
-    }
-  }
-
-  return (
-    <section className={classes.section2}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={formCl.form}
-        noValidate
-      >
-        <h3>Uplata novca na platformu</h3>
-        <p>
-          <span className={classes.bold}>Unesite Iznos</span>
-        </p>
-        <div
-          className={
-            formCl.inputGroup + " " + `${errors.value ? `${formCl.error}` : ""}`
-          }
-        >
-          <CiMoneyBill size="2rem" className={formCl.inputIcon} />
-          <input
-            type="text"
-            id="uplata"
-            placeholder="5000"
-            {...register("value", {
-              required: "Ovo polje je obavezno",
-              valueAsNumber: true,
-              validate: (fieldValue) => {
-                let msg : string = '';
-                let valid = false;
-
-                if(fieldValue < 500 || fieldValue > 200000) 
-                    msg = "Iznos mora da bude između 500 i 200 000 dinara";
-                else if(Number.isNaN(fieldValue)) 
-                    msg = "Dozvoljeni su samo brojevi"
-                else
-                    valid = true;
-
-              return (
-                valid || msg
-              );
-            },
-            })}
-          />
-        </div>
-        <p className={formCl.pError}>
-          {errors.value?.message && <MdErrorOutline />}
-          {errors.value?.message}
-        </p>
-
-        <p>
-          <span className={classes.bold}>Biće vam naplaćeno</span>
-        </p>
-        <p className={classes.gray}>
-            {isValid 
-            ? `${Math.round(amount)} dinara + Taksa`
-            : '0 dinara'}
-        </p>
-
-        <p>
-          <span className={classes.bold}>Vaše novo stanje na profilu biće</span>
-        </p>
-        <p className={classes.gray}>
-            {isValid 
-            ? `${Math.round(amount + currAmount)} dinara`
-            : `${Math.round(currAmount)} dinara`}
-        </p>
-        
-        <div className={formCl.btnContainer}>
-            <button className="mainButtonSmall">Uplati</button>
-            <button onClick={() => {
-                setValue('value', 0);
-                clearErrors();
-            }} type="reset" className="secondLink">Poništi</button>
-        </div>
-      </form>
-    </section>
-  );
-}
-
-function IsplatiNovac({ currAmount, refetch }: PropsValues) {
-    const form = useForm<FormValues>({mode: 'onChange'});
-    const { register, formState, handleSubmit, watch, setValue, clearErrors } = form;
-    const { errors, isValid } = formState;
-  
-    const amount = watch("value");
-
-    const logoutUser = useLogout();
-    const { auth } = useAuth();
-    const { withdraw } = useUserControllerAuth(auth.userType);
-    const { showBoundary } = useErrorBoundary();
-  
-    async function onSubmit(values: FormValues) {
-      const { value } = values;
-      try {
-          await withdraw(value);
-          refetch();
-      } catch (error) {
-          if(error instanceof SessionEndedError)
-            logoutUser();
-          else
-              showBoundary(error);
-      }
-    }
-  
-  
-    return (
-      <section className={classes.section2}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className={formCl.form}
-          noValidate
-        >
-            <h3>Podizanje novca sa platforme</h3>
-          <p>
-            <span className={classes.bold}>Unesite Iznos</span>
-          </p>
-          <div
-            className={
-              formCl.inputGroup + " " + `${errors.value ? `${formCl.error}` : ""}`
-            }
-          >
-            <CiMoneyBill size="2rem" className={formCl.inputIcon} />
-            <input
-              type="text"
-              id="isplata"
-              placeholder="5000"
-              {...register("value", {
-                required: "Ovo polje je obavezno",
-                valueAsNumber: true,
-                validate: (fieldValue) => {
-                    let msg : string = '';
-                    let valid = false;
-
-                    if(fieldValue < 1000 || fieldValue > 200000) 
-                        msg = "Iznos mora da bude između 1000 i 200 000 dinara";
-                    else if(Number.isNaN(fieldValue)) 
-                        msg = "Dozvoljeni su samo brojevi"
-                    else if((currAmount - fieldValue) < 0) 
-                        msg = "Ne mozete da skinete vise novca nego sto imate na profilu"
-                    else
-                        valid = true;
-
-                  return (
-                    valid || msg
-                  );
-                },
-              })}
-            />
-          </div>
-          <p className={formCl.pError}>
-            {errors.value?.message && <MdErrorOutline />}
-            {errors.value?.message}
-          </p>
-  
-          {/* <p>
-            <span className={classes.bold}>Biće vam naplaćeno</span>
-          </p>
-          <p className={classes.gray}>
-              {isValid 
-              ? `${amount} dinara + Taksa`
-              : '0 dinara'}
-          </p> */}
-  
-          <p>
-            <span className={classes.bold}>Vaše novo stanje na profilu biće</span>
-          </p>
-          <p className={classes.gray}>
-              {isValid 
-              ? `${Math.round(currAmount - amount)} dinara`
-              : `${Math.round(currAmount)} dinara`}
-          </p>
-          
-          <div className={formCl.btnContainer}>
-              <button className="mainButtonSmall">Isplati</button>
-              <button onClick={() => {
-                  setValue('value', 0);
-                  clearErrors();
-              }} type="reset" className="secondLink">Poništi</button>
-          </div>
-        </form>
-      </section>
-    );
-}

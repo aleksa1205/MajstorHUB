@@ -1,5 +1,11 @@
+.tekst {
+  margin: 0;
+}
+
 .opis {
   margin: 0;
+  margin-top: .2rem;
+  color: var(--color-neutral-500);
 }
 
 /* Customize the label (the container) */
@@ -7,7 +13,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  height: 25px;
+  /* height: 25px; */
 
   padding-left: 2.2rem;
   margin-bottom: 0.75rem;

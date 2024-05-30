@@ -1,4 +1,4 @@
-import { easings, useTransition } from "@react-spring/web";
+import { useTransition } from "@react-spring/web";
 import { useState } from "react";
 
 function useModalAnimation() {
