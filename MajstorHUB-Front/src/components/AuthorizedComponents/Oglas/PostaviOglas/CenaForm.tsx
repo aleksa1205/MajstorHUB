@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import classes from './PostaviOglas.module.css'
 import { FormContext, stepsLength } from '../../../../routes/Oglasi/PostaviOglas';
 import { MdErrorOutline } from 'react-icons/md';
+import { CenaOglasaValidation } from '../../../../lib/Forms/FormValidation';
 
 export default function CenaForm() {
     const { currentStep, register, errors } = useContext(FormContext)!;
@@ -25,22 +26,7 @@ export default function CenaForm() {
                     type="text"
                     id="cena"
                     placeholder='5000'
-                    {...register("cena", {
-                    required: "Ovo je obavezno polje",
-                    valueAsNumber: true,
-                    validate: (fieldValue) => {
-                        let msg: string = "";
-                        let valid = false;
-        
-                        if (fieldValue < 1000 || fieldValue > 1000000)
-                          msg = "Iznos mora da bude između 1000 i 1 000 000 dinara";
-                        else if (Number.isNaN(fieldValue))
-                          msg = "Dozvoljeni su samo brojevi";
-                        else valid = true;
-        
-                        return valid || msg;
-                      },
-                    })}
+                    {...register("cena", CenaOglasaValidation)}
                 />
                 <p className={classes.pError}>
                     {errors.cena?.message && <MdErrorOutline />}
