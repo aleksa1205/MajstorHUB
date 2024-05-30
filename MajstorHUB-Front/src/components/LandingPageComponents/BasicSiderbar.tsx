@@ -42,7 +42,7 @@ function BasicSidebar({ hideSidebar, style } : PropsValue) {
               Dashboard
             </Link>
         )}
-          <Link to="/register" onClick={hideSidebar} className="link sidebar-item">
+          <Link onClick={hideSidebar} to="/register" className="link sidebar-item">
             Pronađi Posao
           </Link>
 

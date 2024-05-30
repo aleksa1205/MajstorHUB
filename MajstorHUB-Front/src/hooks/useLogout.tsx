@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import useUserControllerAuth from "../api/controllers/useUserControllerAuth";
+import useUserControllerAuth, { WrongAuthDataError } from "../api/controllers/useUserControllerAuth";
 import { emptyAuthValue } from "../context/AuthProvider";
 import useAuth from "./useAuth.ts";
 import { useErrorBoundary } from "react-error-boundary";
@@ -26,7 +26,14 @@ function useLogout() {
                 navigate('/login' + msg, { state: { from: location }, replace: true});
             }, 100);
         } catch (error) {
-            showBoundary(error);
+            if(error instanceof WrongAuthDataError) {
+                setAuth(emptyAuthValue);
+                setTimeout(() => {
+                    navigate('/login?message=Ulogovani ste se na drugom mestu, molimo vas da se ponovo ulogujete', {state: { from: location }, replace: true});
+                }, 100);
+            } else {
+                showBoundary(error);
+            }
         }
     }
 

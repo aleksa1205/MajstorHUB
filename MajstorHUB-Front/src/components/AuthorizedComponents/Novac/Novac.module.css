@@ -36,6 +36,11 @@
   gap: 2rem;
 }
 
+.confirm {
+  padding: 2rem;
+  width: 46rem;
+}
+
 @media (width <= 700px) {
   .options {
     flex-direction: column;

@@ -6,6 +6,7 @@ import {
 import UserType, { pathToUser, userToPath } from "../lib/UserType";
 import axios from "../api/axios";
 import { useErrorBoundary } from "react-error-boundary";
+import { formatDate } from "../lib/utils";
 
 type ContextValues = {
   auth: AuthValues;
@@ -81,7 +82,8 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
 
       const data: LoginResponse = response!.data;
       data.refreshToken.expiry = new Date(data.refreshToken.expiry);
-      console.log(data.refreshToken.expiry);
+      data.expiration = new Date(data.expiration);
+      console.log(data.refreshToken.expiry, data.expiration);
       
       setAuth({
         naziv: data.naziv,

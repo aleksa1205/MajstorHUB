@@ -23,6 +23,7 @@ import { useErrorBoundary } from "react-error-boundary";
 import SuccessBox from "../../Theme/Boxes/SuccessBox";
 import useCurrUser from "../../../hooks/useCurrUser";
 import useModalAnimation from "../../../hooks/useModalAnimation";
+import { Link } from "react-router-dom";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -248,7 +249,9 @@ function UserSpecificDataSection() {
                                 </Tooltip>
                             </span>
                         </div>
-                        <AddButton />
+                        <Link to={'/novac?tip=uplata'}>
+                            <AddButton />
+                        </Link>
                     </div>
                 )}
 

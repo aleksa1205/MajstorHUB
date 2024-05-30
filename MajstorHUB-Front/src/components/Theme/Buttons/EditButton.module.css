@@ -12,6 +12,8 @@
     width: 2rem;
     height: 2rem;
     transition: all 0.1s ease-in-out;
+
+    flex-shrink: 0;
 }
 
 .btn:hover {

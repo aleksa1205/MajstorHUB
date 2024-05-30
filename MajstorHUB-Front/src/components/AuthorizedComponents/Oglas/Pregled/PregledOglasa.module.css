@@ -1,0 +1,83 @@
+.main {
+
+}
+
+.main section {
+    padding: 2rem;
+    border: 1px solid var(--color-neutral-200);
+    border-bottom: none;
+}
+
+.main section h4 {
+    margin: 0;
+    margin-bottom: 2rem;
+}
+
+.editContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.heading h2 {
+    margin: 0;
+    font-family: Kalam, Roboto, Inter, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.naslov {
+    border-bottom: none;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+.naslov h3 {
+    margin: 0;
+}
+
+.opis {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.vestina {
+    background-color: var(--color-main-100);
+    color: var(--color-main-700);
+    padding: 0.65rem;
+    border-radius: 100px;
+    cursor: pointer;
+}
+.vestina:hover {
+    background-color: var(--color-main-200);
+}
+
+.secVestine > div {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.btnContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: 1px solid var(--color-neutral-200) !important;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+@media (width <= 600px) {
+    .main {
+        padding-inline: 0 !important;
+        overflow: hidden;
+    }
+    .main section {
+        border-radius: 0;
+        border-inline: 0;
+    }
+}

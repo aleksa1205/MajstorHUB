@@ -188,6 +188,11 @@
     color: var(--color-main-700);
     padding: 0.65rem;
     border-radius: 100px;
+    cursor: pointer;
+    
+}
+.vestina:hover {
+    background-color: var(--color-main-200);
 }
 
 @media (width <= 1200px) {
