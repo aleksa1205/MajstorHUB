@@ -1,23 +1,21 @@
 import { MdErrorOutline } from "react-icons/md";
-import classes from './EditUserForm.module.css'
 import { useForm } from "react-hook-form";
-import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { IoClose } from "react-icons/io5";
+import { useContext } from "react";
+import { EditOglasFormContext } from "./EditOglasMain";
+import classes from './IzmeniOglas.module.css'
+import frClasses from '../../../FormStyles/Form.module.css';
 import { LokacijaValidation } from "../../../../lib/Forms/FormValidation";
 
 type FromValues = {
     value: string;
 };
 
-type PropsValues = {
-    close: () => void,
-    updateUser: React.Dispatch<React.SetStateAction<userDataUpdateType | null>>,
-    userData: userDataUpdateType;
-}
+export default function EditLokacija() {
+    const { close, oglasData, setOglas } = useContext(EditOglasFormContext)!;
 
-function EditAdresa({ close, updateUser, userData }: PropsValues) {
     const form = useForm<FromValues>({defaultValues: {
-        value: userData.adresa
+        value: oglasData.lokacija
     }});
     const { register, handleSubmit, formState } = form;
     const { errors, isSubmitting, isSubmitSuccessful } = formState;
@@ -26,16 +24,17 @@ function EditAdresa({ close, updateUser, userData }: PropsValues) {
 
     function onSubmit(formValues : FromValues) {
         const { value } = formValues;
-        updateUser(prev => ({...prev!, adresa: value}));
+
+        setOglas(prev => ({...prev!, lokacija: value}));
     }
 
     return (
-        <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
-            <div className={classes.header}>
-                <h3>Promenite lokaciju</h3>
+        <form className={`${frClasses.form} ${classes.form}`} noValidate onSubmit={handleSubmit(onSubmit)}>
+            <div className={frClasses.header}>
+                <h3>Promenite Lokaciju</h3>
                 <IoClose onClick={close} size='2rem' />
             </div>
-    
+
             <p>Lokacija može da bude: </p>
             <ul>
                 <li>Grad</li>
@@ -44,22 +43,21 @@ function EditAdresa({ close, updateUser, userData }: PropsValues) {
                 <li>Optština</li>
             </ul>
             
-            <label htmlFor="adresa">Lokacija</label>
+            <label className={frClasses.label} htmlFor="lokacija">Lokacija</label>
             <input
-                className={errors.value ? `${classes.error}` : ""}
+                className={errors.value ? `${frClasses.error} ${frClasses.input}` : frClasses.input}
                 type="text"
-                id="adresa"
-                placeholder="Niš"
+                id="lokacija"
+                placeholder='Niš'
                 {...register("value", LokacijaValidation)}
             />
-            <p className={classes.pError}>
+            <p className={frClasses.pError}>
                 {errors.value?.message && <MdErrorOutline />}
                 {errors.value?.message}
             </p>
 
-            <div className={classes.btnContainer}>
+            <div className={frClasses.btnContainer}>
                 <button className='secondLink' onClick={close} type='button'>Cancel</button>
-
                 <button
                     disabled={isSubmitting}
                     className={
@@ -68,9 +66,8 @@ function EditAdresa({ close, updateUser, userData }: PropsValues) {
                     >
                     <span className="button__text">Save</span>
                 </button>
+
             </div>
         </form>
     )
 }
-
-export default EditAdresa;

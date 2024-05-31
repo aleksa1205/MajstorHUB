@@ -120,8 +120,8 @@ public class OglasController : ControllerBase
             if (oglasDto.Struke.Count == 0)
                 return BadRequest("Lista struka ne moze da bude prazna");
 
-            if (oglasDto.Cena < 500 || oglasDto.Cena > 1000000)
-                return BadRequest("Cena oglasa mora da bude izmedju 500 i 1000000 dinara");
+            if (oglasDto.Cena < 1000 || oglasDto.Cena > 1000000)
+                return BadRequest("Cena oglasa mora da bude izmedju 1000 i 1000000 dinara");
 
             var oglas = new Oglas
             {

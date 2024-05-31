@@ -8,7 +8,7 @@ import Register from "./routes/Auth/Register.tsx";
 import RootLayout from "./components/Layouts/RootLayout.tsx";
 import ErrorPage from "./components/ErrorPages/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Auth/Login.tsx";
-import Success from "./routes/Success.tsx";
+import Success, {loader as successLoader} from "./routes/Success.tsx";
 import { createBrowserRouter } from "react-router-dom";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
 import Klijenti from "./routes/Filter/Klijenti.tsx";
@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
               </ErrorBoundaryProvider>
             ),
           },
-          { path: "/success", element: <Success /> },
+          { path: "/success", element: <Success />, loader: successLoader },
         ],
       },
 
@@ -175,7 +175,7 @@ export const router = createBrowserRouter([
             path: '/test',
             element: (
               <ErrorBoundaryProvider>
-                <PregledOglasa oglasData={oglas} />
+                <PregledOglasa oglasData={oglas} preview={true} />
               </ErrorBoundaryProvider>
             )
           }

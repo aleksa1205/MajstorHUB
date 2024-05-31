@@ -81,7 +81,9 @@ export default function PostaviOglas() {
     document.body.querySelector("footer")!.style.display = "none";
 
     return () => {
-      document.body.querySelector("footer")!.style.display = "block";
+      const footer = document.body.querySelector("footer");
+      if(footer)
+        footer.style.display = "block";
     };
   }, []);
 
@@ -114,6 +116,8 @@ export default function PostaviOglas() {
 
     next();
   }
+
+  useEffect(() => console.log(struke), [struke]);
 
   return (
     <main className={classes.main}>
@@ -170,7 +174,7 @@ export default function PostaviOglas() {
         </main>
       )}
 
-      {currentStep === Steps.Pregled && <PregledOglasa preview={true} oglasData={oglas!} setOglas={setOglas} prev={prev} setValue={setValue} />}
+      {currentStep === Steps.Pregled && <PregledOglasa preview={true} oglasData={oglas!} setOglas={setOglas} prev={prev} setValue={setValue} struke={struke} setStruke={setStruke} />}
     </main>
   );
 }

@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import classes from './PostaviOglas.module.css'
 import { FormContext, stepsLength } from '../../../../routes/Oglasi/PostaviOglas';
 import { MdErrorOutline } from 'react-icons/md';
+import { OpisOglasaValidation } from '../../../../lib/Forms/FormValidation';
 
 export default function OpisForm() {
     const { register, errors, currentStep } = useContext(FormContext)!;
@@ -29,17 +30,7 @@ export default function OpisForm() {
                     id="opis"
                     placeholder="Već imate spreman opis? Nalepite ga ovde!"
                     rows={10}
-                    {...register("opis", {
-                    required: "Ovo je obavezno polje",
-                    minLength: {
-                        value: 50,
-                        message: 'Mora barem 50 karaktera'
-                    },
-                    maxLength: {
-                        value: 30000,
-                        message: 'Maksimum 30000 karaktera'
-                    },
-                    })}
+                    {...register("opis", OpisOglasaValidation)}
                 />
                 <p className={classes.pError}>
                     {errors.opis?.message && <MdErrorOutline />}

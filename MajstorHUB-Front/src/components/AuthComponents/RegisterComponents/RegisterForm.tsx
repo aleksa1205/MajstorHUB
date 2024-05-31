@@ -81,7 +81,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       showBoundary(error);
     }
     
-    navigate('/success');
+    navigate('/success?message=Uspešno ste se registrovali na platformu&to=login');
   };
 
   // Specificne form control-e za svakog vrsta usera

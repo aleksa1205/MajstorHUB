@@ -155,7 +155,6 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
         </p>
 
         <div className={formCl.btnContainer}>
-          <button className="mainButtonSmall">Uplati</button>
           <button
             onClick={() => {
               setValue("value", 0);
@@ -166,6 +165,7 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
           >
             Poništi
           </button>
+          <button className="mainButtonSmall">Uplati</button>
         </div>
       </form>
     </section>
