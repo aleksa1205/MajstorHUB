@@ -11,4 +11,5 @@ public class MajstorHUBDatabaseSettings
     public string OglasiCollectionName { get; set; } = null!;
     public string RecenzijeCollectionName { get; set; } = null!;
     public string PosloviCollectionName { get; set; } = null!;
+    public string PrijaveCollectionName { get; set; } = null!;
 }

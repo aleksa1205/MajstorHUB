@@ -1,5 +1,7 @@
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
+using MajstorHUB.Services.PosaoService;
+using MajstorHUB.Services.PrijavaService;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -53,6 +55,8 @@ builder.Services.AddScoped<IFirmaService, FirmaService>();
 builder.Services.AddScoped<IMajstorService,MajstorService>();
 builder.Services.AddScoped<IOglasService, OglasService>();
 builder.Services.AddScoped<IRecenzijaService, RecenzijaService>();
+builder.Services.AddScoped<IPosaoService, PosaoService>();
+builder.Services.AddScoped<IPrijavaService, PrijavaService>();
 
 var app = builder.Build();
 
