@@ -6,6 +6,7 @@ import useLogout from '../../hooks/useLogout';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../../pictures/Logo/LogoTransparent2.png'
 import useNavSidebarAnim from '../../hooks/useNavSidebarAnim';
+import { useEffect } from 'react';
 
 function NavBar() {
     const logoutUser = useLogout();
@@ -14,6 +15,17 @@ function NavBar() {
 
     const { showSidebar, transition, toggleSidebar, hideSidebar } = useNavSidebarAnim();
 
+    useEffect(() => {
+        function handleResize() {
+            window.innerWidth >= 900
+            ? hideSidebar()
+            : null;
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, [])
 
     return (
         <header>

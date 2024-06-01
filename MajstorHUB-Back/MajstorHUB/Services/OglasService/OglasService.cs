@@ -3,11 +3,26 @@
 public class OglasService : IOglasService
 {
     private readonly IMongoCollection<Oglas> _oglasi;
+    private readonly ProjectionDefinition<Oglas, GetOglasDTO> _getProjection;
 
     public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _oglasi = db.GetCollection<Oglas>(settings.OglasiCollectionName);
+
+        _getProjection = Builders<Oglas>.Projection.Expression(o => new GetOglasDTO
+        {
+            Cena = o.Cena,
+            DatumKreiranja = o.DatumKreiranja,
+            KorisnikId = o.KorisnikId,
+            Naslov = o.Naslov,
+            Opis = o.Opis,
+            DuzinaPosla = o.DuzinaPosla,
+            Id = o.Id,
+            Iskustvo = o.Iskustvo,
+            Lokacija = o.Lokacija,
+            Struke = o.Struke
+        });
     }
 
     public async Task<List<Oglas>> GetAll()
@@ -56,5 +71,75 @@ public class OglasService : IOglasService
     public async Task Delete(string id)
     {
         await _oglasi.DeleteOneAsync(oglas => oglas.Id == id);
+    }
+
+    public async Task<List<GetOglasDTO>> Filter(FilterOglasDTO oglas)
+    {
+        var filterBuilder = Builders<Oglas>.Filter;
+
+        var queryFilters = new List<FilterDefinition<Oglas>>();
+        var opisFilters = new List<FilterDefinition<Oglas>>();
+
+        if(!string.IsNullOrEmpty(oglas.Query))
+        {
+            var words = oglas.Query.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach(var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var partFilter = filterBuilder.Or(
+                    filterBuilder.Regex(x => x.Naslov, regex),
+                    filterBuilder.Regex(x => x.Struke, regex),
+                    filterBuilder.Regex(x => x.Lokacija, regex)
+                );
+                queryFilters.Add(partFilter);
+            }
+        }
+        var queryFinalFilter = queryFilters.Count > 0
+            ? filterBuilder.And(queryFilters)
+            : filterBuilder.Empty;
+
+        if(!string.IsNullOrEmpty(oglas.Opis))
+        {
+            var words = oglas.Opis.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            
+            foreach (var word in words)
+            {
+                var regex = new BsonRegularExpression(word, "i");
+
+                var filter = filterBuilder.Regex(x => x.Opis, regex);
+
+                opisFilters.Add(filter);
+            }
+        }
+        var opisFinalFilter = opisFilters.Count > 0
+            ? filterBuilder.Or(opisFilters)
+            : filterBuilder.Empty;
+
+        var iskustvoFilter = oglas.Iskustva.Count > 0
+            ? filterBuilder.In(x => x.Iskustvo, oglas.Iskustva)
+            : filterBuilder.Empty;
+
+        var duzinaFilter = oglas.DuzinePosla.Count > 0
+            ? filterBuilder.In(x => x.DuzinaPosla, oglas.DuzinePosla)
+            : filterBuilder.Empty;
+
+        var cenaFilter = filterBuilder.And(
+            filterBuilder.Gte(x => x.Cena, oglas.Cena.Od),
+            filterBuilder.Lte(x => x.Cena, oglas.Cena.Do)
+            );
+
+        var finalFilter = filterBuilder.And(queryFinalFilter,
+                                            opisFinalFilter,
+                                            iskustvoFilter,
+                                            duzinaFilter,
+                                            cenaFilter
+                                            );
+
+        var sortBuilder = Builders<Oglas>.Sort;
+        var datumKreiranja = sortBuilder.Descending(x => x.DatumKreiranja);
+
+        return await _oglasi.Find(finalFilter).Project(_getProjection).Sort(datumKreiranja).ToListAsync();
     }
 }

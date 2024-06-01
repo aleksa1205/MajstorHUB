@@ -12,7 +12,6 @@ public class FirmaService : IFirmaService
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _firme = db.GetCollection<Firma>(settings.FirmeCollectionName);
 
-
         _getProjection = Builders<Firma>.Projection.Expression(f => new GetFirmaResponse
         {
             Adresa = f.Adresa,

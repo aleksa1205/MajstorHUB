@@ -14,6 +14,22 @@ export const LokacijaValidation = {
     },
 }
 
+export const LokacijaValidationWithSpaces = {
+  required: 'Ovo je obavezno polje',
+  minLength: {
+      value: 2,
+      message: "Lokacija mora da ima barem 2 karaktera"
+  },
+  maxLength: {
+      value: 15,
+      message: "Lokacija ne moze da bude duza od 15 karaktera"
+  },
+  pattern: {
+      value: /^[a-zA-Z\s]*$/,
+      message: "Lokacija mora da zadrzi samo slova i razmake",
+  },
+}
+
 export const NaslovOglasaValidation = {
   required: "Ovo je obavezno polje",
   minLength: {

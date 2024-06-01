@@ -550,7 +550,7 @@ public class MajstorController : ControllerBase
             var filterList = await _majstorService.Filter(filter);
             if (filterList.Count == 0)
             {
-                return NotFound("Majstor za zadatim imenom, prezimenom i strukom nije pronadjen!\n");
+                return NotFound("Ne postoji ni jedan majstor sa zadatim parametrima!\n");
             }
 
             return Ok(filterList);

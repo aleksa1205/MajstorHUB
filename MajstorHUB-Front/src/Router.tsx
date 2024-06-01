@@ -18,29 +18,10 @@ import RestoreScrollLayout from "./components/Layouts/RestoreScrollLayout.tsx";
 import Novac, { loader as NovacLoader } from "./routes/Novac.tsx";
 import PostaviOglas from "./routes/Oglasi/PostaviOglas.tsx";
 import FirmaRequiredLayout from "./components/Layouts/FirmaRequiredLayout.tsx";
-import PregledOglasa from "./components/AuthorizedComponents/Oglas/Pregled/PregledOglasa.tsx";
-import { CreateOglasDTO, DuzinaPosla } from "./api/DTO-s/Oglasi/OglasiDTO.ts";
-import { Iskustvo } from "./api/DTO-s/responseTypes.ts";
+import Oglasi from "./routes/Oglasi/Oglasi.tsx";
+import OglasPrikaz from "./routes/Oglasi/OglasPrikaz.tsx";
+import AsideLayout from "./components/Layouts/AsideLayout.tsx";
 
-const oglas : CreateOglasDTO = {
-  cena: 5000,
-  duzinaPosla: DuzinaPosla.JedanDoTriMeseca,
-  iskustvo: Iskustvo.Iskusan,
-  naslov: 'Trazim nekog da me prca',
-  opis: `Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi 
-  Prcenzi dupenzi 
-  Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi
-   Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-   dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi
-    dupenzi Prcenzi dupenzi Prcenzi dupenzi`,
-  struke: [1, 2, 5, 7, 4],
-  lokacija: 'U dupe'
-}
 
 export const router = createBrowserRouter([
   {
@@ -110,28 +91,41 @@ export const router = createBrowserRouter([
             loader: NovacLoader,
           },
           {
-            path: "/klijenti",
-            element: (
-              <ErrorBoundaryProvider>
-                <Klijenti />
-              </ErrorBoundaryProvider>
-            ),
-          },
-          {
-            path: "/majstori",
-            element: (
-              <ErrorBoundaryProvider>
-                <Majstori />
-              </ErrorBoundaryProvider>
-            ),
-          },
-          {
-            path: "/firme",
-            element: (
-              <ErrorBoundaryProvider>
-                <Firme />
-              </ErrorBoundaryProvider>
-            ),
+            element: <AsideLayout />,
+            children: [
+              {
+                path: "/klijenti",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Klijenti />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/majstori",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Majstori />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/firme",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Firme />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/oglasi",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Oglasi />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+            ]
           },
           {
             path: "/klijenti/:id",
@@ -157,6 +151,14 @@ export const router = createBrowserRouter([
               </ErrorBoundaryProvider>
             ),
           },
+          {
+            path: "/oglasi/:id",
+            element: (
+              <ErrorBoundaryProvider>
+                <OglasPrikaz />
+              </ErrorBoundaryProvider>
+            ),
+          },
 
           {
             element: <FirmaRequiredLayout />,
@@ -171,14 +173,6 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          {
-            path: '/test',
-            element: (
-              <ErrorBoundaryProvider>
-                <PregledOglasa oglasData={oglas} preview={true} />
-              </ErrorBoundaryProvider>
-            )
-          }
         ],
       },
     ],
