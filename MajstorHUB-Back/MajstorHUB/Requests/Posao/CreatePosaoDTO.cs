@@ -1,4 +1,4 @@
-﻿namespace MajstorHUB.Requests.Oglas;
+﻿namespace MajstorHUB.Requests.Posao;
 
 public class CreatePosaoDTO
 {

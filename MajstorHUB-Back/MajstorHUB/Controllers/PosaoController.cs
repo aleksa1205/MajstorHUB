@@ -1,4 +1,5 @@
-﻿using MajstorHUB.Services.PosaoService;
+﻿using MajstorHUB.Requests.Posao;
+using MajstorHUB.Services.PosaoService;
 using Microsoft.AspNetCore.Http.HttpResults;
 using MongoDB.Driver.Core.Authentication;
 using System.Runtime.CompilerServices;
