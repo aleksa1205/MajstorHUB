@@ -23,6 +23,7 @@
 
 .main ul li {
     font-weight: 300;
+
 }
 
 .arrow {
@@ -39,4 +40,9 @@
     cursor: default;
     padding-inline: 1rem;
     margin-top: 1rem;
+}
+
+.radioError label span {
+  border-color: var(--color-red-500) !important;
+  background-color: var(--color-red-500) !important;
 }

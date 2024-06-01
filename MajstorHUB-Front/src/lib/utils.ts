@@ -99,6 +99,10 @@ export function getProfileUrl(userType : UserType, id : string) : string {
     return url + '/' + id;
 }
 
+export function getOglasUrl(id: string): string {
+    return '/oglasi/' + id;
+}
+
 export function getUpdateUserFromUserData(userData : userDataType) : userDataUpdateType {
     switch (userData.userType) {
         case UserType.Korisnik:
@@ -162,6 +166,31 @@ export function formatDate(date : Date) : string {
     const formattedDate: string = `${dayString}.${monthString}.${year}`;
 
     return formattedDate;
+}
+
+export function formatDateBefore(date: Date): string {
+    const now = new Date();
+    
+    let result: string = '';
+    const diffMs = now.getTime() - date.getTime();
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMonths = Math.floor(diffDays / 30);  // Simplified month calculation
+
+
+    if (diffMinutes < 60) {
+        result = diffMinutes <= 1 ? 'pre 1 minut' : 'pre ' + diffMinutes + ' minuta';
+    } else if (diffHours < 24) {
+        result = diffHours === 1 ? 'pre sat vremena' : 'pre ' + diffHours + ' sata';
+    } else if (diffDays < 31) {
+        result = diffDays === 1 ? 'juče' : 'pre ' + diffDays + ' dana';
+    } else {
+        result = diffMonths === 1 ? 'pre mesec dana' : 'pre ' + diffMonths + ' meseci';
+    }
+
+    return result;
 }
 
 export function crop(url : string, aspectRatio: number) : Promise<HTMLCanvasElement> {

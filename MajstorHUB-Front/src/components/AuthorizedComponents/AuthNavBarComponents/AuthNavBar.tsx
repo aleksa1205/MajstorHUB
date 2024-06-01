@@ -21,6 +21,18 @@ function AuthNavBar() {
         setShowUserMenu(false);
     }
 
+    useEffect(() => {
+        function handleResize() {
+            window.innerWidth >= 1000
+            ? hideSidebar()
+            : null;
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, [])
+
     // zatvara menu bar ako se klikne sa strane
     useEffect(() => {
         function handler(e : MouseEvent) {

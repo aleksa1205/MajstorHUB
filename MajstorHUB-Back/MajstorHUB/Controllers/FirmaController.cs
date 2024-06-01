@@ -547,7 +547,7 @@ public class FirmaController : ControllerBase
             var filterList = await _firmaService.Filter(filter);
             if (filterList.Count == 0)
             {
-                return NotFound("Firma sa zadatim nazivom i strukom nije pronadjena!\n");
+                return NotFound("Ne postoji ni jedna firma sa zadatim parametrima!\n");
             }
 
             return Ok(filterList);

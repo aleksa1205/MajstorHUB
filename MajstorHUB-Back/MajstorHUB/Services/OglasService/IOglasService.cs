@@ -9,4 +9,5 @@ public interface IOglasService
     Task Update(string id, Oglas oglas);
     Task UpdateSelf(OglasUpdateSelf oglas);
     Task Delete(string id);
+    Task<List<GetOglasDTO>> Filter(FilterOglasDTO oglas);
 }

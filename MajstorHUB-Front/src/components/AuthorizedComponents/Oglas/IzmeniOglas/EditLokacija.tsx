@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { EditOglasFormContext } from "./EditOglasMain";
 import classes from './IzmeniOglas.module.css'
 import frClasses from '../../../FormStyles/Form.module.css';
-import { LokacijaValidation } from "../../../../lib/Forms/FormValidation";
+import { LokacijaValidation, LokacijaValidationWithSpaces } from "../../../../lib/Forms/FormValidation";
 
 type FromValues = {
     value: string;
@@ -49,7 +49,7 @@ export default function EditLokacija() {
                 type="text"
                 id="lokacija"
                 placeholder='Niš'
-                {...register("value", LokacijaValidation)}
+                {...register("value", LokacijaValidationWithSpaces)}
             />
             <p className={frClasses.pError}>
                 {errors.value?.message && <MdErrorOutline />}

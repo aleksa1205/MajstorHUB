@@ -73,14 +73,14 @@ function AuthSidebar({ hideSidebar, style } : PropsValue) {
                         </li>
                         </Link>
 
-                        <Link className={classes.link} onClick={hideSidebar} to='/test'>
+                        {/* <Link className={classes.link} onClick={hideSidebar} to='/test'>
                         <li>
                             <div>
                                 <FaMoneyBill />
                                 <p>Test</p>
                             </div>
                         </li>
-                        </Link>
+                        </Link> */}
 
                         <li onClick={async () => await logoutUser()}>
                             <div>

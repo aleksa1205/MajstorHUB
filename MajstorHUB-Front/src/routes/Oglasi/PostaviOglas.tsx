@@ -117,8 +117,6 @@ export default function PostaviOglas() {
     next();
   }
 
-  useEffect(() => console.log(struke), [struke]);
-
   return (
     <main className={classes.main}>
       {currentStep !== Steps.Pregled && (

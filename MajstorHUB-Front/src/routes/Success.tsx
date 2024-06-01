@@ -34,8 +34,6 @@ function Success() {
     navigate('/' + to);
   }, 3000);
 
-  console.log(message, to);
-
   return (
     <div className={`container ${classes.main}`}>
       <div className={classes.success}>

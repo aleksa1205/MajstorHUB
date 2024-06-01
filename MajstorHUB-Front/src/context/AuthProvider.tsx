@@ -18,6 +18,7 @@ export type AuthValues = {
   email: string;
   userId: string;
   jwtToken: string;
+  expiration: Date;
   refreshToken: RefreshToken;
   userType: UserType;
   roles: Array<Number>;
@@ -28,6 +29,7 @@ export const emptyAuthValue: AuthValues = {
   userId: "",
   email: "",
   jwtToken: "",
+  expiration: new Date(),
   refreshToken: {
     tokenValue: "",
     expiry: new Date(),
@@ -89,6 +91,7 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
         naziv: data.naziv,
         email: email,
         jwtToken: data.jwtToken,
+        expiration: data.expiration,
         refreshToken: data.refreshToken,
         roles: data.roles.map((el) => pathToUser(el)),
         userId: data.userId,

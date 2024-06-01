@@ -225,4 +225,34 @@ public class OglasController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [HttpPost("Filter")]
+    public async Task<IActionResult> Filter(FilterOglasDTO filter)
+    {
+        try
+        {
+            if (filter.Cena.Od > filter.Cena.Do || filter.Cena.Od < 0 || filter.Cena.Do < 0)
+                return BadRequest("Rang cene je neispravan");
+            if (!UtilityCheck.IsValidQuery(filter.Query))
+                return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
+            if (!UtilityCheck.IsValidQuery(filter.Opis))
+                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+
+            var filterList = await _oglasService.Filter(filter);
+            if (filterList.Count == 0)
+            {
+                return NotFound("Ne postoji ni jedan oglas sa zadatim parametrima!\n");
+            }
+
+            return Ok(filterList);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 }

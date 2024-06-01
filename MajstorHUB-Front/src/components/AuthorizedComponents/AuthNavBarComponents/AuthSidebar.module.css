@@ -1,3 +1,7 @@
+.nav {
+    display: block;
+}
+
 .userInfo {
     display: flex;
     flex-direction: row;
@@ -77,8 +81,8 @@
     margin: 0;
 }
 
-@media (width <= 1000) {
+/* @media (width >= 1000) {
     .nav {
-        display: block !important;
+        display: none !important;
     }
-}
+} */

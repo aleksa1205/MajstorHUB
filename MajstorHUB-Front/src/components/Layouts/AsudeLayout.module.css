@@ -1,12 +1,21 @@
 .main {
     display: grid;
-    grid-template-columns: 3fr 1fr;
-    gap: 1rem;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    
+    main {
+        max-width: none !important;
+        margin-inline: 0 !important;
+        padding-inline: 0 !important;
+    }
 }
 
-@media (width <= 900px) {
+@media (width <= 1000px) {
     .main {
-        display: flex;
-        flex-direction: column-reverse;
+        /* display: flex;
+        flex-direction: column-reverse; */
+
+        display: block;
+        gap: 0;
     }
 }
