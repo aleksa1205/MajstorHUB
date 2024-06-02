@@ -91,3 +91,11 @@
         padding: 3rem;
     }
 }
+@media (width <= 600px) {
+    .success {
+        gap: 1.5rem;
+    }
+    .success h3 {
+        font-size: 1.4rem;
+    }
+}

@@ -15,6 +15,7 @@ import classes from "./UserProfile.module.css";
 import { userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import { getUpdateUserFromUserData } from "../../../lib/utils";
 import ProfileData from "./ProfileData";
+import NotFoundImageUrl from '../../../../pictures/not-found.png';
 
 type PropsValues = {
   typeFromUrl: UserType;
@@ -97,7 +98,8 @@ function UserProfile({ typeFromUrl }: PropsValues) {
       {notFound ? (
         <div className='container'>
             <div className={`${classes.center}`}>
-            <h1>Nismo pronasli user-a kog trazite :(</h1>
+            <img src={NotFoundImageUrl} alt="Not Found" />
+            <h1>Nismo pronašli user-a kog tražite :(</h1>
             </div>
         </div>
       ) : isFetching ? (

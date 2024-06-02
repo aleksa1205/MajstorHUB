@@ -15,7 +15,7 @@ export default function Oglasi() {
 
     return (
         <main className={`${classes.main} container`}>
-            <FilerOglasForm setIsFetching={setIsFetching} setOglasi={setOglasi} />
+            <FilerOglasForm isFetching={isFetching} setIsFetching={setIsFetching} setOglasi={setOglasi} />
             {isFetching && (
                 <div className={classes.center}>
                     <Hand />

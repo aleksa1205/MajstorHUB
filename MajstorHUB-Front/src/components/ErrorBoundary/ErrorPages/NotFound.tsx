@@ -1,5 +1,5 @@
 import classes from "./Error.module.css";
-import image from "../../../pictures/not-found.png";
+import image from "../../../../pictures/not-found.png";
 import { Link } from "react-router-dom";
 
 export default function NotFound() {

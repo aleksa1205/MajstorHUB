@@ -2,6 +2,7 @@ import classes from "../components/ErrorBoundary/SuccErr.module.css";
 import { useLoaderData, useNavigate } from "react-router-dom";
 import Lottie from 'react-lottie'
 import animationData from '../../pictures/animations/successAnimation.json'
+import { useEffect, useState } from "react";
 
 type urlType = {
   message: string;
@@ -20,6 +21,9 @@ export function loader({ request }: any) {
 function Success() {
   const {message, to} = useLoaderData() as urlType;
   const navigate = useNavigate();
+  const [size, setSize] = useState<string>(window.innerWidth <= 600
+    ? '2rem'
+    : '2.5rem');
 
   const animOptions = {
     loop: false,
@@ -30,14 +34,30 @@ function Success() {
     }
   }
 
-  setTimeout(() => {
-    navigate('/' + to);
-  }, 3000);
+  useEffect(() => {
+    const id = setTimeout(() => {
+      navigate('/' + to);
+    }, 3000);
+
+    return () => clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
+    function func() {
+      window.innerWidth <= 600
+      ? setSize('2rem')
+      : setSize('2.5rem')
+    }
+
+    window.addEventListener('resize', func);
+
+    return () => window.removeEventListener('resize', func);
+  }, []);
 
   return (
     <div className={`container ${classes.main}`}>
       <div className={classes.success}>
-        <Lottie options={animOptions} height='2.5rem' width='2.5rem'></Lottie>
+        <Lottie options={animOptions} height={size} width={size}></Lottie>
         <div>
           <h3 className={classes.heading}>
               {message !== '' ? message : 'Uspešno ste izvršili akciju'}

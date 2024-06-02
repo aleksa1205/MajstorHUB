@@ -25,6 +25,7 @@ import {
   DuzinaPoslaInputOglas,
   IskustvoInputOglas,
   OpisInputOglas,
+  PotrosenoInputOglas,
   QueryInputOglas,
 } from "./FilterOglasFilters";
 import useModalAnimation from "../../../../hooks/useModalAnimation";
@@ -41,12 +42,14 @@ type FormValues = {
   iskustva?: string[];
   opis?: string;
   query?: string;
+  potroseno?: string;
 };
 
 const formDefaultValues: FormValues = {
   cena: JSON.stringify({ od: 0, do: Number.MAX_VALUE }),
   customDo: "0",
   customOd: "0",
+  potroseno: "0"
 };
 
 type ContextValues = {
@@ -67,11 +70,13 @@ export const FormContext = createContext<ContextValues | null>(null);
 type PropsValues = {
   setOglasi: React.Dispatch<React.SetStateAction<GetOglasDTO[]>>;
   setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  isFetching: boolean
 };
 
 export default function FilerOglasForm({
   setIsFetching,
   setOglasi,
+  isFetching
 }: PropsValues) {
   const form = useForm<FormValues>({
     defaultValues: formDefaultValues,
@@ -87,7 +92,7 @@ export default function FilerOglasForm({
     setError,
     clearErrors,
   } = form;
-  const { errors, isValid } = formState;
+  const { errors, isValid, isSubmitting } = formState;
   const { showBoundary } = useErrorBoundary();
 
   const [isCustom, setIsCustom] = useState(false);
@@ -122,7 +127,12 @@ export default function FilerOglasForm({
       iskustva: iskustvaStrings,
       customDo,
       customOd,
+      potroseno: potrosenoString
     } = values;
+
+    let potroseno;
+    if(potrosenoString)
+      potroseno = parseFloat(potrosenoString);
 
     let cena;
     if (cenaString === "custom") {
@@ -148,6 +158,7 @@ export default function FilerOglasForm({
       duzinePosla,
       query,
       opis,
+      potroseno
     };
 
     try {
@@ -157,7 +168,6 @@ export default function FilerOglasForm({
       if (data === false) setOglasi(new Array());
       else setOglasi(data);
 
-      // console.log(data);
       setIsFetching(false);
     } catch (error) {
       if (error instanceof SessionEndedError) logoutUser();
@@ -186,7 +196,7 @@ export default function FilerOglasForm({
 
           {isSmallScreen && <FilterOptionsSmall />}
           {isReallySmall && <div className={classes.break} />}
-          <button className={`mainButtonSmall ${classes.btnContainer}`}>
+          <button disabled={isFetching} className={`mainButtonSmall ${classes.btnContainer}`}>
             <IoIosSearch />
             Pretraži
           </button>
@@ -244,6 +254,7 @@ function FilterOptionsSmall() {
                 <IoClose onClick={closeHandler} size="2rem" />
               </div>
               <div className={classes.filterContent}>
+                <PotrosenoInputOglas tip="DropDownSlider" />
                 <CenaInputOglas tip="DropDownSlider" />
                 <IskustvoInputOglas tip="DropDownSlider" />
                 <DuzinaPoslaInputOglas tip="DropDownSlider" />
@@ -276,6 +287,7 @@ function FilterOptionsSmall() {
 function FilterOptionsLarge() {
   return (
     <div className={classes.categoryContainer}>
+      <PotrosenoInputOglas tip="DropDown" />
       <CenaInputOglas tip="DropDown" />
       <IskustvoInputOglas tip="DropDown" />
       <DuzinaPoslaInputOglas tip="DropDown" />

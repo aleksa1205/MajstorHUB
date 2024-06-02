@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { CreateOglasDTO } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
+import { CreateOglasDTO, GetOglasDTO } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
 import ModalAnimated from "../../../Theme/Modal/ModalAnimated"
 import EditNaslov from "./EditNaslov";
 import EditOpis from "./EditOpis";
@@ -22,13 +22,13 @@ type PropsValues = {
     formType: EditOglasFormType,
     style: any
     oglasData: CreateOglasDTO;
-    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>>
+    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     close: () => void,
 }
 
 type EditOglasFormContext = {
     oglasData: CreateOglasDTO;
-    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>>
+    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     close: () => void,
 }
 

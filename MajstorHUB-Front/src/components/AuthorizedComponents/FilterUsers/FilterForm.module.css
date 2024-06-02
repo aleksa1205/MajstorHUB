@@ -224,6 +224,9 @@
   .inputGroup {
     min-width: 0;
   }
+  .form {
+    margin-bottom: 1rem;
+  }
 }
 
 @media (height < 800px) {

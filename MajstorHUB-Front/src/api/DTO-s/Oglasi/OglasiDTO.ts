@@ -39,11 +39,15 @@ export type FilterOglasDTO = {
     od: number;
     do: number;
   };
+  potroseno?: number;
 };
 
 export type GetOglasDTO = {
   id: string;
   korisnikId: string;
+  ime: string;
+  prezime: string;
+  potroseno: number;
   naslov: string;
   iskustvo: Iskustvo;
   struke: Struka[];
@@ -53,3 +57,7 @@ export type GetOglasDTO = {
   lokacija?: string;
   datumKreiranja: Date;
 };
+
+export type OglasUpdateSelfDTO = CreateOglasDTO & {
+  id: string;
+}

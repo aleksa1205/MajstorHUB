@@ -4,10 +4,10 @@ import { useState } from "react";
 function usePopUpAnimation() {
     const [showMessge, setShowMessage] = useState(false);
     const transition = useTransition(showMessge, {
-        from: {bottom: '-10%', opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)'},
+        from: {bottom: '-5%', opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)'},
         enter: {bottom: '0', opacity: 1, transform: 'translate(-50%, -50%) scale(1)'},
-        leave: {bottom: '-10%', opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)'},
-        config: {mass: 2, tension: 1500, friction: 40}
+        leave: {bottom: '5%', opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)'},
+        config: {mass: 3, tension: 350, friction: 35, clamp: true}
         // config: {duration: 400, easing: easings.easeInOutQuart}
     })
 

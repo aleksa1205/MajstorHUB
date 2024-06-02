@@ -1,4 +1,4 @@
-import { FaCircleCheck } from "react-icons/fa6";
+import { FaCircleInfo } from "react-icons/fa6";
 import classes from './BoxesAnimated.module.css'
 import { animated } from "@react-spring/web";
 import { IoClose } from "react-icons/io5";
@@ -10,7 +10,7 @@ type PropsVales = {
     closeMessage: () => void
 }
 
-function SuccessBoxAnimated({ children, style, closeMessage } : PropsVales) {
+function InfoBoxAnimated({ children, style, closeMessage } : PropsVales) {
     
     useEffect(() => {
         const id = setTimeout(closeMessage, 5000);
@@ -19,8 +19,8 @@ function SuccessBoxAnimated({ children, style, closeMessage } : PropsVales) {
     }, [])
 
     return (
-        <animated.div style={style} className={classes.succBox}>
-            <FaCircleCheck size='1.25rem' />
+        <animated.div style={style} className={classes.infoBox}>
+            <FaCircleInfo size='1.25rem' />
             <div>
                 {children}
             </div>
@@ -29,4 +29,4 @@ function SuccessBoxAnimated({ children, style, closeMessage } : PropsVales) {
     )
 }
 
-export default SuccessBoxAnimated;
+export default InfoBoxAnimated;

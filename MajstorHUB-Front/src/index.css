@@ -51,7 +51,7 @@ p {
 }
 
 body {
-  padding-top: 96px;
+  padding-top: 80px;
   margin: 0;
   /* color: #e6ddf9; */
 }
@@ -66,6 +66,7 @@ img {
   max-width: 1400px;
   margin-inline: auto;
   padding-inline: 2rem;
+  overflow: hidden;
 }
 
 @media (width <= 600px) {

@@ -47,6 +47,7 @@ type PropsValues = {
   type: UserType;
   setUsers: React.Dispatch<React.SetStateAction<userDataType[]>>;
   setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  isFetching: boolean;
 };
 
 type ContextValues = {
@@ -65,7 +66,7 @@ const formDefaultValues: FormValues = {
   zaradjeno: "0",
 };
 
-function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
+function FilterForm({ type, setUsers, setIsFetching, isFetching }: PropsValues) {
   const form = useForm<FormValues>({
     defaultValues: formDefaultValues,
   });
@@ -164,7 +165,7 @@ function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
 
           {isSmallScreen && <FilterOptionsSmall type={type} />}
           {isReallySmall && <div className={classes.break} />}
-          <button className={`mainButtonSmall ${classes.btnContainer}`}>
+          <button disabled={isFetching} className={`mainButtonSmall ${classes.btnContainer}`}>
             <IoIosSearch />
             Pretraži
           </button>

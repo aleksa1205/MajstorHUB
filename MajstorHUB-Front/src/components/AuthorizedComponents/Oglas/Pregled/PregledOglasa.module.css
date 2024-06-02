@@ -15,6 +15,7 @@
 
 .editContainer {
     display: flex;
+    column-gap: 1rem;
     justify-content: space-between;
 }
 
@@ -34,14 +35,18 @@
     border-bottom: none;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 .naslov h3 {
     margin: 0;
 }
 
-.opis {
+.opisDiv {
+    display: inline-block;
     white-space: pre-wrap;
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
 }
 
 .vestina {
@@ -91,5 +96,10 @@
         width: 100vw;
         bottom: 0;
         left: 0;
+        padding: 1rem !important;
+
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 1rem;
     }
 }
