@@ -214,10 +214,12 @@ function FirstSection({ oglas: {datumKreiranja, naslov, lokacija} }: SectionProp
             <h3>{naslov}</h3>
             <div>
                 <p>Postavljeno {formatDateBefore(datumKreiranja)}</p>
-                <div>
-                    <IoLocationOutline />
-                    <p>{lokacija}</p>
-                </div>
+                {lokacija && (
+                    <div>
+                        <IoLocationOutline />
+                        <p>{lokacija}</p>
+                    </div>
+                )}
             </div>
         </section>
     )

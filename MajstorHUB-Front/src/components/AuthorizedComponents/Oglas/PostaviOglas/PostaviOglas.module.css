@@ -3,6 +3,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 3rem;
   padding-bottom: 90px;
+  overflow: hidden;
 }
 
 .steps span {
