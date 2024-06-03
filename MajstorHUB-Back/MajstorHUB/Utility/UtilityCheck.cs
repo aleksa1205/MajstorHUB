@@ -1,3 +1,6 @@
+using MajstorHUB.Models.Enums;
+using MajstorHUB.Models.Users;
+
 namespace Utlity;
 
 public class UtilityCheck

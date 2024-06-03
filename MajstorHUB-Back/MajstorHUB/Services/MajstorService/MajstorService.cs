@@ -1,8 +1,4 @@
-﻿using MajstorHUB.Models;
-using MajstorHUB.Utility;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.Serialization;
-namespace MajstorHUB.Services.MajstorService;
+﻿namespace MajstorHUB.Services.MajstorService;
 
 public class MajstorService : IMajstorService
 {

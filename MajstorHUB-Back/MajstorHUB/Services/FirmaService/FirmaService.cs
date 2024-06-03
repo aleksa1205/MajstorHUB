@@ -1,6 +1,4 @@
-﻿using MajstorHUB.Models;
-using MajstorHUB.Utility;
-namespace MajstorHUB.Services.FirmaService;
+﻿namespace MajstorHUB.Services.FirmaService;
 
 public class FirmaService : IFirmaService
 {

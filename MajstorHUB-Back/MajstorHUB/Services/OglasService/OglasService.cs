@@ -1,6 +1,4 @@
-﻿using MajstorHUB.Models;
-
-namespace MajstorHUB.Services.OglasService;
+﻿namespace MajstorHUB.Services.OglasService;
 
 public class OglasService : IOglasService
 {
