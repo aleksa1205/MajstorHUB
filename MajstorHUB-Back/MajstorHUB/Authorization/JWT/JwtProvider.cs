@@ -20,11 +20,11 @@ public class JwtProvider
 
         // Hard kodirano je ovako, ako zatreba uradicemo na bolji nacin
         if (user is Majstor)
-            claims.Add(new("Role", Roles.Majstor.ToString()));
+            claims.Add(new("Role", ((int)Roles.Majstor).ToString()));
         else if (user is Korisnik)
-            claims.Add(new("Role", Roles.Korisnik.ToString()));
+            claims.Add(new("Role", ((int)Roles.Korisnik).ToString()));
         else if (user is Firma)
-            claims.Add(new("Role", Roles.Firma.ToString()));
+            claims.Add(new("Role", ((int)Roles.Firma).ToString()));
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(

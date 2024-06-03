@@ -8,10 +8,10 @@ public class Prijava
     public string? Id { get; set; }
 
     [BsonElement("oglas")]
-    public required string Oglas { get; set; }
+    public required string OglasId { get; set; }
 
     [BsonElement("izvodjac")]
-    public required string Izvodjac { get; set; }
+    public required string IzvodjacId { get; set; }
 
     [BsonElement("tip")]
     public required Roles TipIzvodjaca { get; set; }

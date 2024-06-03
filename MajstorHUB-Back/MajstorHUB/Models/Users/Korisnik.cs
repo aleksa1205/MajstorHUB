@@ -17,7 +17,4 @@ public class Korisnik : User
 
     [BsonElement("potroseno_na_sajtu")]
     public double Potroseno { get; set; } = 0;
-
-    [BsonElement("oglasi")]
-    public List<string> OglasiId { get; set; } = [];
 }

@@ -50,6 +50,19 @@ public class UtilityCheck
         }
     }
 
+    public static Roles GetRole(HttpContext context)
+    {
+        Roles role = Roles.Nedefinisano;
+
+        foreach (var claim in context.User.Claims)
+        {
+            if (claim.Type == "Role")
+                role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+        }
+
+        return role;
+    }
+
     public static bool IsValidJmbg(string jmbg)
     {
         return jmbg.Length == 13 && jmbg.All(Char.IsNumber);

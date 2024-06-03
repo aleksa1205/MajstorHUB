@@ -194,12 +194,12 @@ public class FirmaController : ControllerBase
 
             var token = new JwtProvider(_configuration).Generate(firma);
 
-            List<string> roles = new List<string>();
+            Roles role = Roles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
-                    roles.Add(claim.Value);
+                    role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -218,7 +218,7 @@ public class FirmaController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 RefreshToken = refresh,
-                Roles = roles
+                Role = role
             });
 
         }
@@ -265,12 +265,12 @@ public class FirmaController : ControllerBase
 
             var token = jwtProvider.Generate(firma);
 
-            List<string> roles = new List<string>();
+            Roles role = Roles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
-                    roles.Add(claim.Value);
+                    role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
             }
 
             var newRefreshToken = new RefreshToken
@@ -288,7 +288,7 @@ public class FirmaController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
                 Expiration = token.ValidTo,
-                Roles = roles
+                Role = role
             });
         }
         catch (Exception e)

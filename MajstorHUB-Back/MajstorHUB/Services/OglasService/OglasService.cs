@@ -4,13 +4,17 @@ public class OglasService : IOglasService
 {
     private readonly IMongoCollection<Oglas> _oglasi;
     private readonly IMongoCollection<Korisnik> _korisnici;
+    private readonly IMongoCollection<Prijava> _prijave;
     private readonly ProjectionDefinition<Oglas, GetOglasDTO> _getProjection;
+    private readonly IPrijavaService _prijavaService;
 
-    public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
+    public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient, IPrijavaService prijavaService)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _oglasi = db.GetCollection<Oglas>(settings.OglasiCollectionName);
         _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
+        _prijave = db.GetCollection<Prijava>(settings.PrijaveCollectionName);
+        _prijavaService = prijavaService;
 
         //_getProjection = Builders<Oglas>.Projection.Expression(o => new GetOglasDTO
         //{
@@ -76,6 +80,10 @@ public class OglasService : IOglasService
     public async Task Create(Oglas oglas)
     {
         await _oglasi.InsertOneAsync(oglas);
+
+        var korisnikFilter = Builders<Korisnik>.Filter.Eq(k => k.Id, oglas.KorisnikId);
+        var update = Builders<Korisnik>.Update.Push(k => k.OglasiId, oglas.Id);
+        await _korisnici.UpdateOneAsync(korisnikFilter, update);
     }
 
     public async Task Update(string id, Oglas oglas)
@@ -83,7 +91,8 @@ public class OglasService : IOglasService
         var filter = Builders<Oglas>.Filter.Eq(oglas => oglas.Id, id);
         var update = Builders<Oglas>.Update
             .Set("naslov", oglas.Naslov)
-            .Set("opis", oglas.Opis);
+            .Set("opis", oglas.Opis)
+            .Set("prijave", oglas.PrijaveIds);
         await _oglasi.UpdateOneAsync(filter, update);
     }
 
@@ -103,7 +112,21 @@ public class OglasService : IOglasService
 
     public async Task Delete(string id)
     {
-        await _oglasi.DeleteOneAsync(oglas => oglas.Id == id);
+        var oglas = await _oglasi.FindOneAndDeleteAsync(oglas => oglas.Id == id);
+
+        if(oglas is not null)
+        {
+            var korisnikFilter = Builders<Korisnik>.Filter.Eq(k => k.Id, oglas.KorisnikId);
+            var update = Builders<Korisnik>.Update.Pull(k => k.OglasiId, oglas.Id);
+            await _korisnici.UpdateOneAsync(korisnikFilter, update);
+
+            // nije brza operacija, mora batch delete nekako da se implementira da bi
+            // ova operacija bila optimizovana
+            foreach(var prijavaId in oglas.PrijaveIds)
+            {
+                await _prijavaService.Delete(prijavaId);
+            }
+        }
     }
 
     public async Task<List<GetOglasDTO>> Filter(FilterOglasDTO oglas)

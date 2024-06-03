@@ -14,7 +14,7 @@ export type LoginResponse = {
     jwtToken : string;
     refreshToken : RefreshToken;
     expiration : Date;
-    roles : Array<string>;
+    role : UserType;
 }
 
 type RegiserKorisnikDto = {

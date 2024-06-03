@@ -63,7 +63,7 @@ export default function PostaviOglas() {
     setError,
     setValue,
   } = useForm<CreateOglasFormValues>();
-  const { errors, isSubmitting } = formState;
+  const { errors } = formState;
   const [oglas, setOglas] = useState<CreateOglasDTO>();
 
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.Naslov);

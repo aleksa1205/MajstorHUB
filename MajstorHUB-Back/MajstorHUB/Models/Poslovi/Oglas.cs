@@ -10,8 +10,8 @@ public class Oglas
     [BsonElement("korisnik")]
     public required string KorisnikId { get; set; }
 
-    //[BsonElement("prijave")]
-    //public List<Prijava> Prijave { get; set; }
+    [BsonElement("prijave")]
+    public List<string> PrijaveIds { get; set; } = [];
 
     [BsonElement("naslov")]
     public required string Naslov { get; set; }

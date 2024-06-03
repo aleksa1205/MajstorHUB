@@ -68,7 +68,8 @@ public class FirmaService : IFirmaService
             .Set("adresa", firma.Adresa)
             .Set("broj_telefona", firma.BrojTelefona)
             .Set("naziv", firma.Naziv)
-            .Set("struke", firma.Struke);
+            .Set("struke", firma.Struke)
+            .Set("oglasi", firma.OglasiId);
         await _firme.UpdateOneAsync(filter, update);
     }
 

@@ -202,12 +202,12 @@ public class KorisnikController : ControllerBase
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
 
-            List<string> roles = new List<string>();
+            Roles role = Roles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
-                    roles.Add(claim.Value);
+                    role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -226,7 +226,7 @@ public class KorisnikController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 RefreshToken = refresh,
-                Roles = roles
+                Role = role
             });
         }
         catch (Exception e)
@@ -274,12 +274,12 @@ public class KorisnikController : ControllerBase
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
 
-            List<string> roles = new List<string>();
+            Roles role = Roles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
-                    roles.Add(claim.Value);
+                    role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -297,7 +297,7 @@ public class KorisnikController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = refresh,
                 Expiration = token.ValidTo,
-                Roles = roles
+                Role = role
             });
         }
         catch (Exception e)

@@ -413,9 +413,15 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         
 
         <div className={`${classes.center} ${classes.formControl}`}>
-          <button disabled={isSubmitting}  className={"mainButton" + ' ' + `${isSubmitting ? 'button--loading' : ''}`}>
-            Napravi nalog
+        <button
+            disabled={isSubmitting}
+            className={
+              "mainButton" + " " + `${isSubmitting ? "button--loading" : ""}`
+            }
+          >
+            <span className="button__text">Napravi nalog</span>
           </button>
+          
         </div>
         <div className={`${classes.center} ${classes.formControl}`}>
           <p>

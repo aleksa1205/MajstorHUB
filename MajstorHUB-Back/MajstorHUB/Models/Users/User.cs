@@ -36,6 +36,10 @@ public abstract class User
 
     [BsonElement("opis")]
     public string? Opis { get; set; } = string.Empty;
+    // za korisnika se ovo polje koristi za oglase koje je postavio,
+    // za majstore i firme je ovo polje oglasi na koji se prijavio
+    [BsonElement("oglasi")]
+    public List<string> OglasiId { get; set; } = [];
 
     [JsonIgnore]
     [BsonElement("refresh_token")]

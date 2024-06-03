@@ -73,7 +73,8 @@ public class MajstorService : IMajstorService
             .Set("datum_rodjenja", majstor.DatumRodjenja)
             .Set("struka", majstor.Struka)
             .Set("iskustvo", majstor.Iskustvo)
-            .Set("cena_po_satu", majstor.CenaPoSatu);
+            .Set("cena_po_satu", majstor.CenaPoSatu)
+            .Set("oglasi", majstor.OglasiId);
         await _majstori.UpdateOneAsync(filter, update);
     }
 

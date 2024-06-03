@@ -17,19 +17,20 @@ type PropsValues = {
     oglasData: CreateOglasDTO;
     oglasId?: string;
     preview?: boolean;
-    setOglas?: React.Dispatch<React.SetStateAction<CreateOglasDTO>>
+    setOglas?: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>>
     updateOglas?: React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     prev?: () => void
     setValue?: UseFormSetValue<CreateOglasFormValues>
     setStruke?: React.Dispatch<React.SetStateAction<Struka[]>>
     struke?: Struka[],
     setEdit?: React.Dispatch<React.SetStateAction<boolean>>
-    initialOglas?: GetOglasDTO
+    initialOglas?: GetOglasDTO,
 }
 
 export default function PregledOglasa({ oglasData, preview, prev, setOglas, updateOglas, setValue, oglasId, setEdit, initialOglas}: PropsValues) {
     const [formType, setFormType] = useState<EditOglasFormType>(EditOglasFormType.Nedefinisano);
     const { transition, closeModal, openModal } = useModalAnimation();
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
 
     const { postavi, updateSelf } = useOglasController();
@@ -65,6 +66,8 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
 
     async function postaviHandler() {
         try {
+            setIsSubmitting(true);
+
             const data = await postavi(oglasData);
             navigate(`/success?message=Uspešno ste kreirali oglas&to=oglasi/${data}`);
         } catch (error) {
@@ -73,12 +76,16 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
             else
                 showBoundary(error);
         }
+        finally {
+            setIsSubmitting(false);
+        }
     }
 
     async function izmeniHandler() {
         if(!oglasId)
             throw new Error("nisi uneo id oglasa");
         try {
+            setIsSubmitting(true);
             const data: OglasUpdateSelfDTO = {
                 id: oglasId!,
                 ...oglasData
@@ -94,6 +101,9 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
                 } else {
                 showBoundary(error);
                 }
+        }
+        finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -113,9 +123,25 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
             <div className={`${classes.heading} container`}>
                 <h2>Detalji Oglasa</h2>
                 {!preview ? (
-                    <button className='mainButtonSmall'>Ažuriraj ovaj oglas</button>
+                        <button
+                            onClick={izmeniHandler}
+                            disabled={isSubmitting}
+                            className={
+                            "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
+                            }
+                        >
+                            <span className="button__text">Izmeni ovaj oglas</span>
+                        </button>
                 ) : (
-                    <button onClick={postaviHandler} className='mainButtonSmall'>Postavi ovaj oglas</button>
+                    <button
+                        onClick={postaviHandler}
+                        disabled={isSubmitting}
+                        className={
+                        "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
+                        }
+                    >
+                    <span className="button__text">Postavi ovaj oglas</span>
+                </button>
                 )}
             </div>
 
@@ -182,13 +208,29 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
                     {preview && (
                         <>
                             <button onClick={nazadHandler} className='secondaryButtonSmall'>Nazad</button>
-                            <button onClick={postaviHandler} className='mainButtonSmall'>Postavi oglas</button>
+                            <button
+                                onClick={postaviHandler}
+                                disabled={isSubmitting}
+                                className={
+                                "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
+                                }
+                            >
+                                <span className="button__text">Postavi oglas</span>
+                            </button>
                         </>
                     )}
                     {!preview && (
                         <>
                             <button onClick={nazadHandler2} className='secondaryButtonSmall'>Nazad</button>
-                            <button onClick={izmeniHandler} className='mainButtonSmall'>Izmeni oglas</button>
+                            <button
+                                onClick={izmeniHandler}
+                                disabled={isSubmitting}
+                                className={
+                                "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
+                                }
+                            >
+                                <span className="button__text">Izmeni oglas</span>
+                            </button>
                         </>
                     )}
                 </section>

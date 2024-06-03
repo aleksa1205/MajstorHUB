@@ -157,8 +157,8 @@ public class OglasController : ControllerBase
 
             await _oglasService.Create(oglas);
 
-            korisnik.OglasiId.Add(oglas.Id!);
-            await _korisnikService.Update(korisnikId, korisnik);
+            //korisnik.OglasiId.Add(oglas.Id!);
+            //await _korisnikService.Update(korisnikId, korisnik);
 
             return Ok(oglas.Id);
 
@@ -254,9 +254,9 @@ public class OglasController : ControllerBase
             if (postojeciOglas is null)
                 return NotFound($"Oglas sa ID-em {id} ne postoji!\n");
 
-            if (!korisnik.OglasiId.Remove(id))
-                return BadRequest("Nemoguce brisanje id oglasa iz tabele korisnik");
-            await _korisnikService.Update(korisnik.Id!, korisnik);
+            //if (!korisnik.OglasiId.Remove(id))
+            //    return BadRequest("Nemoguce brisanje id oglasa iz tabele korisnik");
+            //await _korisnikService.Update(korisnik.Id!, korisnik);
 
             await _oglasService.Delete(id);
             return Ok($"Oglas sa ID-em {id} je uspesno obrisan!\n");

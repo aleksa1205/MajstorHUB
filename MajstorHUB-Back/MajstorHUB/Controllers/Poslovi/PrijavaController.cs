@@ -17,6 +17,60 @@ public class PrijavaController : ControllerBase
         _oglasService = oglasService;
     }
 
+    private async Task<User> GetIzvodjacById(string userId, Roles userType)
+    {
+        switch (userType)
+        {
+            case Roles.Firma:
+                return await _firmaService.GetById(userId);
+            case Roles.Majstor:
+                return await _majstorService.GetById(userId);
+            default:
+                throw new NotSupportedException("Tip koji je prosledjen nije podrzan!\n");
+        }
+    }
+
+    private async Task UpdateIzvodjac(Roles userType, User user)
+    {
+        if (userType == Roles.Firma && user is not Firma)
+            throw new NotSupportedException("Niste uneli firmu a tip izvodjaca vam je firma");
+        if (userType == Roles.Majstor && user is not Majstor)
+            throw new NotSupportedException("Niste uneli majstora a tip izvodjaca vam je majstor");
+
+        switch (userType)
+        {
+            case Roles.Firma:
+                var firma = user as Firma;
+                if (firma != null)
+                {
+                    await _firmaService.Update(firma.Id!, firma);
+                }
+                break;
+            case Roles.Majstor:
+                var majstor = user as Majstor;
+                if (majstor != null)
+                {
+                    await _majstorService.Update(majstor.Id!, majstor);
+                }
+                break;
+            default:
+                throw new NotSupportedException("Tip koji je prosledjen nije podrzan!\n");
+        }
+    }
+
+    private string GetIzvodjacErrorMessage(Roles userType)
+    {
+        switch (userType)
+        {
+            case Roles.Firma:
+                return "Firma sa prosledjenim ID-em nije pronadjena!\n";
+            case Roles.Majstor:
+                return "Majstor sa prosledjenim ID-em nije pronadjen!\n";
+            default:
+                throw new NotSupportedException("Tip koji je prosledjen nije podrzan!\n");
+        }
+    }
+
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -82,40 +136,51 @@ public class PrijavaController : ControllerBase
 
     [Authorize]
     [RequiresClaim(Roles.Firma, Roles.Majstor)]
-    [HttpPost("Post")]
+    [HttpPost("Prijavi-se")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Post(CreatePrijavaDTO prijavaDTO)
+    public async Task<IActionResult> Post([FromBody] CreatePrijavaDTO prijava)
     {
         try
         {
-            var id = HttpContext.User.Identity?.Name;
-            if (id is null)
+            var izvodjacId = HttpContext.User.Identity?.Name;
+            if (izvodjacId is null)
                 return Unauthorized();
-            Firma firma = await _firmaService.GetById(prijavaDTO.Izvodjac);
-            Majstor majstor = await _majstorService.GetById(prijavaDTO.Izvodjac);
-            if (firma is null && majstor is null)
-            {
-                return NotFound($"Izvodjac radova sa ID-em {prijavaDTO.Izvodjac} nije pronađen!");
-            }
-            Oglas oglas = await _oglasService.GetById(prijavaDTO.Oglas);
-            if (oglas is null)
-            {
-                return NotFound($"Oglas sa ID-em {prijavaDTO.Oglas} nije pronađen!");
-            }
 
-            Prijava prijava = new Prijava
+            var tipIzvodjaca = UtilityCheck.GetRole(HttpContext);
+
+            var izvodjac = await GetIzvodjacById(izvodjacId, tipIzvodjaca);
+            if (izvodjac is null)
+                return NotFound(GetIzvodjacErrorMessage(tipIzvodjaca));
+
+            var oglas = await _oglasService.GetById(prijava.OglasId);
+            if (oglas is null)
+                return NotFound("Oglas sa prosledjenim ID-em nije pronadjen");
+
+            if (izvodjac.OglasiId.Contains(oglas.Id!))
+                return BadRequest("Imate pravo na samo jednu prijavu po poslu");
+
+
+            var novaPrijava = new Prijava
             {
-                Izvodjac = prijavaDTO.Izvodjac,
-                TipIzvodjaca = firma is not null ? Roles.Firma : Roles.Majstor,
-                Oglas = prijavaDTO.Oglas,
-                Ponuda = prijavaDTO.Ponuda,
-                Opis = prijavaDTO.Opis
+                IzvodjacId = izvodjacId,
+                OglasId = prijava.OglasId,
+                Ponuda = prijava.Ponuda,
+                TipIzvodjaca = tipIzvodjaca,
+                Opis = prijava.Opis
             };
-            await _prijavaService.Create(prijava);
-            return Ok($"Uspesno kreirana prijava sa ID-em {prijava.Id}!");
+
+            await _prijavaService.Create(novaPrijava);
+
+            //oglas.PrijaveIds.Add(novaPrijava.Id!);
+            //await _oglasService.Update(oglas.Id!, oglas);
+
+            //izvodjac.OglasiId.Add(prijava.OglasId);
+            //await UpdateIzvodjac(tipIzvodjaca, izvodjac);
+
+            return Ok($"Uspesno kreirana prijava sa ID-em {novaPrijava.Id}!");
         }
         catch (Exception e)
         {
@@ -123,7 +188,6 @@ public class PrijavaController : ControllerBase
         }
     }
 
-    [Authorize]
     [HttpDelete("Delete")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -137,6 +201,21 @@ public class PrijavaController : ControllerBase
             {
                 return NotFound($"Prijava sa ID-em {id} ne postoji!");
             }
+
+            //var izvodjac = await GetIzvodjacById(postojecaPrijava.IzvodjacId, postojecaPrijava.TipIzvodjaca);
+            //if(izvodjac is not null)
+            //{
+            //    if (!izvodjac.OglasiId.Remove(postojecaPrijava.OglasId))
+            //        return BadRequest("Nismo uspeli da izbrisemo id oglasa iz izvodjaca");
+            //}
+
+            //var oglas = await _oglasService.GetById(postojecaPrijava.OglasId);
+            //if (oglas is not null)
+            //{
+            //    if (!oglas.PrijaveIds.Remove(postojecaPrijava.Id!))
+            //        return BadRequest("Nismo uspeli da izbrisemo prijavu sa oglasa");
+            //}
+
             await _prijavaService.Delete(id);
             return Ok($"Prijava sa ID-em {id} je uspesno obrisana!");
         }

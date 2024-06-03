@@ -8,14 +8,14 @@ public class RequiresClaimAttribute : Attribute, IAuthorizationFilter
 
     public RequiresClaimAttribute(Roles role)
     {
-        _claimValues.Add(role.ToString());
+        _claimValues.Add(((int)role).ToString());
     }
 
     public RequiresClaimAttribute(params Roles[] roles)
     {
         foreach (var role in roles)
         {
-            _claimValues.Add(role.ToString());
+            _claimValues.Add(((int)role).ToString());
         }
     }
 
