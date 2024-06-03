@@ -3,17 +3,25 @@
 .warrningBox,
 .errorBox,
 .succBox {
-  border: 2px solid transparent;
+  /* border: 2px solid transparent; */
   border-radius: 10px;
-  padding: 0.5rem 1rem;
-  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  /* margin-bottom: 1rem; */
   display: flex;
+  align-items: center;
   gap: 1rem;
   position: fixed;
   /* top: 2rem; */
   left: 50%;
   /* transform: translate(-50%, -50%); */
   z-index: 999;
+  padding-right: 3.2rem;
+}
+
+.close {
+  position: absolute;
+  right: 0.8rem;
+  cursor: pointer;
 }
 
 .infoBox button,
@@ -33,28 +41,17 @@
   font-size: inherit;
 }
 
-.infoBox > svg,
-.warrningBox > svg,
-.errorBox > svg,
-.succBox > svg {
-  margin-top: 1rem;
-}
-
 .infoBox > div > p:first-child,
 .warrningBox > div > p:first-child,
 .errorBox > div > p:first-child,
 .succBox > div > p:first-child {
   font-weight: bold;
+  margin: 0;
 }
 
 .infoBox {
-  background-color: #dde6f9;
-  color: var(--color-blue-700);
-  border-inline-color: var(--color-blue-500);
-}
-
-.infoBox > svg {
-  color: #1d60eb;
+  background-color: var(--color-blue-500);
+  color: white;
 }
 
 .infoBox button {
@@ -71,9 +68,8 @@
 }
 
 .succBox {
-  background-color: var(--color-green-100);
-  color: var(--color-green-600);
-  border-inline-color: var(--color-green-600);
+  background-color: var(--color-green-500);
+  color: white;
 }
 
 .warrningBox {
@@ -86,4 +82,13 @@
   background-color: var(--color-red-100);
   color: var(--color-red-500);
   border-inline-color: var(--color-red-500);
+}
+
+@media (width <= 700px) {
+  .infoBox,
+  .warrningBox,
+  .errorBox,
+  .succBox {
+    width: 95vw;
+  }
 }

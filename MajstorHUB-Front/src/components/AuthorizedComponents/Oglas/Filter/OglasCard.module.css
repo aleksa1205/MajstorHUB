@@ -26,10 +26,10 @@
     column-gap: 0.5rem;
 }
 
-.firstRow {
-    /* display: flex;
-    align-items: center;
-    column-gap: 1rem; */
+.firstRow p {
+    font-size: .8rem;
+    color: var(--color-neutral-500);
+    font-weight: 400;
 }
 .firstRow p,
 .firstRow h4 {
@@ -44,11 +44,14 @@
 
 .secRow {
     display: flex;
-    column-gap: 1rem;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
 }
 .secRow p {
     color: var(--color-neutral-500);
     font-weight: 400;
+    margin: 0;
 }
 
 .thirdRow p  {
@@ -60,6 +63,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.5;

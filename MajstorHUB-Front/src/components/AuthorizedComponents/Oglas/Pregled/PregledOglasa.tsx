@@ -1,10 +1,10 @@
 import { UseFormSetValue } from 'react-hook-form';
-import { CreateOglasDTO, getDuzinaPoslaDisplayName } from '../../../../api/DTO-s/Oglasi/OglasiDTO'
+import { CreateOglasDTO, GetOglasDTO, OglasUpdateSelfDTO, getDuzinaPoslaDisplayName } from '../../../../api/DTO-s/Oglasi/OglasiDTO'
 import { Iskustvo, Struka, getStrukaDisplayName } from '../../../../api/DTO-s/responseTypes';
 import EditButton from '../../../Theme/Buttons/EditButton';
 import classes from './PregledOglasa.module.css'
 import { CreateOglasFormValues } from '../../../../routes/Oglasi/PostaviOglas';
-import useOglasController from '../../../../api/controllers/useOglasController';
+import useOglasController, { ForbiddenError } from '../../../../api/controllers/useOglasController';
 import { SessionEndedError } from '../../../../api/controllers/useUserControllerAuth';
 import useLogout from '../../../../hooks/useLogout';
 import { useErrorBoundary } from 'react-error-boundary';
@@ -15,19 +15,24 @@ import useModalAnimation from '../../../../hooks/useModalAnimation';
 
 type PropsValues = {
     oglasData: CreateOglasDTO;
+    oglasId?: string;
     preview?: boolean;
-    setOglas?: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>>
+    setOglas?: React.Dispatch<React.SetStateAction<CreateOglasDTO>>
+    updateOglas?: React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     prev?: () => void
     setValue?: UseFormSetValue<CreateOglasFormValues>
-    setStruke: React.Dispatch<React.SetStateAction<Struka[]>>
-    struke: Struka[]
+    setStruke?: React.Dispatch<React.SetStateAction<Struka[]>>
+    struke?: Struka[],
+    setEdit?: React.Dispatch<React.SetStateAction<boolean>>
+    initialOglas?: GetOglasDTO
 }
 
-export default function PregledOglasa({ oglasData, preview, prev, setOglas, setValue, setStruke, struke}: PropsValues) {
+export default function PregledOglasa({ oglasData, preview, prev, setOglas, updateOglas, setValue, oglasId, setEdit, initialOglas}: PropsValues) {
     const [formType, setFormType] = useState<EditOglasFormType>(EditOglasFormType.Nedefinisano);
     const { transition, closeModal, openModal } = useModalAnimation();
 
-    const { postavi } = useOglasController();
+
+    const { postavi, updateSelf } = useOglasController();
     const logoutUser = useLogout();
     const { showBoundary } = useErrorBoundary();
     const navigate = useNavigate();
@@ -44,10 +49,24 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, setV
         prev!();
     }
 
+    function nazadHandler2() {
+        if(!initialOglas)
+            throw new Error("Nisi postavio initial oglas");
+        if(!updateOglas)
+            throw new Error("Nisi postavio updateOglas");
+
+        updateOglas(initialOglas);
+        
+        if(setEdit)
+            setEdit(false);
+        else
+            navigate(-1);
+    }
+
     async function postaviHandler() {
         try {
-            await postavi(oglasData);
-            navigate('/success?message=Uspešno ste kreirali oglas&to=dashboard');
+            const data = await postavi(oglasData);
+            navigate(`/success?message=Uspešno ste kreirali oglas&to=oglasi/${data}`);
         } catch (error) {
             if(error instanceof SessionEndedError)
                 logoutUser();
@@ -56,20 +75,38 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, setV
         }
     }
 
+    async function izmeniHandler() {
+        if(!oglasId)
+            throw new Error("nisi uneo id oglasa");
+        try {
+            const data: OglasUpdateSelfDTO = {
+                id: oglasId!,
+                ...oglasData
+            }
+
+            await updateSelf(data);
+            navigate(`/success?message=Uspešno ste ažurirali oglas&to=oglasi/${oglasId!}`);
+        } catch (error) {
+            if (error instanceof SessionEndedError) {
+                logoutUser();
+                } else if (error instanceof ForbiddenError) {
+                    navigate('/forbidden');
+                } else {
+                showBoundary(error);
+                }
+        }
+    }
+
     function openOption(type: EditOglasFormType) {
         setFormType(type);
         openModal();
-    }
-
-    function izmeniHandler() {
-
     }
 
     return (
         <div>
             {transition((style, show) => {
                 return show ? (
-                    <EditOglasMain style={style} close={closeModal} formType={formType} oglasData={oglasData} setOglas={setOglas!} />
+                    <EditOglasMain style={style} close={closeModal} formType={formType} oglasData={oglasData} setOglas={preview ? setOglas! : updateOglas!} />
                 ) : null
             })}
 
@@ -92,7 +129,7 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, setV
 
                 <section className={classes.opis}>
                     <div className={classes.editContainer}>
-                        <div>{oglasData.opis}</div>
+                        <div className={classes.opisDiv}>{oglasData.opis}</div>
                         <EditButton onClick={() => openOption(EditOglasFormType.Opis)} />
                     </div>
                 </section>
@@ -145,11 +182,14 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, setV
                     {preview && (
                         <>
                             <button onClick={nazadHandler} className='secondaryButtonSmall'>Nazad</button>
-                            <button onClick={postaviHandler} className='mainButtonSmall'>Postavi ovaj oglas</button>
+                            <button onClick={postaviHandler} className='mainButtonSmall'>Postavi oglas</button>
                         </>
                     )}
                     {!preview && (
-                         <button className='mainButtonSmall'>Izmeni ovaj oglas</button>
+                        <>
+                            <button onClick={nazadHandler2} className='secondaryButtonSmall'>Nazad</button>
+                            <button onClick={izmeniHandler} className='mainButtonSmall'>Izmeni oglas</button>
+                        </>
                     )}
                 </section>
             </div>

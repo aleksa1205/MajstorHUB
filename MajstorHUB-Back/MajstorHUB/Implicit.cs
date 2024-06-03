@@ -11,6 +11,9 @@ global using System.Text.RegularExpressions;
 global using System.Globalization;
 global using System.Security.Claims;
 global using System.IdentityModel.Tokens.Jwt;
+global using System.Linq;
+global using System.Collections.Generic;
+global using System.Threading.Tasks;
 
 global using Swashbuckle.AspNetCore.SwaggerGen;
 

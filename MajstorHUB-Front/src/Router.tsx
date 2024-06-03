@@ -6,7 +6,7 @@ import MajstorProfile from "./routes/UsersProfiles/MajstorProfile.tsx";
 import LandingPage from "./routes/LandingPage.tsx";
 import Register from "./routes/Auth/Register.tsx";
 import RootLayout from "./components/Layouts/RootLayout.tsx";
-import ErrorPage from "./components/ErrorPages/ErrorPage.tsx";
+import ErrorPage from "./components/ErrorBoundary/ErrorPages/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Auth/Login.tsx";
 import Success, {loader as successLoader} from "./routes/Success.tsx";
 import { createBrowserRouter } from "react-router-dom";
@@ -21,6 +21,7 @@ import FirmaRequiredLayout from "./components/Layouts/FirmaRequiredLayout.tsx";
 import Oglasi from "./routes/Oglasi/Oglasi.tsx";
 import OglasPrikaz from "./routes/Oglasi/OglasPrikaz.tsx";
 import AsideLayout from "./components/Layouts/AsideLayout.tsx";
+import Forbidden from "./components/ErrorBoundary/ErrorPages/Forbidden.tsx";
 
 
 export const router = createBrowserRouter([
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
             ),
           },
           { path: "/success", element: <Success />, loader: successLoader },
+          { path: "/forbidden", element: <Forbidden />}
         ],
       },
 

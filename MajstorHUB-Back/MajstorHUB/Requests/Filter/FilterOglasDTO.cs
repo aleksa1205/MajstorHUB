@@ -7,5 +7,5 @@ public class FilterOglasDTO
     public List<Iskustvo> Iskustva { get; set; } = [];
     public List<DuzinaPosla> DuzinePosla { get; set; } = [];
     public CenaRange Cena { get; set; } = new CenaRange();
-    //public double Zaradjeno { get; set; } = 0;
+    public double Potroseno { get; set; } = 0;
 }

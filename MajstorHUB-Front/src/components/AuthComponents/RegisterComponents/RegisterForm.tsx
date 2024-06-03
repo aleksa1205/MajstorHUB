@@ -426,7 +426,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           </p>
         </div>
       </form>
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </div>
   );
 }

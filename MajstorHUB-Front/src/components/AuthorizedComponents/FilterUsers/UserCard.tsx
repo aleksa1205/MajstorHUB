@@ -37,7 +37,7 @@ function UserCard({ userData, currUserId }: PropsValues) {
                     {isCurrUser && (
                         <div className={classes.owner}>
                             <FaCircleInfo />
-                            <p>Ovo ste vi</p>
+                            <p>Ovo ste Vi</p>
                         </div>
                     )}
                 </Link>

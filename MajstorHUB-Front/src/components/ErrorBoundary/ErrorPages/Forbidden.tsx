@@ -1,5 +1,5 @@
 import classes from './Error.module.css'
-import image from '../../../pictures/forbidden.png';
+import image from '../../../../pictures/forbidden.png';
 import { Link } from 'react-router-dom';
 
 export default function Forbidden() {

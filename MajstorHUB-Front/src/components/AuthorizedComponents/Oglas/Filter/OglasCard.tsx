@@ -1,7 +1,7 @@
 import classes from  './OglasCard.module.css';
 import { createContext, useContext } from "react";
 import { GetOglasDTO, getDuzinaPoslaDisplayName } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
-import { formatDate, formatDateBefore, getOglasUrl } from '../../../../lib/utils';
+import { formatDate, formatDateBefore, formatDouble, formatDoubleWithWhite, getOglasUrl } from '../../../../lib/utils';
 import { Link } from 'react-router-dom';
 import { IoLocationOutline } from 'react-icons/io5';
 import { Iskustvo, Struka, getStrukaDisplayName } from '../../../../api/DTO-s/responseTypes';
@@ -56,9 +56,11 @@ function FirstRow() {
 }
 
 function SecondRow() {
-    const { oglasData: { lokacija } } = useContext(CardContext)!;
+    const { oglasData: { lokacija, ime, prezime, potroseno } } = useContext(CardContext)!;
     return (
         <div className={`${classes.secRow} ${classes.row}`}>
+            <p>{ime} {prezime}</p>
+            <p>{formatDouble(potroseno, 'potrošeno')}</p>
             {lokacija && (
                 <div className={classes.iconContainer}>
                     <IoLocationOutline />
@@ -74,7 +76,7 @@ function ThirdRow() {
 
     return (
         <div className={`${classes.thirdRow} ${classes.row}`}>
-            <p>Budžet: {cena} RSD - {Iskustvo[iskustvo]} - Procenjeno Vreme: {getDuzinaPoslaDisplayName(duzinaPosla)}</p>
+            <p>Budžet: {formatDoubleWithWhite(cena)} RSD - {Iskustvo[iskustvo]} - Procenjeno Vreme: {getDuzinaPoslaDisplayName(duzinaPosla)}</p>
         </div>
     )
 }

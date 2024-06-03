@@ -14,7 +14,7 @@ export default function OpisForm() {
                     <span>{currentStep + 1}/{stepsLength}</span>
                     <span>Postavljanje Oglasa</span>
                 </div>
-                <h2>Zapčnite razgovor.</h2>
+                <h2>Započnite razgovor.</h2>
                 <p>Izvođači traže:</p>
                 <ul>
                     <li>Veštine potrebne za vaš posao</li>

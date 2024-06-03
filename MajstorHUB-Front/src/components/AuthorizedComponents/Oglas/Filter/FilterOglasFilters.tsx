@@ -220,7 +220,7 @@ export function CenaInputOglas({ tip }: PropsValues) {
                   }
 
                   return valid || msg;
-                }
+                },
               })}
             />
           </div>
@@ -239,7 +239,7 @@ export function CenaInputOglas({ tip }: PropsValues) {
               type="text"
               placeholder="Do"
               {...register("customDo", {
-                required: 'Ovo je obavezno polje',
+                required: "Ovo je obavezno polje",
                 validate: (fieldValueStr) => {
                   let msg: string = "";
                   let valid = false;
@@ -263,7 +263,10 @@ export function CenaInputOglas({ tip }: PropsValues) {
     </>
   );
 
-  const isValid = (typeof errors.customDo === 'undefined' && typeof errors.customOd === 'undefined') || !isCustom;
+  const isValid =
+    (typeof errors.customDo === "undefined" &&
+      typeof errors.customOd === "undefined") ||
+    !isCustom;
 
   return (
     <>
@@ -288,6 +291,100 @@ export function CenaInputOglas({ tip }: PropsValues) {
           <DDSliderItem>{item5}</DDSliderItem>
           <DDSliderItem>{item6}</DDSliderItem>
           <DDSliderItem isValid={isValid}>{item7}</DDSliderItem>
+        </DropDownSlider>
+      )}
+    </>
+  );
+}
+
+export function PotrosenoInputOglas({ tip }: PropsValues) {
+  const { register } = useContext(FormContext)!;
+
+  const item1 = (
+    <RadioButton htmlFor="potroseno0" tekst="Bilo koji iznos potrošen">
+      <input
+        type="radio"
+        id="potroseno0"
+        value={0}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+  const item2 = (
+    <RadioButton htmlFor="potroseno1" tekst="Preko 1 din potrošeno">
+      <input
+        type="radio"
+        id="potroseno1"
+        value={1}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+  const item3 = (
+    <RadioButton htmlFor="potroseno1000" tekst="Preko 1000 din potrošeno">
+      <input
+        type="radio"
+        id="potroseno1000"
+        value={1000}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+  const item4 = (
+    <RadioButton htmlFor="potroseno10000" tekst="Preko 10 000 din potrošeno">
+      <input
+        type="radio"
+        id="potroseno10000"
+        value={10000}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+  const item5 = (
+    <RadioButton htmlFor="potroseno100000" tekst="Preko 100 000 din potrošeno">
+      <input
+        type="radio"
+        id="potroseno100000"
+        value={100000}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+
+  const item6 = (
+    <RadioButton htmlFor="potroseno-1" tekst="Klijent nije potrošio ništa">
+      <input
+        type="radio"
+        id="potroseno-1"
+        value={-1}
+        {...register("potroseno")}
+      />
+    </RadioButton>
+  );
+
+  const text = "Potrošeno";
+
+  return (
+    <>
+      {tip === "DropDown" && (
+        <DropDown text={text}>
+          <DDItem>{item1}</DDItem>
+          <DDItem>{item2}</DDItem>
+          <DDItem>{item3}</DDItem>
+          <DDItem>{item4}</DDItem>
+          <DDItem>{item5}</DDItem>
+          <DDItem>{item6}</DDItem>
+        </DropDown>
+      )}
+
+      {tip === "DropDownSlider" && (
+        <DropDownSlider isOpen={true} text={text}>
+          <DDSliderItem>{item1}</DDSliderItem>
+          <DDSliderItem>{item2}</DDSliderItem>
+          <DDSliderItem>{item3}</DDSliderItem>
+          <DDSliderItem>{item4}</DDSliderItem>
+          <DDSliderItem>{item5}</DDSliderItem>
+          <DDSliderItem>{item6}</DDSliderItem>
         </DropDownSlider>
       )}
     </>

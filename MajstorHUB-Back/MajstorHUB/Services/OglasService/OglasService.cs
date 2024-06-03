@@ -1,28 +1,53 @@
-﻿namespace MajstorHUB.Services.OglasService;
+﻿using MajstorHUB.Models;
+
+namespace MajstorHUB.Services.OglasService;
 
 public class OglasService : IOglasService
 {
     private readonly IMongoCollection<Oglas> _oglasi;
+    private readonly IMongoCollection<Korisnik> _korisnici;
     private readonly ProjectionDefinition<Oglas, GetOglasDTO> _getProjection;
 
     public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
         _oglasi = db.GetCollection<Oglas>(settings.OglasiCollectionName);
+        _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
 
-        _getProjection = Builders<Oglas>.Projection.Expression(o => new GetOglasDTO
+        //_getProjection = Builders<Oglas>.Projection.Expression(o => new GetOglasDTO
+        //{
+        //    Cena = o.Cena,
+        //    DatumKreiranja = o.DatumKreiranja,
+        //    KorisnikId = o.KorisnikId,
+        //    Naslov = o.Naslov,
+        //    Opis = o.Opis,
+        //    DuzinaPosla = o.DuzinaPosla,
+        //    Id = o.Id,
+        //    Iskustvo = o.Iskustvo,
+        //    Lokacija = o.Lokacija,
+        //    Struke = o.Struke
+        //});
+    }
+
+    // Imitacija projekcije kao u mongoDB driver-u, samo za obican .net linq
+    public static GetOglasDTO ProjectToGetDto(Oglas oglas, Korisnik korisnik)
+    {
+        return new GetOglasDTO
         {
-            Cena = o.Cena,
-            DatumKreiranja = o.DatumKreiranja,
-            KorisnikId = o.KorisnikId,
-            Naslov = o.Naslov,
-            Opis = o.Opis,
-            DuzinaPosla = o.DuzinaPosla,
-            Id = o.Id,
-            Iskustvo = o.Iskustvo,
-            Lokacija = o.Lokacija,
-            Struke = o.Struke
-        });
+            Cena = oglas.Cena,
+            DatumKreiranja = oglas.DatumKreiranja,
+            DuzinaPosla = oglas.DuzinaPosla,
+            Id = oglas.Id,
+            Iskustvo = oglas.Iskustvo,
+            Lokacija = oglas.Lokacija,
+            Naslov = oglas.Naslov,
+            Struke = oglas.Struke,
+            Opis = oglas.Opis,
+            Ime = korisnik.Ime!,
+            Prezime = korisnik.Prezime!,
+            KorisnikId = oglas.KorisnikId,
+            Potroseno = korisnik.Potroseno
+        };
     }
 
     public async Task<List<Oglas>> GetAll()
@@ -33,6 +58,16 @@ public class OglasService : IOglasService
     public async Task<Oglas> GetById(string id)
     {
         return await _oglasi.Find(oglas => oglas.Id == id).FirstOrDefaultAsync();
+    }
+
+    public async Task<GetOglasDTO> GetByIdDto(string id)
+    {
+        var oglas = await _oglasi.Find(oglas => oglas.Id == id).FirstOrDefaultAsync();
+        if (oglas is null)
+            return null;
+        var korisnik = await _korisnici.Find(k => k.Id == oglas.KorisnikId).FirstOrDefaultAsync();
+
+        return ProjectToGetDto(oglas, korisnik);
     }
 
     public async Task<List<Oglas>> GetByKorisnik(string korisnikId)
@@ -140,6 +175,28 @@ public class OglasService : IOglasService
         var sortBuilder = Builders<Oglas>.Sort;
         var datumKreiranja = sortBuilder.Descending(x => x.DatumKreiranja);
 
-        return await _oglasi.Find(finalFilter).Project(_getProjection).Sort(datumKreiranja).ToListAsync();
+        var oglasi = await _oglasi.Find(finalFilter).Sort(datumKreiranja).ToListAsync();
+
+        var korisnikIds = oglasi.Select(o => o.KorisnikId).Distinct().ToList();
+
+        var korisnikFilterBuilder = Builders<Korisnik>.Filter;
+
+        var zaradjenoFilter = oglas.Potroseno > -1
+            ? korisnikFilterBuilder.Gte(x => x.Potroseno, oglas.Potroseno)
+            : korisnikFilterBuilder.Eq(x => x.Potroseno, 0);
+
+        var korisniciFilter = zaradjenoFilter &
+                              korisnikFilterBuilder.In(x => x.Id, korisnikIds);
+                            
+        var korisnici = await _korisnici.Find(korisniciFilter).ToListAsync();
+
+        var result = oglasi
+            .Join(korisnici,
+                  oglas => oglas.KorisnikId,
+                  korisnik => korisnik.Id,
+                  ProjectToGetDto)
+            .ToList();
+
+        return result;
     }
 }

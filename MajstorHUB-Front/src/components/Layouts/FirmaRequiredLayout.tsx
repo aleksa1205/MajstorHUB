@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import UserType from "../../lib/UserType";
-import Forbidden from "../ErrorPages/Forbidden";
+import Forbidden from "../ErrorBoundary/ErrorPages/Forbidden";
 
 function FirmaRequiredLayout() {
     const { auth } = useAuth();

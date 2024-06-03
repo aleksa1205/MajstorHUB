@@ -51,6 +51,26 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [HttpGet("GetByIdDto/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByIdDto(string id)
+    {
+        try
+        {
+            var oglas = await _oglasService.GetByIdDto(id);
+            if (oglas == null)
+                return NotFound($"Oglas sa ID-em {id} ne postoji!\n");
+            return Ok(oglas);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
     [HttpGet("GetByUser/{korisnikiId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -140,7 +160,7 @@ public class OglasController : ControllerBase
             korisnik.OglasiId.Add(oglas.Id!);
             await _korisnikService.Update(korisnikId, korisnik);
 
-            return Ok($"Oglas sa ID-em {oglas.Id} uspesno dodat!\n");
+            return Ok(oglas.Id);
 
         }
         catch (Exception ex)
@@ -175,6 +195,7 @@ public class OglasController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateSelf(OglasUpdateSelf oglas)
     {
@@ -190,7 +211,7 @@ public class OglasController : ControllerBase
             }
             if (!korisnik.OglasiId.Contains(oglas.Id))
             {
-                return Unauthorized();
+                return Forbid();
             }
             var postojeciOglas = await _oglasService.GetById(oglas.Id);
             if(postojeciOglas is null)
@@ -203,6 +224,46 @@ public class OglasController : ControllerBase
         catch(Exception e)
         {
             return BadRequest(e.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(Roles.Korisnik)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [HttpDelete("DeleteSelf/{id}")]
+    public async Task<IActionResult> DeleteSelf(string id)
+    {
+        try
+        {
+            var korisnikId = HttpContext.User.Identity?.Name;
+            if (korisnikId is null)
+                return Unauthorized();
+
+            var korisnik = await _korisnikService.GetById(korisnikId);
+            if (korisnik is null)
+                return NotFound("Ne postoji korisnik sa zadatim id-em");
+
+            if (!korisnik.OglasiId.Contains(id))
+                return Forbid();
+
+            var postojeciOglas = await _oglasService.GetById(id);
+            if (postojeciOglas is null)
+                return NotFound($"Oglas sa ID-em {id} ne postoji!\n");
+
+            if (!korisnik.OglasiId.Remove(id))
+                return BadRequest("Nemoguce brisanje id oglasa iz tabele korisnik");
+            await _korisnikService.Update(korisnik.Id!, korisnik);
+
+            await _oglasService.Delete(id);
+            return Ok($"Oglas sa ID-em {id} je uspesno obrisan!\n");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 

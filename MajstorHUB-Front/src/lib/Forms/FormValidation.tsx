@@ -40,10 +40,10 @@ export const NaslovOglasaValidation = {
     value: 50,
     message: "Maksimum 50 karaktera",
   },
-  pattern: {
-    value: /^[a-zA-Z\s]*$/,
-    message: "Naslov mora da zadrzi samo slova",
-  },
+  // pattern: {
+  //   value: /^[a-zA-Z\s]*$/,
+  //   message: "Naslov mora da zadrzi samo slova",
+  // },
 };
 
 export const OpisOglasaValidation = {

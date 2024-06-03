@@ -15,11 +15,13 @@ function useRefreshToken() {
             withCredentials: true
         });
         const data : LoginResponse = response.data;
+        data.expiration = new Date(data.expiration);
+        data.refreshToken.expiry = new Date(data.refreshToken.expiry);
 
         setAuth(prev => {
             // console.log(JSON.stringify(prev.jwtToken));
             // console.log(data.jwtToken);
-            return {...prev, jwtToken: data.jwtToken, refreshToken: data.refreshToken}
+            return {...prev, jwtToken: data.jwtToken, refreshToken: data.refreshToken, expiration: data.expiration}
         });
 
         return data;

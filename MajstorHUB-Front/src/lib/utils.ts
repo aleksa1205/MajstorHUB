@@ -2,6 +2,7 @@ import { redirect } from "react-router-dom";
 import UserType from "./UserType";
 import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../api/DTO-s/updateSelfTypes";
 import { userDataType } from "../api/DTO-s/responseTypes";
+import { number } from "prop-types";
 
 export function isLoggedIn() {
     const data = localStorage.getItem('_auth');
@@ -67,13 +68,31 @@ export function formatBase64(file : string) {
 export function formatDouble(broj : number, append : string) : string {
     let msg = '';
     if(broj === 0)
-        msg = '0 din';
+        msg = '0 RSD';
     else if(broj > 1000)
         msg = `${Math.floor(broj / 1000)}K+ din`;
     else
         msg = `${Math.floor((broj / 100)) * 100}+ din`
     
     return msg + ' ' + append;
+}
+
+export function formatDoubleWithWhite(broj: number): string {
+    let numberStr = Math.round(broj).toString();
+    let result: string[] = [];
+
+    let count = 1;
+    for(let i = numberStr.length - 1; i >= 0; i--) {
+        result.unshift(numberStr[i]);
+        if(count === 3 && i !== 0) {
+            result.unshift(' ');
+            count = 0;
+        }
+
+        count++;
+    }
+
+    return result.join('');
 }
 
 export function getProfileUrl(userType : UserType, id : string) : string {
