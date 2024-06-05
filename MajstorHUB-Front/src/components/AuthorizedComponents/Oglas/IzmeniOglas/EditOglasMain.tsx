@@ -22,13 +22,13 @@ type PropsValues = {
     formType: EditOglasFormType,
     style: any
     oglasData: CreateOglasDTO;
-    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
+    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     close: () => void,
 }
 
 type EditOglasFormContext = {
     oglasData: CreateOglasDTO;
-    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
+    setOglas: React.Dispatch<React.SetStateAction<CreateOglasDTO | undefined>> | React.Dispatch<React.SetStateAction<GetOglasDTO | null>>
     close: () => void,
 }
 

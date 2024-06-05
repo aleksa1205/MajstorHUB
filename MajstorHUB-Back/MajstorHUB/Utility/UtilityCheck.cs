@@ -1,3 +1,6 @@
+using MajstorHUB.Models.Enums;
+using MajstorHUB.Models.Users;
+
 namespace Utlity;
 
 public class UtilityCheck
@@ -45,6 +48,19 @@ public class UtilityCheck
         {
             return false;
         }
+    }
+
+    public static Roles GetRole(HttpContext context)
+    {
+        Roles role = Roles.Nedefinisano;
+
+        foreach (var claim in context.User.Claims)
+        {
+            if (claim.Type == "Role")
+                role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+        }
+
+        return role;
     }
 
     public static bool IsValidJmbg(string jmbg)

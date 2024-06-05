@@ -37,8 +37,8 @@ export const NaslovOglasaValidation = {
     message: "Mora barem 3 karaktera",
   },
   maxLength: {
-    value: 50,
-    message: "Maksimum 50 karaktera",
+    value: 70,
+    message: "Maksimum 70 karaktera",
   },
   // pattern: {
   //   value: /^[a-zA-Z\s]*$/,

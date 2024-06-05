@@ -25,19 +25,40 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.IdentityModel.Tokens;
 
+global using MajstorHUB.Authorization;
+global using MajstorHUB.Authorization.JWT;
+global using MajstorHUB.Authorization.Refresh;
+
+global using MajstorHUB.Models.DatabaseSettings;
+global using MajstorHUB.Models.Enums;
+global using MajstorHUB.Models.Poslovi;
+global using MajstorHUB.Models.Users;
+
 global using MajstorHUB.Requests;
-global using MajstorHUB.Requests.UpdateSelf;
-global using MajstorHUB.Requests.Register;
 global using MajstorHUB.Requests.Filter;
 global using MajstorHUB.Requests.Oglas;
-global using MajstorHUB.Authorization;
-global using MajstorHUB.Models;
+global using MajstorHUB.Requests.Posao;
+global using MajstorHUB.Requests.Prijava;
+global using MajstorHUB.Requests.Users;
+global using MajstorHUB.Requests.Users.Firma;
+global using MajstorHUB.Requests.Users.Majstor;
+global using MajstorHUB.Requests.Users.Korisnik;
+
+global using MajstorHUB.Responses.Oglas;
+global using MajstorHUB.Responses.Users;
+global using MajstorHUB.Responses.Users.Firma;
+global using MajstorHUB.Responses.Users.Majstor;
+global using MajstorHUB.Responses.Users.Korisnik;
+
 global using MajstorHUB.Services.FirmaService;
 global using MajstorHUB.Services.KorisnikService;
 global using MajstorHUB.Services.MajstorService;
 global using MajstorHUB.Services.OglasService;
+global using MajstorHUB.Services.PosaoService;
+global using MajstorHUB.Services.PrijavaService;
 global using MajstorHUB.Services.RecenzijaService;
+
+
 global using MajstorHUB.Swagger;
 
-global using MajstorHUB.Responses;
 global using Utlity;

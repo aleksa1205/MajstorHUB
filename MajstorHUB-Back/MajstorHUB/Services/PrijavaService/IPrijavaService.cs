@@ -1,6 +1,4 @@
-﻿using MajstorHUB.Requests.Prijava;
-
-namespace MajstorHUB.Services.PrijavaService;
+﻿namespace MajstorHUB.Services.PrijavaService;
 
 public interface IPrijavaService
 {
