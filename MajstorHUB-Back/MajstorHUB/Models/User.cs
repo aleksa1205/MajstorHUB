@@ -39,6 +39,9 @@ public abstract class User
     [BsonElement("opis")]
     public string? Opis { get; set; } = string.Empty;
 
+    [BsonElement("admin")]
+    public AdminRole Admin { get; set; } = AdminRole.Nedefinisano;
+
     [JsonIgnore]
     [BsonElement("refresh_token")]
     public RefreshToken? RefreshToken { get; set; }

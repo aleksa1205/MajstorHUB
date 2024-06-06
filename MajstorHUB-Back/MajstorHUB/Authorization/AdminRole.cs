@@ -1,10 +1,8 @@
 ﻿namespace MajstorHUB.Authorization;
 
-public enum Roles
+public enum AdminRole
 {
-    Korisnik,
-    Majstor,
-    Firma,
+    Nedefinisano,
     Admin,
     SudoAdmin
 }
