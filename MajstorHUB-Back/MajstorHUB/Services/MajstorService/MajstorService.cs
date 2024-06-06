@@ -1,8 +1,4 @@
-﻿using MajstorHUB.Models;
-using MajstorHUB.Utility;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Bson.Serialization;
-namespace MajstorHUB.Services.MajstorService;
+﻿namespace MajstorHUB.Services.MajstorService;
 
 public class MajstorService : IMajstorService
 {
@@ -77,7 +73,8 @@ public class MajstorService : IMajstorService
             .Set("datum_rodjenja", majstor.DatumRodjenja)
             .Set("struka", majstor.Struka)
             .Set("iskustvo", majstor.Iskustvo)
-            .Set("cena_po_satu", majstor.CenaPoSatu);
+            .Set("cena_po_satu", majstor.CenaPoSatu)
+            .Set("oglasi", majstor.OglasiId);
         await _majstori.UpdateOneAsync(filter, update);
     }
 

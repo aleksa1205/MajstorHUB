@@ -6,7 +6,6 @@ import {
 import UserType, { pathToUser, userToPath } from "../lib/UserType";
 import axios from "../api/axios";
 import { useErrorBoundary } from "react-error-boundary";
-import { formatDate } from "../lib/utils";
 
 type ContextValues = {
   auth: AuthValues;
@@ -18,9 +17,10 @@ export type AuthValues = {
   email: string;
   userId: string;
   jwtToken: string;
+  expiration: Date;
   refreshToken: RefreshToken;
   userType: UserType;
-  roles: Array<Number>;
+  role: UserType;
 };
 
 export const emptyAuthValue: AuthValues = {
@@ -28,12 +28,13 @@ export const emptyAuthValue: AuthValues = {
   userId: "",
   email: "",
   jwtToken: "",
+  expiration: new Date(),
   refreshToken: {
     tokenValue: "",
     expiry: new Date(),
     jwtId: "",
   },
-  roles: [],
+  role: UserType.Nedefinisano,
   userType: UserType.Nedefinisano,
 };
 
@@ -89,11 +90,13 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
         naziv: data.naziv,
         email: email,
         jwtToken: data.jwtToken,
+        expiration: data.expiration,
         refreshToken: data.refreshToken,
-        roles: data.roles.map((el) => pathToUser(el)),
+        role: data.role,
         userId: data.userId,
         userType: type,
       });
+
     } catch (error) {
       showBoundary(error);
     }

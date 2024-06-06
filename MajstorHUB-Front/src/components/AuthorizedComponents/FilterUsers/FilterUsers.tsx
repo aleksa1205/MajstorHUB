@@ -19,8 +19,7 @@ function FilterUsers({type} : PropsValues) {
 
     return (
         <main className={`${classes.main} container`}>
-            <FilterForm type={type} setUsers={setUsers} setIsFetching={setIsFetching} />
-            <hr />
+            <FilterForm type={type} isFetching={isFetching} setUsers={setUsers} setIsFetching={setIsFetching} />
             {isFetching && (
                 <div className={classes.center}>
                     <Hand />

@@ -63,7 +63,7 @@ export default function PostaviOglas() {
     setError,
     setValue,
   } = useForm<CreateOglasFormValues>();
-  const { errors, isSubmitting } = formState;
+  const { errors } = formState;
   const [oglas, setOglas] = useState<CreateOglasDTO>();
 
   const [currentStep, setCurrentStep] = useState<Steps>(Steps.Naslov);
@@ -81,7 +81,9 @@ export default function PostaviOglas() {
     document.body.querySelector("footer")!.style.display = "none";
 
     return () => {
-      document.body.querySelector("footer")!.style.display = "block";
+      const footer = document.body.querySelector("footer");
+      if(footer)
+        footer.style.display = "block";
     };
   }, []);
 
@@ -170,7 +172,7 @@ export default function PostaviOglas() {
         </main>
       )}
 
-      {currentStep === Steps.Pregled && <PregledOglasa preview={true} oglasData={oglas!} setOglas={setOglas} prev={prev} setValue={setValue} />}
+      {currentStep === Steps.Pregled && <PregledOglasa preview={true} oglasData={oglas!} setOglas={setOglas} prev={prev} setValue={setValue} struke={struke} setStruke={setStruke} />}
     </main>
   );
 }

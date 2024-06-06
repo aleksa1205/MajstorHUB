@@ -81,7 +81,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       showBoundary(error);
     }
     
-    navigate('/success');
+    navigate('/success?message=Uspešno ste se registrovali na platformu&to=login');
   };
 
   // Specificne form control-e za svakog vrsta usera
@@ -413,9 +413,15 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
         
 
         <div className={`${classes.center} ${classes.formControl}`}>
-          <button disabled={isSubmitting}  className={"mainButton" + ' ' + `${isSubmitting ? 'button--loading' : ''}`}>
-            Napravi nalog
+        <button
+            disabled={isSubmitting}
+            className={
+              "mainButton" + " " + `${isSubmitting ? "button--loading" : ""}`
+            }
+          >
+            <span className="button__text">Napravi nalog</span>
           </button>
+          
         </div>
         <div className={`${classes.center} ${classes.formControl}`}>
           <p>
@@ -426,7 +432,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
           </p>
         </div>
       </form>
-      <DevTool control={control} />
+      {/* <DevTool control={control} /> */}
     </div>
   );
 }

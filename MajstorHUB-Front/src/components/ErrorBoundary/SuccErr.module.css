@@ -7,13 +7,34 @@
 
 .success {
     background-color: #d9f2e3;
-    color: #038839;
-    border-inline: 5px solid #038839;
+    color: var(--color-green-500);
+    border-inline: 5px solid var(--color-green-500);
     border-radius: 20px;
     padding: 5rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    animation: 1s appear ease-in-out;
+}
+.success div:first-child {
+    flex-shrink: 0;
 }
 
-.succes h3, .error h3 {
+@keyframes appear {
+    0% {
+        opacity: 0;
+        transform: translateY(100px) scale(0.9); 
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.heading {
+    margin: 0 !important;
+}
+.error h3 {
     margin: 2rem 0 2rem 0;
 }
 
@@ -68,5 +89,13 @@
 @media (width < 840px) {
     .error, .success {
         padding: 3rem;
+    }
+}
+@media (width <= 600px) {
+    .success {
+        gap: 1.5rem;
+    }
+    .success h3 {
+        font-size: 1.4rem;
     }
 }

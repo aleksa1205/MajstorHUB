@@ -14,14 +14,21 @@ function useLogout() {
     const LogoutUser = async function logoutHandler() {
         try {
             let msg : string = '';
+            console.log(`Logout called, current time: ${new Date()}
+                                        refresh token expiry: ${auth.refreshToken.expiry},
+                                        jwt token expiry: ${auth.expiration}`);
             if(auth.refreshToken.expiry > new Date()) {
+                console.log('Refresh token not expired, calling logout endpoint...');
                 await logout();
             }
-            else
+            else {
+                console.log('Refrsh token has expired, no need to call logout endpoint...')
                 msg = '?message=Vaša sesija je istekla, ulogujte se ponovo'
+            }
             
             setAuth(emptyAuthValue);
 
+            console.log('Url to navigate to: ' + '/login'+msg);
             setTimeout(() => {
                 navigate('/login' + msg, { state: { from: location }, replace: true});
             }, 100);

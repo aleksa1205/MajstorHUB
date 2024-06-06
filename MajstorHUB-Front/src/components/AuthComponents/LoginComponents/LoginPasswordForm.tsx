@@ -51,9 +51,10 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
         userId: data.userId,
         email,
         jwtToken: data.jwtToken,
+        expiration: data.expiration,
         refreshToken: data.refreshToken,
         userType,
-        roles: data.roles.map(el => pathToUser(el))
+        role: data.role
       });
 
       // Nesto ne radi kada nema setTimeout

@@ -2,6 +2,7 @@ import { redirect } from "react-router-dom";
 import UserType from "./UserType";
 import { FirmaDataUpdate, KorisnikDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../api/DTO-s/updateSelfTypes";
 import { userDataType } from "../api/DTO-s/responseTypes";
+import { number } from "prop-types";
 
 export function isLoggedIn() {
     const data = localStorage.getItem('_auth');
@@ -67,13 +68,31 @@ export function formatBase64(file : string) {
 export function formatDouble(broj : number, append : string) : string {
     let msg = '';
     if(broj === 0)
-        msg = '0 din';
+        msg = '0 RSD';
     else if(broj > 1000)
         msg = `${Math.floor(broj / 1000)}K+ din`;
     else
         msg = `${Math.floor((broj / 100)) * 100}+ din`
     
     return msg + ' ' + append;
+}
+
+export function formatDoubleWithWhite(broj: number): string {
+    let numberStr = Math.round(broj).toString();
+    let result: string[] = [];
+
+    let count = 1;
+    for(let i = numberStr.length - 1; i >= 0; i--) {
+        result.unshift(numberStr[i]);
+        if(count === 3 && i !== 0) {
+            result.unshift(' ');
+            count = 0;
+        }
+
+        count++;
+    }
+
+    return result.join('');
 }
 
 export function getProfileUrl(userType : UserType, id : string) : string {
@@ -97,6 +116,10 @@ export function getProfileUrl(userType : UserType, id : string) : string {
     }
 
     return url + '/' + id;
+}
+
+export function getOglasUrl(id: string): string {
+    return '/oglasi/' + id;
 }
 
 export function getUpdateUserFromUserData(userData : userDataType) : userDataUpdateType {
@@ -162,6 +185,31 @@ export function formatDate(date : Date) : string {
     const formattedDate: string = `${dayString}.${monthString}.${year}`;
 
     return formattedDate;
+}
+
+export function formatDateBefore(date: Date): string {
+    const now = new Date();
+    
+    let result: string = '';
+    const diffMs = now.getTime() - date.getTime();
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    const diffMonths = Math.floor(diffDays / 30);  // Simplified month calculation
+
+
+    if (diffMinutes < 60) {
+        result = diffMinutes <= 1 ? 'pre 1 minut' : 'pre ' + diffMinutes + ' minuta';
+    } else if (diffHours < 24) {
+        result = diffHours === 1 ? 'pre sat vremena' : 'pre ' + diffHours + ' sata';
+    } else if (diffDays < 31) {
+        result = diffDays === 1 ? 'juče' : 'pre ' + diffDays + ' dana';
+    } else {
+        result = diffMonths === 1 ? 'pre mesec dana' : 'pre ' + diffMonths + ' meseci';
+    }
+
+    return result;
 }
 
 export function crop(url : string, aspectRatio: number) : Promise<HTMLCanvasElement> {

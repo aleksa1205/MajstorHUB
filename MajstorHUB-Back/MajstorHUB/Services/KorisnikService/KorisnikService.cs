@@ -1,8 +1,4 @@
-﻿using MajstorHUB.Models;
-using MajstorHUB.Requests.Filter;
-using MajstorHUB.Utility;
-using Microsoft.OpenApi.Validations;
-namespace MajstorHUB.Services.KorisnikService;
+﻿namespace MajstorHUB.Services.KorisnikService;
 
 public class KorisnikService : IKorisnikService
 {

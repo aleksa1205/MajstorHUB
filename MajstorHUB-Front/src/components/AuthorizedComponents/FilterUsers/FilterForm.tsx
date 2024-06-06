@@ -1,4 +1,9 @@
-import { FieldErrors, UseFormRegister, UseFormSetValue, useForm } from "react-hook-form";
+import {
+  FieldErrors,
+  UseFormRegister,
+  UseFormSetValue,
+  useForm,
+} from "react-hook-form";
 import UserType from "../../../lib/UserType";
 import classes from "./FilterForm.module.css";
 import { MdErrorOutline } from "react-icons/md";
@@ -14,8 +19,20 @@ import { FilterDTO } from "../../../api/DTO-s/FilterRequest";
 import useModalAnimation from "../../../hooks/useModalAnimation";
 import ModalAnimated from "../../Theme/Modal/ModalAnimated";
 import { IoClose, IoOptions } from "react-icons/io5";
-import { CenaPoSatuInputDD, IskustvoInputDD, OpisInputDD, PotrosenoInputDD, ZaradjenoInputDD } from "./FilterFormFIltersDD";
-import { CenaPoSatuInput, IskustvoInput, OpisInput, PotrosenoInput, ZaradjenoInput } from "./FilterFormFilters";
+import {
+  CenaPoSatuInputDD,
+  IskustvoInputDD,
+  OpisInputDD,
+  PotrosenoInputDD,
+  ZaradjenoInputDD,
+} from "./FilterFormFIltersDD";
+import {
+  CenaPoSatuInput,
+  IskustvoInput,
+  OpisInput,
+  PotrosenoInput,
+  ZaradjenoInput,
+} from "./FilterFormFilters";
 
 type FormValues = {
   query: string;
@@ -30,27 +47,28 @@ type PropsValues = {
   type: UserType;
   setUsers: React.Dispatch<React.SetStateAction<userDataType[]>>;
   setIsFetching: React.Dispatch<React.SetStateAction<boolean>>;
+  isFetching: boolean;
 };
 
 type ContextValues = {
   register: UseFormRegister<FormValues>;
   errors: FieldErrors<FormValues>;
-  setValue: UseFormSetValue<FormValues>
+  setValue: UseFormSetValue<FormValues>;
 };
 
 export const FormContext = createContext<ContextValues | null>(null);
-const formDefaultValues : FormValues = {
-    query: "",
-    opis: "",
-    potroseno: "0",
-    iskustva: [],
-    cenaPoSatu: "0",
-    zaradjeno: "0",
-}
+const formDefaultValues: FormValues = {
+  query: "",
+  opis: "",
+  potroseno: "0",
+  iskustva: [],
+  cenaPoSatu: "0",
+  zaradjeno: "0",
+};
 
-function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
+function FilterForm({ type, setUsers, setIsFetching, isFetching }: PropsValues) {
   const form = useForm<FormValues>({
-    defaultValues: formDefaultValues
+    defaultValues: formDefaultValues,
   });
   const { register, formState, handleSubmit, setValue } = form;
   const { errors } = formState;
@@ -127,12 +145,10 @@ function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
 
     try {
       setIsFetching(true);
-      
+
       const data = await filter(request!);
-      if(data === false)
-        setUsers(new Array())
-      else
-        setUsers(data);
+      if (data === false) setUsers(new Array());
+      else setUsers(data);
 
       setIsFetching(false);
     } catch (error) {
@@ -145,15 +161,28 @@ function FilterForm({ type, setUsers, setIsFetching }: PropsValues) {
     <form className={classes.form} noValidate onSubmit={handleSubmit(onSubmit)}>
       <FormContext.Provider value={{ register, errors, setValue }}>
         <div className={classes.searchContainer}>
-          <QueryInput />
+          <QueryInput type={type} />
 
           {isSmallScreen && <FilterOptionsSmall type={type} />}
-          {isReallySmall && <div className={classes.break}/>}
-          <button className={`mainButtonSmall ${classes.btnContainer}`}>
+          {isReallySmall && <div className={classes.break} />}
+          <button disabled={isFetching} className={`mainButtonSmall ${classes.btnContainer}`}>
             <IoIosSearch />
             Pretraži
           </button>
         </div>
+
+        {errors.query && (
+          <p className={classes.pError}>
+            <MdErrorOutline />
+            Naslov: {errors.query?.message}
+          </p>
+        )}
+        {errors.opis && (
+          <p className={classes.pError}>
+            <MdErrorOutline />
+            Niste lepo uneli opis
+          </p>
+        )}
 
         {!isSmallScreen && <FilterOptionsLarge type={type} />}
       </FormContext.Provider>
@@ -168,7 +197,7 @@ function FilterOptionsLarge({ type }: { type: UserType }) {
     <div className={classes.categoryContainer}>
       {type === UserType.Korisnik && <PotrosenoInputDD />}
       {type !== UserType.Korisnik && (
-          <>
+        <>
           <ZaradjenoInputDD />
           <CenaPoSatuInputDD />
           <IskustvoInputDD />
@@ -184,55 +213,77 @@ function FilterOptionsSmall({ type }: { type: UserType }) {
   const { closeModal, openModal, transition } = useModalAnimation();
 
   function clearHandler() {
-    setValue('cenaPoSatu', '0');
-    setValue('opis', '');
-    setValue('potroseno', '0');
-    setValue('zaradjeno', '0');
-    setValue('iskustva', []);
+    setValue("cenaPoSatu", "0");
+    setValue("opis", "");
+    setValue("potroseno", "0");
+    setValue("zaradjeno", "0");
+    setValue("iskustva", []);
   }
 
   return (
     <>
       <button className={classes.showButton} type="button" onClick={openModal}>
-        <IoOptions size='1.65rem'/>
+        <IoOptions size="1.65rem" />
       </button>
       {transition((style, showModal) => {
         return showModal ? (
-            <ModalAnimated style={style} onClose={closeModal}>
-              <main className={classes.containerSmall}>
-                <div>
-                    <h2 className={classes.h2}>Filteri</h2>
-                    <IoClose onClick={closeModal} size='2rem' />
-                </div>
-                <div className={classes.filterContent}>
-                  <OpisInput isOpen={true} />
-                  {type === UserType.Korisnik && <PotrosenoInput isOpen={true} />}
-                  {type !== UserType.Korisnik && (
-                    <>
-                      <ZaradjenoInput isOpen={true} />
-                      <CenaPoSatuInput isOpen={true} />
-                      <IskustvoInput isOpen={true} />
-                    </>
-                  )}
-                </div>
-                <div className={classes.smallButtonContainer}>
-                  <button onClick={closeModal} className="mainButtonSmall" type="button">
-                    Sačuvaj
-                  </button>
-                  <button onClick={clearHandler} className="secondLink" type="button">
-                    Obriši filtere
-                  </button>
-                </div>
-              </main>
-            </ModalAnimated>
-          ) : null;
+          <ModalAnimated style={style} onClose={closeModal}>
+            <main className={classes.containerSmall}>
+              <div>
+                <h2 className={classes.h2}>Filteri</h2>
+                <IoClose onClick={closeModal} size="2rem" />
+              </div>
+              <div className={classes.filterContent}>
+                <OpisInput isOpen={true} />
+                {type === UserType.Korisnik && <PotrosenoInput isOpen={true} />}
+                {type !== UserType.Korisnik && (
+                  <>
+                    <ZaradjenoInput isOpen={true} />
+                    <CenaPoSatuInput isOpen={true} />
+                    <IskustvoInput isOpen={true} />
+                  </>
+                )}
+              </div>
+              <div className={classes.smallButtonContainer}>
+                <button
+                  onClick={closeModal}
+                  className="mainButtonSmall"
+                  type="button"
+                >
+                  Sačuvaj
+                </button>
+                <button
+                  onClick={clearHandler}
+                  className="secondLink"
+                  type="button"
+                >
+                  Obriši filtere
+                </button>
+              </div>
+            </main>
+          </ModalAnimated>
+        ) : null;
       })}
     </>
   );
 }
 
-export function QueryInput() {
+export function QueryInput({ type }: { type: UserType }) {
   const { register, errors } = useContext(FormContext)!;
+
+  let placeholderMessage: string = "";
+  switch (type) {
+    case UserType.Firma:
+      placeholderMessage = "PVC Stolarija Stanišić";
+      break;
+    case UserType.Majstor:
+      placeholderMessage = "Majstor Bob";
+      break;
+    case UserType.Korisnik:
+      placeholderMessage = "Milos Nis";
+      break;
+  }
+
   return (
     <>
       <div
@@ -244,7 +295,7 @@ export function QueryInput() {
         <input
           type="text"
           id="query"
-          placeholder="Primer: milos nis moleraj"
+          placeholder={placeholderMessage}
           {...register("query", {
             minLength: {
               value: 3,
@@ -257,10 +308,6 @@ export function QueryInput() {
           })}
         />
       </div>
-      <p className={classes.pError}>
-        {errors.query?.message && <MdErrorOutline />}
-        {errors.query?.message}
-      </p>
     </>
   );
 }

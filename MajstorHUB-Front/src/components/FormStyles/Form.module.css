@@ -11,6 +11,19 @@
   border-color: #e5212c !important;
 }
 
+.header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header svg {
+  cursor: pointer;
+}
+.header h3 {
+  margin: 0 !important;
+}
+
 .form select {
   width: 100%;
 }
@@ -45,12 +58,7 @@
   transition: all 0.15s ease-in-out;
 }
 
-.inputIcon {
-  padding: 0.5rem;
-  padding-right: 0;
-}
-
-.form input {
+.inputGroup input {
   display: block;
   width: 100%;
   font: inherit;
@@ -58,12 +66,26 @@
   border-top-right-radius: 100px;
   border-bottom-right-radius: 100px;
   border: none !important;
-  /* border-radius: 7px;
-        border: 2px solid #efded3;
-        transition: all 0.15s ease-in-out; */
 }
 
-.form input:focus {
+.inputIcon {
+  padding: 0.5rem;
+  padding-right: 0;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+  border-radius: 7px;
+  border: 2px solid #efded3;
+  transition: all 0.15s ease-in-out;
+}
+
+.form input {
   outline: none;
 }
 
@@ -86,21 +108,21 @@
   padding: 0.5rem 1rem;
 }
 
-.form input:hover,
+.input:hover,
 .form textarea:hover {
   border-color: #f5aa7a;
 }
 
-.form input:disabled {
+.input:disabled {
   cursor: not-allowed;
   background-color: var(--color-main-100);
   color: var(--color-neutral-300);
 }
-.form input:hover:disabled {
+.input:hover:disabled {
   border-color: var(--color-main-100);
 }
 
-.form input:focus,
+.input:focus,
 .form textarea:focus {
   outline: none;
   border-color: #f57624;
@@ -112,6 +134,41 @@
   gap: 1rem;
   flex-direction: row-reverse;
 }
+.btnContainer > button:first-child,
+.btnContainer > label:first-child {
+  order: 1;
+}
+
+.vestine {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.vestina {
+  background-color: var(--color-main-100);
+  color: var(--color-main-700);
+  padding: 0.65rem;
+  border-radius: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 0.25rem;
+  cursor: pointer;
+}
+.vestina:hover {
+  background-color: var(--color-main-200);
+}
+.vestina button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  border: none;
+}
 
 @media (width <= 46rem) {
   .btnContainer {
@@ -121,5 +178,10 @@
   .btnContainer > button:first-child,
   .btnContainer > label:first-child {
     order: 0;
+  }
+
+  .inputGroup {
+    min-width: auto;
+    width: 100%;
   }
 }

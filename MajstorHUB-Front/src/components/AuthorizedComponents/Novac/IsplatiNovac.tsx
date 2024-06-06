@@ -141,7 +141,6 @@ export default function IsplatiNovac({ currAmount, refetch, setSuccMessage }: Pr
           </p>
   
           <div className={formCl.btnContainer}>
-            <button className="mainButtonSmall">Isplati</button>
             <button
               onClick={() => {
                 setValue("value", 0);
@@ -152,6 +151,7 @@ export default function IsplatiNovac({ currAmount, refetch, setSuccMessage }: Pr
             >
               Poništi
             </button>
+            <button className="mainButtonSmall">Isplati</button>
           </div>
         </form>
       </section>

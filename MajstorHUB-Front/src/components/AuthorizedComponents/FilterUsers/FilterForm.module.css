@@ -60,7 +60,8 @@
   font-weight: bold;
 }
 
-.inputGroup {
+.inputGroup,
+.inputGroup2 {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,6 +73,13 @@
   border-radius: 100px;
   border: 2px solid #efded3;
   transition: all 0.15s ease-in-out;
+}
+
+.inputGroup2 {
+  min-width: auto;
+}
+.inputGroup2 > .inputIcon {
+  font-weight: 400;
 }
 
 .inputIcon {
@@ -215,6 +223,9 @@
 @media (width < 1200px) {
   .inputGroup {
     min-width: 0;
+  }
+  .form {
+    margin-bottom: 1rem;
   }
 }
 

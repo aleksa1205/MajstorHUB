@@ -1,0 +1,97 @@
+.section {
+    padding: 2rem 1rem;
+    border-top: 1px solid var(--color-neutral-200);
+    /* transition: all 0.1s ease-in-out; */
+    cursor: pointer;
+}
+.section:hover {
+    background-color: var(--color-main-25);
+    .strukeRow div {
+        border-color: var(--color-main-700);
+    }
+    .iskustvoRow {
+        background-color: var(--color-main-200);
+    }
+}
+.section a {
+    color: black;
+    text-decoration: none;
+}
+
+.owner {
+    color: var(--color-blue-500);
+    display: inline-block;
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.firstRow p {
+    font-size: .8rem;
+    color: var(--color-neutral-500);
+    font-weight: 400;
+}
+.firstRow p,
+.firstRow h4 {
+    margin: 0.5rem 0;
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+    column-gap: 0.2rem;
+}
+
+.secRow {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+}
+.secRow p {
+    color: var(--color-neutral-500);
+    font-weight: 400;
+    margin: 0;
+}
+
+.thirdRow p  {
+    color: var(--color-neutral-500);
+    font-weight: 400;
+}
+
+.opisRow p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+    max-height: 6em;
+}
+
+.strukeRow {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.strukeRow div {
+    margin: 0;
+    background-color: var(--color-main-100);
+    border: 1px solid var(--color-main-100);
+    color: var(--color-main-700);
+    font-weight: 400;
+    border-radius: 100px;
+    padding: 0.6rem;
+    /* transition: all 0.1s ease-in-out; */
+}
+
+.lastRow {
+    color: var(--color-neutral-500);
+}
+.lastRow span {
+    display: inline-block;
+    font-weight: bold;
+}

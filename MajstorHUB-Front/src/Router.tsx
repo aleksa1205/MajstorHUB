@@ -6,9 +6,9 @@ import MajstorProfile from "./routes/UsersProfiles/MajstorProfile.tsx";
 import LandingPage from "./routes/LandingPage.tsx";
 import Register from "./routes/Auth/Register.tsx";
 import RootLayout from "./components/Layouts/RootLayout.tsx";
-import ErrorPage from "./components/ErrorPages/ErrorPage.tsx";
+import ErrorPage from "./components/ErrorBoundary/ErrorPages/ErrorPage.tsx";
 import Login, { loader as loginLoader } from "./routes/Auth/Login.tsx";
-import Success from "./routes/Success.tsx";
+import Success, {loader as successLoader} from "./routes/Success.tsx";
 import { createBrowserRouter } from "react-router-dom";
 import ErrorBoundaryProvider from "./components/ErrorBoundary/ErrorBoundaryProvider.tsx";
 import Klijenti from "./routes/Filter/Klijenti.tsx";
@@ -18,29 +18,11 @@ import RestoreScrollLayout from "./components/Layouts/RestoreScrollLayout.tsx";
 import Novac, { loader as NovacLoader } from "./routes/Novac.tsx";
 import PostaviOglas from "./routes/Oglasi/PostaviOglas.tsx";
 import FirmaRequiredLayout from "./components/Layouts/FirmaRequiredLayout.tsx";
-import PregledOglasa from "./components/AuthorizedComponents/Oglas/Pregled/PregledOglasa.tsx";
-import { CreateOglasDTO, DuzinaPosla } from "./api/DTO-s/Oglasi/OglasiDTO.ts";
-import { Iskustvo } from "./api/DTO-s/responseTypes.ts";
+import Oglasi from "./routes/Oglasi/Oglasi.tsx";
+import OglasPrikaz from "./routes/Oglasi/OglasPrikaz.tsx";
+import AsideLayout from "./components/Layouts/AsideLayout.tsx";
+import Forbidden from "./components/ErrorBoundary/ErrorPages/Forbidden.tsx";
 
-const oglas : CreateOglasDTO = {
-  cena: 5000,
-  duzinaPosla: DuzinaPosla.JedanDoTriMeseca,
-  iskustvo: Iskustvo.Iskusan,
-  naslov: 'Trazim nekog da me prca',
-  opis: `Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi 
-  Prcenzi dupenzi 
-  Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-  dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi
-   Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi 
-   dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi dupenzi Prcenzi
-    dupenzi Prcenzi dupenzi Prcenzi dupenzi`,
-  struke: [1, 2, 5, 7, 4],
-  lokacija: 'U dupe'
-}
 
 export const router = createBrowserRouter([
   {
@@ -80,7 +62,8 @@ export const router = createBrowserRouter([
               </ErrorBoundaryProvider>
             ),
           },
-          { path: "/success", element: <Success /> },
+          { path: "/success", element: <Success />, loader: successLoader },
+          { path: "/forbidden", element: <Forbidden />}
         ],
       },
 
@@ -110,28 +93,41 @@ export const router = createBrowserRouter([
             loader: NovacLoader,
           },
           {
-            path: "/klijenti",
-            element: (
-              <ErrorBoundaryProvider>
-                <Klijenti />
-              </ErrorBoundaryProvider>
-            ),
-          },
-          {
-            path: "/majstori",
-            element: (
-              <ErrorBoundaryProvider>
-                <Majstori />
-              </ErrorBoundaryProvider>
-            ),
-          },
-          {
-            path: "/firme",
-            element: (
-              <ErrorBoundaryProvider>
-                <Firme />
-              </ErrorBoundaryProvider>
-            ),
+            element: <AsideLayout />,
+            children: [
+              {
+                path: "/klijenti",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Klijenti />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/majstori",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Majstori />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/firme",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Firme />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+              {
+                path: "/oglasi",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <Oglasi />
+                  </ErrorBoundaryProvider>
+                ),
+              },
+            ]
           },
           {
             path: "/klijenti/:id",
@@ -157,6 +153,14 @@ export const router = createBrowserRouter([
               </ErrorBoundaryProvider>
             ),
           },
+          {
+            path: "/oglasi/:id",
+            element: (
+              <ErrorBoundaryProvider>
+                <OglasPrikaz />
+              </ErrorBoundaryProvider>
+            ),
+          },
 
           {
             element: <FirmaRequiredLayout />,
@@ -171,14 +175,6 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          {
-            path: '/test',
-            element: (
-              <ErrorBoundaryProvider>
-                <PregledOglasa oglasData={oglas} />
-              </ErrorBoundaryProvider>
-            )
-          }
         ],
       },
     ],

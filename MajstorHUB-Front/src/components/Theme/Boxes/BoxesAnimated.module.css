@@ -1,0 +1,94 @@
+/* Info, warrning, success, error boxovi */
+.infoBox,
+.warrningBox,
+.errorBox,
+.succBox {
+  /* border: 2px solid transparent; */
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  /* margin-bottom: 1rem; */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: fixed;
+  /* top: 2rem; */
+  left: 50%;
+  /* transform: translate(-50%, -50%); */
+  z-index: 999;
+  padding-right: 3.2rem;
+}
+
+.close {
+  position: absolute;
+  right: 0.8rem;
+  cursor: pointer;
+}
+
+.infoBox button,
+.warrningBox button,
+.errorBox button,
+.succBox button {
+  padding: 1rem;
+  margin-right: 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.infoBox > div > p:first-child,
+.warrningBox > div > p:first-child,
+.errorBox > div > p:first-child,
+.succBox > div > p:first-child {
+  font-weight: bold;
+  margin: 0;
+}
+
+.infoBox {
+  background-color: var(--color-blue-500);
+  color: white;
+}
+
+.infoBox button {
+  background-color: #1d60eb;
+  color: #dde6f9;
+}
+
+.infoBox button:hover {
+  background-color: #0e4ac6;
+}
+
+.infoBox button:active {
+  background-color: #093893;
+}
+
+.succBox {
+  background-color: var(--color-green-500);
+  color: white;
+}
+
+.warrningBox {
+  background-color: #f0efd2;
+  color: #beb706;
+  border-inline-color: #beb706;
+}
+
+.errorBox {
+  background-color: var(--color-red-100);
+  color: var(--color-red-500);
+  border-inline-color: var(--color-red-500);
+}
+
+@media (width <= 700px) {
+  .infoBox,
+  .warrningBox,
+  .errorBox,
+  .succBox {
+    width: 95vw;
+  }
+}

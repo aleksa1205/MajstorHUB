@@ -7,6 +7,7 @@ import UserType from '../../../lib/UserType';
 import { Link } from 'react-router-dom';
 import { IoLocationOutline } from 'react-icons/io5';
 import { GiRank1, GiRank2, GiRank3 } from "react-icons/gi";
+import { FaCircleInfo } from 'react-icons/fa6';
 
 type PropsValues = {
     userData: userDataType;
@@ -15,21 +16,15 @@ type PropsValues = {
 
 type ContextType = {
     userData: userDataType;
-
 }
 const CardContext = createContext<ContextType | null>(null);
 
 function UserCard({ userData, currUserId }: PropsValues) {
     const isCurrUser = userData.id === currUserId;
 
-    const styles : React.CSSProperties = {
-        backgroundColor: '#efded3',
-    }
-
     return (
         <section 
             className={classes.section}
-            style={isCurrUser ? styles : {}}
         >
             <CardContext.Provider value={{userData}}>
                 <Link to={getProfileUrl(userData.userType, userData.id)} >
@@ -39,6 +34,12 @@ function UserCard({ userData, currUserId }: PropsValues) {
                     {userData.userType === UserType.Majstor && <StrukaRow />}
                     {userData.userType === UserType.Firma && <StrukeRow />}
                     <OpisRow />
+                    {isCurrUser && (
+                        <div className={classes.owner}>
+                            <FaCircleInfo />
+                            <p>Ovo ste Vi</p>
+                        </div>
+                    )}
                 </Link>
             </CardContext.Provider>
         </section>
@@ -59,11 +60,11 @@ function FirstRow() {
             )}
             <div>
                 {userData.userType !== UserType.Firma && (
-                    <p>{userData.ime} {userData.prezime}</p>
+                    <h4>{userData.ime} {userData.prezime}</h4>
                 )}
 
                 {userData.userType === UserType.Firma && (
-                    <p>{userData.naziv}</p>
+                    <h4>{userData.naziv}</h4>
                 )}
 
                 {userData.adresa && (
