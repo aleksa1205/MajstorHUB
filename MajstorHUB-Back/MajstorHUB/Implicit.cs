@@ -57,8 +57,6 @@ global using MajstorHUB.Services.OglasService;
 global using MajstorHUB.Services.PosaoService;
 global using MajstorHUB.Services.PrijavaService;
 global using MajstorHUB.Services.RecenzijaService;
-
-
+global using MajstorHUB.Services.AdminService;
 global using MajstorHUB.Swagger;
-
 global using Utlity;

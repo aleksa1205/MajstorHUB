@@ -41,6 +41,12 @@ public abstract class User
     [BsonElement("oglasi")]
     public List<string> OglasiId { get; set; } = [];
 
+    [BsonElement("admin")]
+    public AdminRoles Admin { get; set; } = AdminRoles.Nedefinisano;
+
+    [BsonElement("blocked")]
+    public bool Blocked { get; set; } = false;
+
     [JsonIgnore]
     [BsonElement("refresh_token")]
     public RefreshToken? RefreshToken { get; set; }

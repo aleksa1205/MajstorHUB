@@ -191,4 +191,17 @@ public class UtilityCheck
 
         return result;
     }
+
+    public static bool IsAdmin(HttpContext context)
+    {
+        var tmp = context.User.Claims.FirstOrDefault(claim => claim.Type == "Admin");
+        if (Int32.Parse(tmp.Value) == 0 || Int32.Parse(tmp.Value) == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

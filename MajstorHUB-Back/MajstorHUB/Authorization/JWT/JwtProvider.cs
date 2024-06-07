@@ -25,6 +25,12 @@ public class JwtProvider
             claims.Add(new("Role", ((int)Roles.Korisnik).ToString()));
         else if (user is Firma)
             claims.Add(new("Role", ((int)Roles.Firma).ToString()));
+        if (user.Admin is AdminRoles.Admin)
+            claims.Add(new("Admin", ((int)AdminRoles.Admin).ToString()));
+        else if (user.Admin is AdminRoles.SudoAdmin)
+            claims.Add(new("Admin", ((int)AdminRoles.SudoAdmin).ToString()));
+        else
+            claims.Add(new("Admin", ((int)AdminRoles.Nedefinisano).ToString()));
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(
