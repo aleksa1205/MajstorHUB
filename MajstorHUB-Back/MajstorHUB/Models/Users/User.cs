@@ -42,7 +42,7 @@ public abstract class User
     public List<string> OglasiId { get; set; } = [];
 
     [BsonElement("admin")]
-    public AdminRole Admin { get; set; } = AdminRole.Nedefinisano;
+    public AdminRoles Admin { get; set; } = AdminRoles.Nedefinisano;
 
     [BsonElement("blocked")]
     public bool Blocked { get; set; } = false;

@@ -14,7 +14,7 @@ public class AdminController : ControllerBase
     }
 
     [Authorize]
-    //[RequiresClaim(Roles.Admin, Roles.SudoAdmin)]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetAllBlockedUsers")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -23,10 +23,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsAdmin(HttpContext))
-            {
-                return Forbid("Niste admin");
-            }
             var lista = await _adminService.GetAllBlockedUsers();
             if (lista.Count == 0)
                 return NotFound("Na platformi nema blokiranih korisnika!");
@@ -39,7 +35,7 @@ public class AdminController : ControllerBase
     }
 
     [Authorize]
-    //[RequiresClaim(Roles.Admin, Roles.SudoAdmin)]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpPatch("BlockUser/{userId}/{role}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,10 +44,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsAdmin(HttpContext))
-            {
-                return Forbid("Niste admin");
-            }
             var adminId = HttpContext.User.Identity?.Name;
             var result = await _adminService.BlockUser(adminId!, userId, role);
             if (result is false)
@@ -65,6 +57,7 @@ public class AdminController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(AdminRoles.Nedefinisano)]
     [HttpPost("SignUpForAdmin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,10 +65,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (UtilityCheck.IsAdmin(HttpContext))
-            {
-                return BadRequest("Već ste admin!");
-            }
             var user = HttpContext.User.Identity?.Name;
             if (!(await _adminService.SignUpAsAdmin(user!)))
             {
@@ -90,7 +79,7 @@ public class AdminController : ControllerBase
     }
 
     [Authorize]
-    //[RequiresClaim(Roles.SudoAdmin)]
+    [RequiresClaim(AdminRoles.SudoAdmin)]
     [HttpPost("EnrolAsAdmin/{userId}/{role}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -98,10 +87,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsAdmin(HttpContext))
-            {
-                return Forbid();
-            }
             if(!(await _adminService.EnrolAsAdmin(userId, role)))
             {
                 return BadRequest("Greška pri dodavanju admina!");
@@ -115,6 +100,7 @@ public class AdminController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(AdminRoles.SudoAdmin)]
     [HttpPatch("RejectAdmin/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,10 +108,6 @@ public class AdminController : ControllerBase
     {
         try
         {
-            if (!UtilityCheck.IsAdmin(HttpContext))
-            {
-                return Forbid();
-            }
             if (!(await _adminService.RejectAdmin(userId)))
             {
                 return BadRequest("Greška pri odbijanju admina!");

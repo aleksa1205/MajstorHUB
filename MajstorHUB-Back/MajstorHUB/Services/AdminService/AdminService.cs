@@ -67,7 +67,7 @@ public class AdminService : IAdminService
 
     public async Task<bool> SignUpAsAdmin(string userId)
     {
-        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRole.SudoAdmin);
+        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRoles.SudoAdmin);
         var admin = await _korisnici.Find(filter).FirstOrDefaultAsync();
         if (admin.Prijave.Contains(userId))
         {
@@ -81,7 +81,7 @@ public class AdminService : IAdminService
 
     public async Task<bool> EnrolAsAdmin(string userId, Roles role)
     {
-        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRole.SudoAdmin);
+        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRoles.SudoAdmin);
         var admin = await _korisnici.Find(filter).FirstOrDefaultAsync();
         if (!admin.Prijave.Contains(userId))
         {
@@ -95,17 +95,17 @@ public class AdminService : IAdminService
         {
             case Roles.Korisnik:
                 var filterUpdateKorisnik = Builders<Korisnik>.Filter.Eq(k => k.Id, userId);
-                var korisnikUpdate = Builders<Korisnik>.Update.Set(x => x.Admin, AdminRole.Admin);
+                var korisnikUpdate = Builders<Korisnik>.Update.Set(x => x.Admin, AdminRoles.Admin);
                 await _korisnici.UpdateOneAsync(filterUpdateKorisnik, korisnikUpdate);
                 break;
             case Roles.Firma:
                 var filterUpdateFirma = Builders<Firma>.Filter.Eq(k => k.Id, userId);
-                var firmaUpdate = Builders<Firma>.Update.Set(x => x.Admin, AdminRole.Admin);
+                var firmaUpdate = Builders<Firma>.Update.Set(x => x.Admin, AdminRoles.Admin);
                 await _firme.UpdateOneAsync(filterUpdateFirma, firmaUpdate);
                 break;
             case Roles.Majstor:
                 var filterUpdateMajstor = Builders<Majstor>.Filter.Eq(k => k.Id, userId);
-                var majstorUpdate = Builders<Majstor>.Update.Set(x => x.Admin, AdminRole.Admin);
+                var majstorUpdate = Builders<Majstor>.Update.Set(x => x.Admin, AdminRoles.Admin);
                 await _majstori.UpdateOneAsync(filterUpdateMajstor, majstorUpdate);
                 break;
             default:
@@ -116,7 +116,7 @@ public class AdminService : IAdminService
 
     public async Task<bool> RejectAdmin(string userId)
     {
-        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRole.SudoAdmin);
+        var filter = Builders<Korisnik>.Filter.Eq(u => u.Admin, AdminRoles.SudoAdmin);
         var admin = await _korisnici.Find(filter).FirstOrDefaultAsync();
         if (!admin.Prijave.Contains(userId))
         {

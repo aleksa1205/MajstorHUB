@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Authorization;
 
-public enum AdminRole
+public enum AdminRoles
 {
     Nedefinisano = -1,
     Admin,
