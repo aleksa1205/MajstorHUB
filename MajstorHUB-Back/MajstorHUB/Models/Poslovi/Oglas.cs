@@ -37,4 +37,12 @@ public class Oglas
     [JsonIgnore]
     [BsonElement("datum_kreiranja")]
     public DateTime DatumKreiranja { get; set; } = DateTime.Now;
+
+    [JsonIgnore]
+    [BsonElement("private")]
+    public bool Private { get; set; } = false;
+
+    [JsonIgnore]
+    [BsonElement("Active")]
+    public bool Active { get; set; } = true;
 }

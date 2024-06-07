@@ -5,7 +5,5 @@ public enum Roles
     Nedefinisano = -1,
     Korisnik,
     Majstor,
-    Firma,
-    Admin,
-    SudoAdmin
+    Firma
 }

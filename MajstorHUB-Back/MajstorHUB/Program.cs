@@ -4,6 +4,7 @@ using MajstorHUB.Services.PosaoService;
 using MajstorHUB.Services.PrijavaService;
 using MajstorHUB.Models.Enums;
 using MajstorHUB.Models.DatabaseSettings;
+using MajstorHUB.Services.AdminService;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -59,6 +60,7 @@ builder.Services.AddScoped<IOglasService, OglasService>();
 builder.Services.AddScoped<IRecenzijaService, RecenzijaService>();
 builder.Services.AddScoped<IPosaoService, PosaoService>();
 builder.Services.AddScoped<IPrijavaService, PrijavaService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 var app = builder.Build();
 
