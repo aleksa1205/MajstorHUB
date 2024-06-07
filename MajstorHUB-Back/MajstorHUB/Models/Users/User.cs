@@ -44,6 +44,9 @@ public abstract class User
     [BsonElement("admin")]
     public AdminRole Admin { get; set; } = AdminRole.Nedefinisano;
 
+    [BsonElement("blocked")]
+    public bool Blocked { get; set; } = false;
+
     [JsonIgnore]
     [BsonElement("refresh_token")]
     public RefreshToken? RefreshToken { get; set; }

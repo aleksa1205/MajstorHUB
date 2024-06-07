@@ -24,11 +24,13 @@ public class JwtProvider
         else if (user is Korisnik)
             claims.Add(new("Role", ((int)Roles.Korisnik).ToString()));
         else if (user is Firma)
-            claims.Add(new("Role", Roles.Firma.ToString()));
+            claims.Add(new("Role", ((int)Roles.Firma).ToString()));
         if (user.Admin is AdminRole.Admin)
-            claims.Add(new("Admin", ((int)Roles.Admin).ToString()));
+            claims.Add(new("Admin", ((int)AdminRole.Admin).ToString()));
         else if (user.Admin is AdminRole.SudoAdmin)
-            claims.Add(new("Admin", ((int)Roles.SudoAdmin).ToString()));
+            claims.Add(new("Admin", ((int)AdminRole.SudoAdmin).ToString()));
+        else
+            claims.Add(new("Admin", ((int)AdminRole.Nedefinisano).ToString()));
 
         var signingCredentials = new SigningCredentials(
             new SymmetricSecurityKey(

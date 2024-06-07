@@ -2,7 +2,7 @@
 
 public enum AdminRole
 {
-    Nedefinisano,
+    Nedefinisano = -1,
     Admin,
     SudoAdmin
 }
