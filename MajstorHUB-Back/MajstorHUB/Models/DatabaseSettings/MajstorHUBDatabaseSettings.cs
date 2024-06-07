@@ -13,4 +13,5 @@ public class MajstorHUBDatabaseSettings
     public string PosloviCollectionName { get; set; } = null!;
     public string PrijaveCollectionName { get; set; } = null!;
     public string AdminCollectionName { get; set; } = null!;
+    public string ReportCollectionName { get; set; } = null!;
 }
