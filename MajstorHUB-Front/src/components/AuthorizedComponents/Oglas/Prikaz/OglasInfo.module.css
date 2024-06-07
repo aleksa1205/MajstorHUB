@@ -30,8 +30,13 @@
     margin-bottom: 4rem;
 }
 .prijaviBtn {
+    font: inherit;
     width: 100%;
     margin-bottom: 2rem;
+}
+.prijaviBtn a {
+    text-decoration: none;
+    color: white;
 }
 
 .oglasLink {
@@ -44,6 +49,12 @@
     margin-top: .5rem;
 }
 
+
+.smallNoMargin {
+    color: var(--color-neutral-500);
+    font-size: .9rem;
+    text-align: center;
+}
 
 .small {
     color: var(--color-neutral-500);
@@ -141,6 +152,10 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
 }
+.footer a {
+    text-decoration: none;
+    color: white;
+}
 
 @media (width <= 500px) {
     .firstSec > div {
@@ -166,7 +181,8 @@
         border-top: 1px solid var(--color-neutral-200);
     }
     .prijaviBtn,
-    .ownerOptions {
+    .ownerOptions,
+    .notOwnerOptions {
         display: none;
     }
     .section {

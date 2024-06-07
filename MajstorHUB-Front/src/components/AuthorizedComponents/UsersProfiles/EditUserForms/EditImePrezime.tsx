@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { IoClose } from "react-icons/io5";
 import UserType from "../../../../lib/UserType";
+import { ImeUseraValidation } from "../../../../lib/Forms/FormValidation";
 
 type FromValues = {
     value: string;
@@ -46,21 +47,7 @@ function EditImePrezime({ close, updateUser, userData }: PropsValues) {
                 type="text"
                 id="ime"
                 placeholder="Jovan"
-                {...register("value", {
-                required: "Ovo je obavezno polje",
-                minLength: {
-                    value: 4,
-                    message: 'Ime mora da zadrzi najmanje 4 slova'
-                },
-                maxLength: {
-                    value: 20,
-                    message: 'Ime ne moze da ima vise od 20 slova'
-                },
-                pattern: {
-                    value: /^[a-zA-Z]+$/,
-                    message: "Ime mora da zadrzi samo slova",
-                },
-                })}
+                {...register("value", ImeUseraValidation)}
             />
             <p className={classes.pError}>
                 {errors.value?.message && <MdErrorOutline />}

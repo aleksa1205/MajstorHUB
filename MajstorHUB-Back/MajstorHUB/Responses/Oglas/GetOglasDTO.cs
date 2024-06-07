@@ -16,4 +16,5 @@ public class GetOglasDTO
     public DuzinaPosla DuzinaPosla { get; set; }
     public string? Lokacija { get; set; }
     public required DateTime DatumKreiranja { get; set; }
+    public required int BrojPrijava { get; set; }
 }

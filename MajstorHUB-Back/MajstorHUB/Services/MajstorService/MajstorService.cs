@@ -27,7 +27,8 @@ public class MajstorService : IMajstorService
             DatumRodjenja = x.DatumRodjenja,
             Iskustvo = x.Iskustvo,
             Struka = x.Struka,
-            Zaradjeno = x.Zaradjeno
+            Zaradjeno = x.Zaradjeno,
+            Oglasi = x.OglasiId
         });
     }
 

@@ -34,5 +34,8 @@ public enum Struka
     Staklorezac,
     Stolar,
     Vodoinstalater,
-    Zidar
+    Zidar,
+    Putevi,
+    Betoniranje,
+    Asfaltiranje
 }

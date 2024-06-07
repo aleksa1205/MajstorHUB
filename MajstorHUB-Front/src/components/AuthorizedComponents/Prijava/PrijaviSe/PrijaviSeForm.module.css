@@ -1,0 +1,25 @@
+.form {
+    width: 70rem;
+    /* padding: 2rem; */
+}
+.form section {
+    padding-inline: 2rem;
+}
+.form section:first-child {
+    padding-top: 2rem;
+}
+.form section:last-child {
+    padding-bottom: 2rem;
+}
+.form > div > h4 {
+    margin-top: 2.5rem;
+}
+.form > div > h4:first-child {
+    margin-top: 1rem;
+}
+
+@media (width <= 70rem) {
+    .form {
+        width: 100vw;
+    }
+}

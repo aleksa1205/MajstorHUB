@@ -24,7 +24,8 @@ public class KorisnikService : IKorisnikService
             DatumRodjenja = x.DatumRodjenja,
             Ime = x.Ime,
             Prezime = x.Prezime,
-            Potroseno = x.Potroseno
+            Potroseno = x.Potroseno,
+            Oglasi = x.OglasiId
         });
     }
 

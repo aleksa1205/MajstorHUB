@@ -1,31 +1,40 @@
 import classes from  './OglasCard.module.css';
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { GetOglasDTO, getDuzinaPoslaDisplayName } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
-import { formatDate, formatDateBefore, formatDouble, formatDoubleWithWhite, getOglasUrl } from '../../../../lib/utils';
+import { formatDateBefore, formatDouble, formatDoubleWithWhite, getOglasUrl } from '../../../../lib/utils';
 import { Link } from 'react-router-dom';
 import { IoLocationOutline } from 'react-icons/io5';
 import { Iskustvo, Struka, getStrukaDisplayName } from '../../../../api/DTO-s/responseTypes';
-import InfoBox from '../../../Theme/Boxes/InfoBox';
 import { FaCircleInfo } from 'react-icons/fa6';
+import useAuth from '../../../../hooks/useAuth';
+import UserType from '../../../../lib/UserType';
 
 type PropsValues = {
     oglasData: GetOglasDTO;
     currUserId: string;
+    userOglasi: string[];
 }
 
 type ContextType = {
     oglasData: GetOglasDTO;
     isOwner: boolean;
+    isPrijavljen: boolean;
 }
 
 const CardContext = createContext<ContextType | null>(null);
 
-export default function OglasCard({ currUserId, oglasData }: PropsValues) {
+export default function OglasCard({ currUserId, oglasData, userOglasi }: PropsValues) {
     const isOwner = oglasData.korisnikId === currUserId;
+    const [isPrijavljen, setIsPrijavljen] = useState<boolean>(userOglasi.includes(oglasData.id));
+    useEffect(() => {
+        setIsPrijavljen(userOglasi.includes(oglasData.id));
+    }, [userOglasi]);
+
+    const { auth: { userType } } = useAuth();
 
     return (
         <section className={classes.section} >
-            <CardContext.Provider value={{oglasData, isOwner}}>
+            <CardContext.Provider value={{oglasData, isOwner, isPrijavljen}}>
                 <Link to={getOglasUrl(oglasData.id)}>
                     <FirstRow />
                     <SecondRow />
@@ -37,6 +46,12 @@ export default function OglasCard({ currUserId, oglasData }: PropsValues) {
                         <div className={classes.owner}>
                             <FaCircleInfo />
                             <p>Ovo je vaš oglas</p>
+                        </div>
+                    )}
+                    {(isPrijavljen && userType !== UserType.Korisnik) && (
+                        <div className={classes.owner}>
+                            <FaCircleInfo />
+                            <p>Prijavljeni ste na ovaj oglas</p>
                         </div>
                     )}
                 </Link>
@@ -114,11 +129,11 @@ function StrukeRow() {
 }
 
 function LastRow() {
-    const { oglasData } = useContext(CardContext)!;
+    const { oglasData: { brojPrijava } } = useContext(CardContext)!;
 
     return (
         <div className={`${classes.lastRow} ${classes.row}`}>
-            <p>Broj prijava: <span>0</span></p>
+            <p>Broj prijava: <span>{brojPrijava}</span></p>
         </div>
     )
 }

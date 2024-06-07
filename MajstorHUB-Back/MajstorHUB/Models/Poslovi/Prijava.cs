@@ -19,6 +19,12 @@ public class Prijava
     [BsonElement("ponuda")]
     public required double Ponuda { get; set; }
 
+    [BsonElement("bid")]
+    public required int Bid { get; set; }
+
     [BsonElement("opis")]
     public string? Opis { get; set; }
+
+    [BsonElement("datum_kreiranja")]
+    public DateTime DatumKreiranja { get; set; } = DateTime.Now;
 }

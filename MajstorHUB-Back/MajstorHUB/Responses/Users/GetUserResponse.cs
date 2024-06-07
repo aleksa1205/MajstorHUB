@@ -10,4 +10,5 @@ public class GetUserResponse
     public DateTime DatumKreiranjaNaloga { get; set; }
     public double NovacNaSajtu { get; set; }
     public string? Opis { get; set; }
+    public required List<string> Oglasi { get; set; }
 }

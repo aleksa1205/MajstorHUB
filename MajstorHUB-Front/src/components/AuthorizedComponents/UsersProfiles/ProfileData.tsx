@@ -1,19 +1,19 @@
 import UserType from "../../../lib/UserType";
 import { KorisnikDataUpdate, FirmaDataUpdate, MajstorDataUpdate, userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import classes from './ProfileData.module.css'
-import { base64ToUrl, formatDate, formatDouble } from "../../../lib/utils";
+import { base64ToUrl, formatDate, formatDouble, formatDoubleWithWhite } from "../../../lib/utils";
 import { FaUserAlt } from "react-icons/fa";
 import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import EditButton from "../../Theme/Buttons/EditButton";
-import { Iskustvo, getStrukaDisplayName, userDataType } from "../../../api/DTO-s/responseTypes";
+import { GetFirmaResponse, Iskustvo, getStrukaDisplayName, userDataType } from "../../../api/DTO-s/responseTypes";
 import { IoIosContact } from "react-icons/io";
 import { MdConstruction } from "react-icons/md";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { CiCalendar } from "react-icons/ci";
 import { createContext, useContext, useEffect, useState } from "react";
-import EditUserFormContext, { EditUserFormType } from "./EditUserForms/EditUserFormContext";
+import EditUserFormContext, { EditUserFormType } from "./EditUserForms/EditUserFormContext"
 import { FaEuroSign } from "react-icons/fa";
 import AddButton from "../../Theme/Buttons/AddButton";
 import useUserControllerAuth, { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";
@@ -24,6 +24,8 @@ import SuccessBox from "../../Theme/Boxes/SuccessBox";
 import useCurrUser from "../../../hooks/useCurrUser";
 import useModalAnimation from "../../../hooks/useModalAnimation";
 import { Link } from "react-router-dom";
+import { requiresRole } from "../../../api/RequiresRole";
+import ShowMore from "../../Theme/ShowMoreContainer/ShowMore";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -242,7 +244,7 @@ function UserSpecificDataSection() {
                     <div className={classes.containerWithButton}>
                         <div className={classes.textWithInfo}>
                             <span className={classes.bold}>Trenutno Stanje: </span>{' '}
-                            {Math.round(userDataPriv.novacNaSajtu)} din
+                            {formatDoubleWithWhite(userDataPriv.novacNaSajtu)} RSD
                             <span className={classes.iconInline}>
                                 <Tooltip infoText="Drugi korisnici ne mogu da vide ovo polje" width="250px">
                                     <IoInformationCircleOutline size='1rem' />
@@ -257,19 +259,21 @@ function UserSpecificDataSection() {
 
                 {userDataPriv.userType === UserType.Korisnik && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno potroseno: </span> {' '}
+                        <p><span className={classes.bold}>Ukupno potrošeno: </span> {' '}
                         { isCurrUser 
-                          ? `${Math.round(userDataPriv.potroseno)} din` 
-                          : formatDouble(userDataPriv.potroseno, 'potroseno') }</p>
+                          ? `${formatDoubleWithWhite(userDataPriv.potroseno)} RSD` 
+                          : formatDouble(userDataPriv.potroseno, '')}
+                        </p>
                     </div>
                 )}
 
                 {(userDataPriv.userType === UserType.Majstor || userDataPriv.userType === UserType.Firma) && (
                     <div className={classes.containerWithButton}>
-                        <p><span className={classes.bold}>Ukupno zaradjeno: </span> {' '}
+                        <p><span className={classes.bold}>Ukupno zarađeno: </span> {' '}
                          { isCurrUser
-                           ? `${Math.round(userDataPriv.zaradjeno)} din`
-                           : formatDouble(userDataPriv.zaradjeno, 'potroseno')}</p>
+                           ? `${formatDoubleWithWhite(userDataPriv.zaradjeno)} RSD`
+                           : formatDouble(userDataPriv.zaradjeno, '')}
+                        </p>
                     </div>
                 )}
             </div>
@@ -298,51 +302,81 @@ function UserSpecificDataSection() {
                 </div>
             )}
 
-            <div>
-                <h4 className={classes.heading}>
-                    <IoIosContact size='2rem' />
-                    Kontakt
-                </h4>
-                <div className={classes.containerWithButton}>
-                    <p><span className={classes.bold}>Email: </span> {userData.email}</p>
-                    {isCurrUser && <EditButton />}
-                </div>
                 {isCurrUser && (
-                    <div className={classes.containerWithButton}>
-                        <div className={classes.textWithInfo}>
-                            <span className={classes.bold}>Broj Telefona:</span>{' '}
-                            {userData.brojTelefona}
+                    <div>
+                        <div className={classes.headingWithInfo}>
+                            <h4 className={classes.heading}>
+
+                                <IoIosContact size='2rem' />
+                                Kontakt
                             <span className={classes.iconInline}>
-                                <Tooltip infoText="Drugi korisnici ne mogu da vide ovo polje" width="250px">
-                                    <IoInformationCircleOutline size='1rem' />
-                                </Tooltip>
+                                        <Tooltip infoText="Drugi korisnici ne mogu da vide vaš kontakt" width="270px">
+                                            <IoInformationCircleOutline size='1rem' />
+                                        </Tooltip>
                             </span>
+
+                            </h4>
                         </div>
-                        <EditButton onClick={() => {
-                            setFormSelected(EditUserFormType.BrojTelefona)
-                            openModal();
-                        }} />
+
+                        <div className={classes.containerWithButton}>
+                            <p>
+                                <span className={classes.bold}>Email:</span>{' '}
+                                {userData.email}
+                            </p>
+                            <EditButton />
+                        </div>
+
+                        <div className={classes.containerWithButton}>
+                            <p>
+                                <span className={classes.bold}>Broj Telefona:</span>{' '}
+                                {userData.brojTelefona}
+                            </p>
+                            <EditButton onClick={() => {
+                                setFormSelected(EditUserFormType.BrojTelefona)
+                                openModal();
+                            }} />
+                        </div>
+
+                        {(userDataPriv.userType === UserType.Majstor || userDataPriv.userType === UserType.Korisnik) && (
+                            <p>
+                                <span className={classes.bold}>JMBG:</span>{' '}
+                                {userDataPriv.jmbg}
+                            </p>
+                        )}
+
+                        {requiresRole(userDataPriv.userType, [UserType.Firma]) && (
+                            <p>
+                                <span className={classes.bold}>PIB:</span>{' '}
+                                {(userDataPriv as GetFirmaResponse).pib}
+                            </p>
+                        )}
                     </div>
                 )}
-            </div>
 
             {(userData.userType === UserType.Korisnik || userData.userType === UserType.Majstor) && (
                 <div>
                     <h4 className={classes.heading}>
                         <CiCalendar size='2rem' />
-                        Datum Rođenja
+                        Datumi
                     </h4>
                     <div className={classes.containerWithButton}>
                         <p>
                             <span className={classes.bold}>
-                                {formatDate(userData.datumRodjenja)}
-                            </span>
+                                Datum Rođenja:
+                            </span> {' '}
+                            {formatDate(userData.datumRodjenja)}
                         </p>
                         {isCurrUser && <EditButton onClick={() => {
                             setFormSelected(EditUserFormType.DatumRodjenja)
                             openModal();
                         }} />}
                     </div>
+                    <p>
+                        <span className={classes.bold}>
+                            Član još od:
+                        </span> {' '}
+                        {formatDate(userDataPriv.datumKreiranjaNaloga)}
+                    </p>
                 </div>
             )}
         </section>
@@ -374,9 +408,10 @@ function Opis() {
                     </Tooltip>
                 </div>
             </div>
-            <div className={classes.divOpis}>
+            <ShowMore text={userData.opis}></ShowMore>
+            {/* <div className={classes.divOpis}>
                 {userData.opis}
-            </div>
+            </div> */}
         </section>
     )
 }

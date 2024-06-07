@@ -25,7 +25,8 @@ public class FirmaService : IFirmaService
             CenaPoSatu = f.CenaPoSatu,
             Iskustvo = f.Iskustvo,
             Struke = f.Struke,
-            Zaradjeno = f.Zaradjeno
+            Zaradjeno = f.Zaradjeno,
+            Oglasi = f.OglasiId
         });
     }
 

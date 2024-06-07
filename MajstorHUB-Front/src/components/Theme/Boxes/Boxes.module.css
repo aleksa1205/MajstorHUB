@@ -33,6 +33,7 @@
 .errorBox > svg,
 .succBox > svg {
   margin-top: 1rem;
+  flex-shrink: 0;
 }
 
 .infoBox > div > p:first-child,

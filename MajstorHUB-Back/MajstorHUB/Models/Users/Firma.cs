@@ -21,4 +21,7 @@ public class Firma : User
 
     [BsonElement("cena_po_satu")]
     public double CenaPoSatu { get; set; }
+
+    [BsonElement("prijave_na_posta")]
+    public string[] PrijaveNaPosao { get; set; } = [];
 }

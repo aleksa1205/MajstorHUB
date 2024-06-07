@@ -14,4 +14,7 @@ public class Majstor : Korisnik
 
     [BsonElement("zaradjeno_na_platformi")]
     public double Zaradjeno { get; set; } = 0;
+
+    [BsonElement("prijave_na_posta")]
+    public string[] PrijaveNaPosao { get; set; } = [];
 }

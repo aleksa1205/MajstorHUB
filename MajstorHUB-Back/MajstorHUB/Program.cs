@@ -1,9 +1,5 @@
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
-using MajstorHUB.Services.PosaoService;
-using MajstorHUB.Services.PrijavaService;
-using MajstorHUB.Models.Enums;
-using MajstorHUB.Models.DatabaseSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
