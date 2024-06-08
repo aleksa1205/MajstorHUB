@@ -102,6 +102,8 @@ function useOglasController() {
                             return false;
                         case 401:
                             throw new SessionEndedError();
+                        case 403:
+                            throw new ForbiddenError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

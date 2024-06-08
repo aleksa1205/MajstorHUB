@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Controllers.Poslovi;
+﻿using static MajstorHUB.Services.OglasService.OglasService;
+
+namespace MajstorHUB.Controllers.Poslovi;
 
 [ApiController]
 [Route("[controller]")]
@@ -56,6 +58,7 @@ public class OglasController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetByIdDto(string id)
     {
         try
@@ -64,6 +67,10 @@ public class OglasController : ControllerBase
             if (oglas == null)
                 return NotFound($"Oglas sa ID-em {id} ne postoji!\n");
             return Ok(oglas);
+        }
+        catch (PrivateOrInactiveOglasException)
+        {
+            return Forbid();
         }
         catch (Exception ex)
         {

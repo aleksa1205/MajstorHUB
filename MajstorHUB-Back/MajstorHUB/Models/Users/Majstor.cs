@@ -9,7 +9,6 @@ public class Majstor : Korisnik
     [BsonElement("iskustvo")]
     public Iskustvo Iskustvo { get; set; } = Iskustvo.Nedefinisano;
 
-
     [BsonElement("cena_po_satu")]
     public double CenaPoSatu { get; set; }
 

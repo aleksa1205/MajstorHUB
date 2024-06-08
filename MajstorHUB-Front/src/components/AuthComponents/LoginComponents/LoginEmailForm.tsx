@@ -1,14 +1,13 @@
 import classes from "./LoginEmailForm.module.css";
-import { Link, useLoaderData, useNavigate } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { MdErrorOutline } from "react-icons/md";
 import UserType from "../../../lib/UserType";
 import { CiUser } from "react-icons/ci";
-import { useState } from "react";
-import { IoIosWarning } from "react-icons/io";
+import { useEffect } from "react";
 import useUserController from "../../../api/controllers/useUserController";
-import { FaCircleInfo } from "react-icons/fa6";
 import { useErrorBoundary } from "react-error-boundary";
+import { PopUpMessage } from "../../../hooks/usePopUpMessage";
 
 type FromValues = {
   email: string;
@@ -17,15 +16,22 @@ type FromValues = {
 type PropsValues = {
   setUserTypesFound: React.Dispatch<React.SetStateAction<UserType[]>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setPopUpMessage: React.Dispatch<React.SetStateAction<PopUpMessage | null>>
 };
 
-function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
+function LoginEmailForm({ setUserTypesFound, setEmail, setPopUpMessage } : PropsValues) {
   const { emailExists } = useUserController();
   const {showBoundary} = useErrorBoundary();
-  const navigate = useNavigate();
   const message = useLoaderData();
 
-  const [doesEmailExists, setDoesEmailExists] = useState(true);
+  useEffect(() => {
+    if(typeof message === 'string') {
+      setPopUpMessage({
+        message,
+        type: 'info'
+      })
+    }
+  }, []);
 
   const form = useForm<FromValues>();
   const { register, handleSubmit, formState } = form;
@@ -49,9 +55,13 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
       if (data) userTypesFound.push(type);
     }
 
-    if (userTypesFound.length == 0) setDoesEmailExists(false);
+    if (userTypesFound.length == 0) {
+      setPopUpMessage({
+        message: "Email koji ste uneli ne postoji",
+        type: 'warning'
+      })
+    }
     else {
-      setDoesEmailExists(true);
       setEmail(email);
       setUserTypesFound(userTypesFound);
     }
@@ -59,24 +69,6 @@ function LoginEmailForm({ setUserTypesFound, setEmail } : PropsValues) {
 
   return (
     <>
-      {(message && typeof message === 'string') && (
-        <div className="infoBox">
-          <FaCircleInfo size="1.25rem" />
-          <div>
-            <p>{message}</p>
-          </div>
-        </div>
-      )}
-
-      {!doesEmailExists && (
-        <div className="warrningBox">
-          <IoIosWarning size="1.25rem" className={classes.warningIcon} />
-          <div>
-            <p>Email koji ste uneli ne postoji</p>
-          </div>
-        </div>
-      )}
-
       <form
         className={`${classes.form}`}
         noValidate

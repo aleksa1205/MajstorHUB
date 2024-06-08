@@ -7,4 +7,6 @@ public class GetKorisnikResponse : GetUserResponse
     public string? Prezime { get; set; }
     public DateTime? DatumRodjenja { get; set; }
     public double Potroseno { get; set; }
+    public required bool Private { get; set; }
+    public required bool Blocked { get; set; }
 }

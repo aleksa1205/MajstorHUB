@@ -26,7 +26,9 @@ public class FirmaService : IFirmaService
             Iskustvo = f.Iskustvo,
             Struke = f.Struke,
             Zaradjeno = f.Zaradjeno,
-            Oglasi = f.OglasiId
+            Oglasi = f.OglasiId,
+            Private = f.Private,
+            Blocked = f.Blocked
         });
     }
 
@@ -174,11 +176,16 @@ public class FirmaService : IFirmaService
         var cenaFilter = filterBuilder.Gte(x => x.CenaPoSatu, firma.CenaPoSatu);
         var zaradjenoFilter = filterBuilder.Gte(x => x.Zaradjeno, firma.Zaradjeno);
 
+        var privateFilter = filterBuilder.And(
+            filterBuilder.Eq(x => x.Private, false),
+            filterBuilder.Eq(x => x.Blocked, false));
+
         var finalFilter = filterBuilder.And(queryFinalFilter,
                                             opisFinalFilter,
                                             iskustvoFilter,
                                             cenaFilter,
-                                            zaradjenoFilter);
+                                            zaradjenoFilter,
+                                            privateFilter);
 
         var sortZaradjeno = sortBuilder.Descending(x => x.Zaradjeno);
 

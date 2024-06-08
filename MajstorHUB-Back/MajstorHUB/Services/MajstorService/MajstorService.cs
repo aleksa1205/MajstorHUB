@@ -28,7 +28,9 @@ public class MajstorService : IMajstorService
             Iskustvo = x.Iskustvo,
             Struka = x.Struka,
             Zaradjeno = x.Zaradjeno,
-            Oglasi = x.OglasiId
+            Oglasi = x.OglasiId,
+            Blocked = x.Blocked,
+            Private = x.Private
         });
     }
 
@@ -187,11 +189,16 @@ public class MajstorService : IMajstorService
         var cenaFilter = filterBuilder.Gte(x => x.CenaPoSatu, majstor.CenaPoSatu);
         var zaradjenoFilter = filterBuilder.Gte(x => x.Zaradjeno, majstor.Zaradjeno);
 
+        var privateFilter = filterBuilder.And(
+            filterBuilder.Eq(x => x.Private, false),
+            filterBuilder.Eq(x => x.Blocked, false));
+
         var finalFilter = filterBuilder.And(queryFinalFilter,
                                             iskustvoFilter, 
                                             opisFinalFilter,
                                             cenaFilter,
-                                            zaradjenoFilter);
+                                            zaradjenoFilter,
+                                            privateFilter);
 
         var sortZaradjeno = sortBuilder.Descending(x => x.Zaradjeno);
 

@@ -47,6 +47,9 @@ public abstract class User
     [BsonElement("admin")]
     public AdminRoles Admin { get; set; } = AdminRoles.Nedefinisano;
 
+    [BsonElement("private")]
+    public bool Private { get; set; } = false;
+
     [BsonElement("blocked")]
     public bool Blocked { get; set; } = false;
 

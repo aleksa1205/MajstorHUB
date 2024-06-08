@@ -17,12 +17,12 @@ function useLogout() {
             console.log(`Logout called, current time: ${new Date()}
                                         refresh token expiry: ${auth.refreshToken.expiry},
                                         jwt token expiry: ${auth.expiration}`);
-            if(auth.refreshToken.expiry > new Date()) {
+            if(new Date(auth.refreshToken.expiry) > new Date()) {
                 console.log('Refresh token not expired, calling logout endpoint...');
                 await logout();
             }
             else {
-                console.log('Refrsh token has expired, no need to call logout endpoint...')
+                console.log('Refresh token has expired, no need to call logout endpoint...')
                 msg = '?message=Vaša sesija je istekla, ulogujte se ponovo'
             }
             

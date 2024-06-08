@@ -79,15 +79,19 @@ public class MajstorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetById(string id)
     {
         try
         {
+            var ownerid = HttpContext.User.Identity?.Name;
             var majstor = await _majstorService.GetByIdDto(id);
             if (majstor == null)
             {
                 return NotFound($"Majstor sa ID-em {id} ne postoji!\n");
             }
+            if ((majstor.Blocked || majstor.Private) && ownerid != majstor.Id)
+                return Forbid();
 
             return Ok(majstor);
         }
@@ -201,6 +205,9 @@ public class MajstorController : ControllerBase
                 return Unauthorized("Pogresna sifra!\n");
             }
 
+            if (majstor.Blocked)
+                return Forbid();
+
             var token = new JwtProvider(_configuration).Generate(majstor);
 
             Roles role = Roles.Nedefinisano;
@@ -270,6 +277,9 @@ public class MajstorController : ControllerBase
                 majstor.RefreshToken.Expiry < DateTime.UtcNow
                 )
                 return Unauthorized();
+
+            if (majstor.Blocked)
+                return Forbid();
 
             var token = jwtProvider.Generate(majstor);
 

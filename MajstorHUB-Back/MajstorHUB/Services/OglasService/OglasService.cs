@@ -16,6 +16,11 @@ public class OglasService : IOglasService
         _prijavaService = prijavaService;
     }
 
+    public class PrivateOrInactiveOglasException : Exception
+    {
+        public PrivateOrInactiveOglasException() : base() { }
+    }
+
     // Imitacija projekcije kao u mongoDB driver-u, samo za obican .net linq
     public static GetOglasDTO ProjectToGetDto(Oglas oglas, Korisnik korisnik)
     {
@@ -53,6 +58,8 @@ public class OglasService : IOglasService
         var oglas = await _oglasi.Find(oglas => oglas.Id == id).FirstOrDefaultAsync();
         if (oglas is null)
             return null;
+        if (oglas.Private || !oglas.Active)
+            throw new PrivateOrInactiveOglasException();
         var korisnik = await _korisnici.Find(k => k.Id == oglas.KorisnikId).FirstOrDefaultAsync();
 
         return ProjectToGetDto(oglas, korisnik);
@@ -172,11 +179,16 @@ public class OglasService : IOglasService
             filterBuilder.Lte(x => x.Cena, oglas.Cena.Do)
             );
 
+        var activeFilter = filterBuilder.And(
+            filterBuilder.Eq(o => o.Active, true),
+            filterBuilder.Eq(o => o.Private, false));
+
         var finalFilter = filterBuilder.And(queryFinalFilter,
                                             opisFinalFilter,
                                             iskustvoFilter,
                                             duzinaFilter,
-                                            cenaFilter
+                                            cenaFilter,
+                                            activeFilter
                                             );
 
         var sortBuilder = Builders<Oglas>.Sort;

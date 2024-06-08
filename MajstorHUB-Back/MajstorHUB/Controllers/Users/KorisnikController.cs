@@ -79,13 +79,17 @@ public class KorisnikController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Get(string id)
     {
         try
         {
+            var ownerId = HttpContext.User.Identity?.Name;
             var korisnik = await _korisnikService.GetByIdDto(id);
             if (korisnik == null)
                 return NotFound($"Korisnik sa ID-em {id} ne postoji!\n");
+            if ((korisnik.Private || korisnik.Blocked) && ownerId != korisnik.Id)
+                return Forbid();
 
             return Ok(korisnik);
         }
@@ -200,6 +204,9 @@ public class KorisnikController : ControllerBase
                 return Unauthorized("Pogresna sifra!\n");
             }
 
+            if (korisnik.Blocked)
+                return Forbid();
+
             var token = new JwtProvider(_configuration).Generate(korisnik);
 
             Roles role = Roles.Nedefinisano;
@@ -271,6 +278,9 @@ public class KorisnikController : ControllerBase
                 return Unauthorized("Refresh token se ne poklapa sa onim u bazi");
             if (korisnik.RefreshToken.Expiry < DateTime.UtcNow)
                 return Unauthorized("Refresh token je istekao, ne smes ovaj endpoint da zoves tako");
+
+            if (korisnik.Blocked)
+                return Forbid();
 
             var token = new JwtProvider(_configuration).Generate(korisnik);
 

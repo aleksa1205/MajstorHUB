@@ -3,9 +3,10 @@ import {
   LoginResponse,
   RefreshToken,
 } from "../api/controllers/useUserController";
-import UserType, { pathToUser, userToPath } from "../lib/UserType";
+import UserType, {  userToPath } from "../lib/UserType";
 import axios from "../api/axios";
 import { useErrorBoundary } from "react-error-boundary";
+import appconfig from "../../appconfig.json";
 
 type ContextValues = {
   auth: AuthValues;
@@ -48,10 +49,25 @@ type PropsValue = {
 };
 
 export const AuthProvider = ({ children }: PropsValue) => {
-  const [auth, setAuth] = useState<AuthValues>(emptyAuthValue);
+  const { storeSessionInLocalStorage, logTestUser } = appconfig;
+
+
+  const localStorageItem = localStorage.getItem('_auth');
+  let defaultValues: AuthValues = emptyAuthValue
+  if (localStorageItem && storeSessionInLocalStorage) {
+    defaultValues = JSON.parse(localStorageItem);
+  }
+  else
+    localStorage.removeItem("_auth");
+
+  const [auth, setAuth] = useState<AuthValues>(defaultValues);
   const { showBoundary } = useErrorBoundary();
 
-  const logTestUser : boolean = true;
+  useEffect(() => {
+    if(storeSessionInLocalStorage)
+      localStorage.setItem('_auth', JSON.stringify(auth));
+  }, [auth])
+
 
   useEffect(() => {
     if(logTestUser)
@@ -68,9 +84,7 @@ export const AuthProvider = ({ children }: PropsValue) => {
 export default AuthContext;
 
 async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>>, showBoundary : (error: any) => void) {
-    const email = "milosmilosevic@gmail.com";
-    const password = "sifra123";
-    const type = UserType.Korisnik;
+    const { testUserLoginInfo: { email, password, type } } = appconfig;    
     const dataToSend = { email, password };
 
     let response;

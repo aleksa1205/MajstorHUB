@@ -5,8 +5,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MdErrorOutline, MdLockOutline } from "react-icons/md";
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
-import useUserController from "../../../api/controllers/useUserController";
+import useUserController, { WrongPasswordError } from "../../../api/controllers/useUserController";
 import { useErrorBoundary } from "react-error-boundary";
+import { PopUpMessage } from "../../../hooks/usePopUpMessage";
+import { ForbiddenError } from "../../../api/controllers/useOglasController";
 
 type FormValues = {
   password: string;
@@ -16,9 +18,10 @@ type PropsValues = {
   email: string;
   userType: UserType;
   reset: React.Dispatch<React.SetStateAction<UserType[]>>;
+  setPopUpMessage: React.Dispatch<React.SetStateAction<PopUpMessage | null>>
 };
 
-function LoginPasswordForm({ email, userType, reset }: PropsValues) {
+function LoginPasswordForm({ email, userType, reset, setPopUpMessage }: PropsValues) {
   const { setAuth } = useAuth();
   const { login } = useUserController();
   const {showBoundary} = useErrorBoundary();
@@ -35,15 +38,9 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
   async function onSubmit(formData: FormValues) {
     const { password } = formData;
 
-    let data;
     try {
-      data = await login(userType, email, password);
-    } catch (error) {
-      showBoundary(error);
-    }
-    
-    if (!data) setIsWrongPassword(true);
-    else {
+      const data = await login(userType, email, password);
+
       // Auth context (mesto gde cuvamo sve podatke o trenutno logovanom useru) 
       // mora da se updatuje kada submitujemo login formu
       setAuth({
@@ -63,6 +60,20 @@ function LoginPasswordForm({ email, userType, reset }: PropsValues) {
       }, 100);
 
       setIsWrongPassword(false);
+    } catch (error) {
+      if (error instanceof ForbiddenError) {
+          setPopUpMessage({
+            message: "Vaš nalog je blokiran",
+            type: "error"
+          })
+          setIsWrongPassword(false);
+      }
+      else if (error instanceof WrongPasswordError) {
+        setIsWrongPassword(true);
+      }
+      else
+        showBoundary(error);
+
     }
   }
   return (

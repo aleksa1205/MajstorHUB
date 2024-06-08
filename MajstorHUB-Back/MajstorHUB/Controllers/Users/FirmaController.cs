@@ -76,13 +76,17 @@ public class FirmaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Get(string id)
     {
         try
         {
+            var ownerId = HttpContext.User.Identity?.Name;
             var firma = await _firmaService.GetByIdDto(id);
             if (firma == null)
                 return NotFound($"Firma sa ID-em {id} ne postoji!\n");
+            if ((firma.Blocked || firma.Private) && ownerId != firma.Id)
+                return Forbid();
 
             return Ok(firma);
         }
@@ -192,6 +196,9 @@ public class FirmaController : ControllerBase
                 return Unauthorized("Pogresna sifra!\n");
             }
 
+            if (firma.Blocked)
+                return Forbid();
+
             var token = new JwtProvider(_configuration).Generate(firma);
 
             Roles role = Roles.Nedefinisano;
@@ -262,6 +269,9 @@ public class FirmaController : ControllerBase
                 firma.RefreshToken.Expiry < DateTime.UtcNow
                 )
                 return Unauthorized();
+
+            if (firma.Blocked)
+                return Forbid();
 
             var token = jwtProvider.Generate(firma);
 

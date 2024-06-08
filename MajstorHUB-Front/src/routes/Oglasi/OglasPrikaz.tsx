@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
-import useOglasController from "../../api/controllers/useOglasController";
+import useOglasController, { ForbiddenError } from "../../api/controllers/useOglasController";
 import useLogout from "../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ import PregledOglasa from "../../components/AuthorizedComponents/Oglas/Pregled/P
 import { GetKorisnikResponse } from "../../api/DTO-s/responseTypes";
 import { PrijavaWithIzvodjacDTO } from "../../api/DTO-s/Prijave/PrijaveDTO";
 import PrijaveWithIzv from "../../components/AuthorizedComponents/Prijava/PrijaveNaOglasu/PrijaveWithIzv";
+import ClosedSignUrl from "../../../pictures/closed_sign.jpg";
 
 enum NavOptions {
   Prikaz,
@@ -30,6 +31,7 @@ export default function OglasPrikaz() {
   const [initialOglas, setInitialOglas] = useState<GetOglasDTO | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(true);
   const [notFound, setNotFound] = useState(id?.length !== 24);
+  const [forbidden, setForbidden] = useState<boolean>(false);
 
   const [klijent, setKlijent] = useState<GetKorisnikResponse | null>(null);
   const [isFetchingKlijent, setIsFetchingKlijent] = useState<boolean>(true);
@@ -73,6 +75,10 @@ export default function OglasPrikaz() {
         } else if (error instanceof SessionEndedError) {
           logoutUser();
           setIsFetching(false);
+        }
+        else if (error instanceof ForbiddenError) {
+          setForbidden(true);
+          setIsFetching(false);
         } else {
           setIsFetching(false);
           showBoundary(error);
@@ -109,6 +115,14 @@ export default function OglasPrikaz() {
             <div className="container">
               <div className={`${classes.center}`}>
                 <Hamster />
+              </div>
+            </div>
+          ) : forbidden ? (
+            <div className="container">
+              <div className={`${classes.center}`}>
+                <img src={ClosedSignUrl} alt="Closed" />
+                <h1>Oglas je zatvoren za prijave</h1>
+                <Link to='/oglasi' className="secondaryButton">Nazad na pretragu oglasa</Link>
               </div>
             </div>
           ) : (

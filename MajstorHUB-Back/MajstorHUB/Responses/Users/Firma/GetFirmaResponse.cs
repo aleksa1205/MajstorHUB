@@ -8,4 +8,6 @@ public class GetFirmaResponse : GetUserResponse
     public List<Struka>? Struke { get; set; }
     public Iskustvo Iskustvo { get; set; }
     public double Zaradjeno { get; set; }
+    public required bool Private { get; set; }
+    public required bool Blocked { get; set; }
 }
