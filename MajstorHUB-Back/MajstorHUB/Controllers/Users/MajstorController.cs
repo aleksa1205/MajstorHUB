@@ -335,31 +335,6 @@ public class MajstorController : ControllerBase
         }
     }
 
-    [HttpPost("Prosek/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Average(string id)
-    {
-        try
-        {
-            var majstor = await _majstorService.GetById(id);
-            if (majstor is null)
-                return NotFound($"Majstor za ID-em {id} ne postoji!\n");
-            if (majstor.Recenzija.Count == 0)
-                return BadRequest("Majstor nema nijednu recenziju!\n");
-            double avg = 0;
-            foreach (var element in majstor.Recenzija)
-                avg += element.Ocena;
-            avg /= majstor.Recenzija.Count;
-            return Ok(avg);
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -445,10 +420,10 @@ public class MajstorController : ControllerBase
             if (id is null)
                 return Unauthorized();
 
-            if (amount < 500)
-                return BadRequest("Ne mozete uplatiti manje od 500 dinara na racun\n");
-            if (amount > 200000)
-                return BadRequest("Ne mozete uplatiti vise od 200000 dinara na racun\n");
+            if (amount < 2000)
+                return BadRequest("Ne mozete uplatiti manje od 2000 dinara na racun\n");
+            if (amount > 100000000)
+                return BadRequest("Ne mozete uplatiti vise od 100000000 dinara na racun\n");
 
             var postojecaFirma = await _majstorService.GetById(id);
             if (postojecaFirma is null)
@@ -481,8 +456,8 @@ public class MajstorController : ControllerBase
 
             if (amount < 1000)
                 return BadRequest("Ne mozete isplatiti manje od 1000\n");
-            if (amount > 200000)
-                return BadRequest("Ne mozete isplatiti vise od 200000\n");
+            if (amount > 100000000)
+                return BadRequest("Ne mozete isplatiti vise od 100000000\n");
 
             var postojecaFirma = await _majstorService.GetById(id);
             if (postojecaFirma is null)

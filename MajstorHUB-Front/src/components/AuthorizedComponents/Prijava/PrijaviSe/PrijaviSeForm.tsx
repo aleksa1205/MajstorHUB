@@ -170,7 +170,7 @@ export default function PrijaviSeForm({ close, style, setSuccessMessage }: Props
                             "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
                             }
                             >
-                            <span className="button__text">Save</span>
+                            <span className="button__text">Pošalji prijavu</span>
                         </button>
                     </div>
                 </section>

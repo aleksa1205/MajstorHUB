@@ -57,7 +57,8 @@ export enum Struka {
     Zidar,
     Putevi,
     Betoniranje,
-    Asfaltiranje
+    Asfaltiranje,
+    Vutricionista
 }
 
 const strukaDisplayNames: { [key in Struka]: string } = {
@@ -96,7 +97,8 @@ const strukaDisplayNames: { [key in Struka]: string } = {
     [Struka.Zidar]: "Zidar",
     [Struka.Putevi]: "Putevi",
     [Struka.Betoniranje]: "Betoniranje",
-    [Struka.Asfaltiranje]: "Asfaltiranje"
+    [Struka.Asfaltiranje]: "Asfaltiranje",
+    [Struka.Vutricionista]: "Vutricionista"
 };
 
 export const maxStrukeLength = 15;

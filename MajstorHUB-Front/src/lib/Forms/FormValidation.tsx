@@ -1,5 +1,33 @@
 import { minCenaPrijave } from "../../api/controllers/usePrijavaController";
 
+export const DatumRodjenjaValidation = {
+  required: 'Ovo polje je obavezno',
+  valueAsDate: true,
+  validate: (fieldValue: Date) => {
+      const date = new Date(fieldValue);
+  
+      const isValid = date < new Date();
+  
+      return isValid || 'Izabran datum je veci od današnjeg'
+  }
+}
+
+export const DatumPoslaValidation = {
+  required: 'Ovo polje je obavezno',
+  valueAsDate: true,
+  validate: (fieldValue: Date) => {
+      const date = new Date(fieldValue);
+      let isValid: boolean = false;
+      let msg: string = '';
+
+      if (date <= new Date()) 
+        msg = "Ne smete uneti datum koji je pre današnjeg";
+      else isValid = true;
+  
+      return isValid || msg;
+  }
+}
+
 export const LokacijaValidation = {
     required: 'Ovo je obavezno polje',
     minLength: {
@@ -74,6 +102,29 @@ export const CenaOglasaValidation = {
 
     return valid || msg;
   },
+};
+
+export function CenaPoslaValidation(ponuda: number, stanje: number) {
+  return {
+    required: "Ovo je obavezno polje",
+    valueAsNumber: true,
+    validate: (fieldValue: number) => {
+      let msg: string = "";
+      let valid = false;
+
+      const botThreshold = ponuda * 0.7;
+      const topThreshold = ponuda * 1.3;
+  
+      if (fieldValue > stanje) msg = "Nemate dovoljno novca da platite ovaj posao";
+      else if (fieldValue < 1000 || fieldValue > 100000000) msg = "Iznos mora da bude između 1000 i 100 000 000 dinara";
+      else if (Number.isNaN(fieldValue)) msg = "Dozvoljeni su samo brojevi";
+      else if (fieldValue < botThreshold) msg = "Premala cena posla za izvođačevu ponudu"
+      else if (fieldValue > topThreshold) msg = "Prevelika cena posla za izvođačevu ponudu"
+      else valid = true;
+  
+      return valid || msg;
+    },
+  };
 };
 
 export function DodatnaCenaPrijavaValidation(trenutnoStanje: number) {

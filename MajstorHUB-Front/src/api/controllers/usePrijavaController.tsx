@@ -16,6 +16,7 @@ export enum Matching {
 }
 
 export const minCenaPrijave = 30;
+export const maxNumberOfPrijave = 3;
 
 export function checkMatchingScore(matchingScore: number) {
     if(matchingScore >= bestMatchThreshold)

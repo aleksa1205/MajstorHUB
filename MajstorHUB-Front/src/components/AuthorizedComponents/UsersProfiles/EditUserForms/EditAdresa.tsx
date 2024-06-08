@@ -3,7 +3,7 @@ import classes from './EditUserForm.module.css'
 import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { IoClose } from "react-icons/io5";
-import { LokacijaValidation } from "../../../../lib/Forms/FormValidation";
+import { LokacijaValidationWithSpaces } from "../../../../lib/Forms/FormValidation";
 
 type FromValues = {
     value: string;
@@ -50,7 +50,7 @@ function EditAdresa({ close, updateUser, userData }: PropsValues) {
                 type="text"
                 id="adresa"
                 placeholder="Niš"
-                {...register("value", LokacijaValidation)}
+                {...register("value", LokacijaValidationWithSpaces)}
             />
             <p className={classes.pError}>
                 {errors.value?.message && <MdErrorOutline />}

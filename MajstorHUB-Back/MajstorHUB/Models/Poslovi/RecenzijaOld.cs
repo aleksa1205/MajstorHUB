@@ -1,6 +1,6 @@
 ﻿namespace MajstorHUB.Models.Poslovi;
 
-public class Recenzija
+public class RecenzijaOld
 {
     [JsonIgnore]
     [BsonId]

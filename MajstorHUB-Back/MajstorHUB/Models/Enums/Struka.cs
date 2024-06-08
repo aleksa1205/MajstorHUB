@@ -37,5 +37,6 @@ public enum Struka
     Zidar,
     Putevi,
     Betoniranje,
-    Asfaltiranje
+    Asfaltiranje,
+    Vutricionista
 }

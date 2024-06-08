@@ -14,12 +14,15 @@ import { Link } from "react-router-dom";
 import ShowMore from "../../../Theme/ShowMoreContainer/ShowMore";
 import { CiMail } from "react-icons/ci";
 import { BsTelephone } from "react-icons/bs";
+import { IzvodjacOnPrijava } from "./PrijaveWithIzv";
 
 type PropsValues = {
-    prijava: PrijavaWithIzvodjacDTO
+    prijava: PrijavaWithIzvodjacDTO;
+    openModal: () => void;
+    setIzvodjac: React.Dispatch<React.SetStateAction<IzvodjacOnPrijava | null>>;
 }
 
-export default function PrijavaWIthIzvCard({ prijava }: PropsValues) {
+export default function PrijavaWIthIzvCard({ prijava, openModal, setIzvodjac }: PropsValues) {
 
     const [isSmallSize, setIsSmallSize] = useState<boolean>(window.innerWidth <= 800);
 
@@ -34,31 +37,36 @@ export default function PrijavaWIthIzvCard({ prijava }: PropsValues) {
     }, []);
 
     return (
-        <section className={classes.card}>
-            {!isSmallSize && (
+          <section className={classes.card}>
+                {!isSmallSize && (
+                    <div>
+                        <LeftSection prijava={prijava} />
+                    </div>
+                )}
+                <AbsoluteButtons openModal={openModal} prijava={prijava} setIzvodjac={setIzvodjac} />
+                <AbsoluteMatch prijava={prijava} />
                 <div>
-                    <LeftSection prijava={prijava} />
+                    <FirstRow prijava={prijava} isSmallSize={isSmallSize} />
+                    <SecondRow prijava={prijava} />
+                    <ThirdRow prijava={prijava} />
+                    <IskustvoRow prijava={prijava} />
+                    <OpisRow prijava={prijava} />
+                    <MatchingStrukeRow prijava={prijava} />
+                    <KontaktRow prijava={prijava} />
+                    <LastRow prijava={prijava} />
                 </div>
-            )}
-            <AbsoluteButtons prijava={prijava} />
-            <AbsoluteMatch prijava={prijava} />
-            <div>
-                <FirstRow prijava={prijava} isSmallSize={isSmallSize} />
-                <SecondRow prijava={prijava} />
-                <ThirdRow prijava={prijava} />
-                <IskustvoRow prijava={prijava} />
-                <OpisRow prijava={prijava} />
-                <MatchingStrukeRow prijava={prijava} />
-                <KontaktRow prijava={prijava} />
-                <LastRow prijava={prijava} />
-            </div>
-        </section>
+            </section>
     )
 }
 
 type RowProps = {
     prijava: PrijavaWithIzvodjacDTO
     isSmallSize?: boolean;
+}
+
+type AbsoluteButtonsProps = RowProps & {
+    openModal: () => void;
+    setIzvodjac: React.Dispatch<React.SetStateAction<IzvodjacOnPrijava | null>>;
 }
 
 function AbsoluteMatch({ prijava }: RowProps) {
@@ -77,13 +85,24 @@ function AbsoluteMatch({ prijava }: RowProps) {
     )
 }
 
-function AbsoluteButtons({ prijava }: RowProps) {
-    const { tipIzvodjaca, izvodjacId } = prijava;
+function AbsoluteButtons({ prijava, openModal, setIzvodjac }: AbsoluteButtonsProps) {
+    const { tipIzvodjaca, izvodjacId, naziv, ponuda, id } = prijava;
+
+    function openForm() {
+        setIzvodjac({
+            izvodjacId,
+            tipIzvodjaca,
+            naziv,
+            ponuda,
+            prijava: id
+        });
+        openModal();
+    }
 
     return (
         <div className={classes.absoluteButtons}>
             <Link to={getProfileUrl(tipIzvodjaca, izvodjacId)} className="secondaryButtonSmall">Pogledaj Profil</Link>
-            <button className="mainButtonSmall">Zaposli</button>
+            <button onClick={openForm} className="mainButtonSmall">Zaposli</button>
         </div>
     )
 }

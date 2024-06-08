@@ -130,6 +130,8 @@ export default function OglasPrikaz() {
               {navSelected === NavOptions.Prijave && (
                 <PrijaveWithIzv
                   oglasId={oglas!.id}
+                  oglasOpis={oglas!.opis}
+                  oglasCena={oglas!.cena}
                   prijave={prijave}
                   setPrijave={setPrijave}
                 />

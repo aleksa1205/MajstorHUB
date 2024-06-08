@@ -38,6 +38,22 @@
   font-weight: 300;
 }
 
+.form section {
+  padding-inline: 2rem;
+}
+.form section:first-child {
+  padding-top: 2rem;
+}
+.form section:last-child {
+  padding-bottom: 2rem;
+}
+.form > div > h4 {
+  margin-top: 2.5rem;
+}
+.form > div > h4:first-child {
+  margin-top: 1rem;
+}
+
 .label {
   display: block;
   margin-bottom: 0.2rem;

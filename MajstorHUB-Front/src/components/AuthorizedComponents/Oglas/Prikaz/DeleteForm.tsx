@@ -36,7 +36,7 @@ export default function DeleteForm({ style, close, oglasId }: PropsValues) {
     async function onSubmit() {
         try {
             await deleteSelf(oglasId);
-            navigate('/success?message=Uspešno ste zatvorili oglas&to=dashboard');
+            navigate('/success?message=Uspešno ste zatvorili oglas&to=dashboard', { replace: true });
         } catch (error) {
             if (error instanceof SessionEndedError) {
             logoutUser();

@@ -128,6 +128,7 @@ public class PrijavaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status402PaymentRequired)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Post([FromBody] CreatePrijavaDTO prijava)
     {
         try
@@ -145,15 +146,21 @@ public class PrijavaController : ControllerBase
             if (izvodjac.NovacNaSajtu < prijava.Bid)
                 return StatusCode(402, "Nemate dovoljno novca za ovaj oglas");
 
+            if (prijava.Ponuda < 1000 || prijava.Ponuda > 100000000)
+                return BadRequest("Ponuda mora da bude izmedju 1000 i 100000000 dinara");
+
             var oglas = await _oglasService.GetById(prijava.OglasId);
             if (oglas is null)
                 return NotFound("Oglas sa prosledjenim ID-em nije pronadjen");
+            if (!oglas.Active || oglas.Private)
+                return BadRequest("Posao je zatvoren za prijave");
 
             if (izvodjac.OglasiId.Contains(oglas.Id!))
                 return BadRequest("Imate pravo na samo jednu prijavu po poslu");
 
             // ogranici broj prijava na 30
-
+            if (oglas.PrijaveIds.Count == 3)
+                return StatusCode(409, "Maksimalan broj prijava postignut, nemate pravo da se prijavite");
 
             var novaPrijava = new Prijava
             {
