@@ -1,0 +1,16 @@
+.info {
+    color: var(--color-blue-500);
+    display: inline-block;
+    display: flex;
+    align-items: start;
+
+    column-gap: 0.5rem;
+}
+.info svg {
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+.info p {
+    margin: 0;
+    text-align: left;
+}

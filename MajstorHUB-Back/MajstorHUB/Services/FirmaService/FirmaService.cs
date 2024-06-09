@@ -28,7 +28,8 @@ public class FirmaService : IFirmaService
             Zaradjeno = f.Zaradjeno,
             Oglasi = f.OglasiId,
             Private = f.Private,
-            Blocked = f.Blocked
+            Blocked = f.Blocked,
+            Ocena = f.Ocena
         });
     }
 

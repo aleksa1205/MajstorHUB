@@ -91,7 +91,7 @@ export default function PrijaviSeForm({ close, style, setSuccessMessage }: Props
                     </div>
                 </section>
 
-                <section style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '60vh' : '600px'}} className={classes.scroll}>
+                <section style={{overflowY: 'scroll', height: window.innerWidth < 1000 ? '60vh' : '600px'}} className={classes.scroll}>
                         <h4>Ponuda za oglas</h4>
                         <p>Koliko želite da naplatite klijentu za ovaj posao, ovo nije finalna cena, možete kasnije da se dogovarate za tačnu cenu posla.</p>
                         <input

@@ -10,7 +10,7 @@ import useLogout from '../../../../hooks/useLogout';
 import { useErrorBoundary } from 'react-error-boundary';
 import { useNavigate } from 'react-router-dom';
 import EditOglasMain, { EditOglasFormType } from '../IzmeniOglas/EditOglasMain';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useModalAnimation from '../../../../hooks/useModalAnimation';
 import { formatDoubleWithWhite } from '../../../../lib/utils';
 
@@ -33,11 +33,12 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
     const { transition, closeModal, openModal } = useModalAnimation();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-
     const { postavi, updateSelf } = useOglasController();
     const logoutUser = useLogout();
     const { showBoundary } = useErrorBoundary();
     const navigate = useNavigate();
+
+    useEffect(() => console.log(oglasData), [oglasData]);
 
     function nazadHandler() {
         setValue!('cena', oglasData.cena);

@@ -30,7 +30,8 @@ public class MajstorService : IMajstorService
             Zaradjeno = x.Zaradjeno,
             Oglasi = x.OglasiId,
             Blocked = x.Blocked,
-            Private = x.Private
+            Private = x.Private,
+            Ocena = x.Ocena
         });
     }
 

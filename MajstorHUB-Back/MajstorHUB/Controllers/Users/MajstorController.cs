@@ -450,7 +450,7 @@ public class MajstorController : ControllerBase
         }
     }
 
-    [RequiresClaim(Roles.Korisnik)]
+    [RequiresClaim(Roles.Majstor)]
     [HttpPatch("Withdraw")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

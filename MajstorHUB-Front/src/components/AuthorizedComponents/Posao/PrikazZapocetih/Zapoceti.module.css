@@ -1,0 +1,60 @@
+.kontinjer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.cards {
+    margin-bottom: 2rem;
+}
+
+.carousel,
+.section {
+    padding: 20px;
+}
+
+.novPosaoCard,
+.card {
+    flex-grow: 0;
+    flex-shrink: 0;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    row-gap: 5rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+.novPosaoCard button {
+    margin-top: 33.4px;
+}
+
+.novPosaoCard:hover,
+.card:hover {
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.novPosaoCard {
+    border: 2px dashed var(--color-neutral-400);
+    color: var(--color-neutral-400);
+    cursor: pointer;
+}
+.naslov {
+    margin-top: .5rem;
+}
+
+.card {
+    color: black;
+    cursor: default;
+}
+
+.card button {
+    margin-top: -4rem;
+}
+.izvodjacBtn button {
+    margin-top: 55px;
+}

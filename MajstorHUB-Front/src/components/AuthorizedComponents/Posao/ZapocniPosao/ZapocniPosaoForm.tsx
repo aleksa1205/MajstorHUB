@@ -30,6 +30,7 @@ type PropsValues = {
     oglasOpis: string;
     cenaOglasa: number;
     setSuccess(message: string): void;
+    oglasNaslov: string;
 }
 
 type FormValues = {
@@ -38,7 +39,7 @@ type FormValues = {
     allow: boolean
 }
 
-export default function ZapocniPosaoForm({ close, style, izvodjac, oglasId, oglasOpis, cenaOglasa }: PropsValues) {
+export default function ZapocniPosaoForm({ close, style, izvodjac, oglasId, oglasOpis, cenaOglasa, oglasNaslov }: PropsValues) {
     const { register, handleSubmit, formState, watch, setError, clearErrors } = useForm<FormValues>();
     const { errors, isSubmitting, isValid } = formState;
     const [ allow, setAllow ] = useState<boolean>(false);
@@ -77,7 +78,8 @@ export default function ZapocniPosaoForm({ close, style, izvodjac, oglasId, ogla
                 oglas: oglasId,
                 opis: oglasOpis,
                 prijava: izvodjac.prijava,
-                korisnik: auth.userId
+                korisnik: auth.userId,
+                naslov: oglasNaslov
             }
 
             await zapocniPosao(dto);
@@ -111,7 +113,7 @@ export default function ZapocniPosaoForm({ close, style, izvodjac, oglasId, ogla
                     </div>
                 </section>
 
-                <section style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '60vh' : '600px'}} className={classes.scroll}>
+                <section style={{overflowY: 'scroll', height: window.innerWidth < 1000 ? '60vh' : '600px'}} className={classes.scroll}>
                     <InfoBox>
                         <p>Dogovorite se sa izvođačem pre nego što započnete posao.</p>
                         <p>Na svakoj prijavi stoji email i, eventualno, broj telefona izvođača. Kontaktirajte ga kako biste sklopili dogovor.</p>

@@ -1,6 +1,7 @@
 import { IoLocationOutline, IoPricetagOutline } from "react-icons/io5";
 import {
   GetOglasDTO,
+  StatusOglasa,
   getDuzinaPoslaDisplayName,
 } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
 import {
@@ -135,6 +136,7 @@ export default function OglasInfo({
       <div className={`container`}>
           <div className={classes.main}>
             <div>
+
               <FirstSection oglas={oglas} isOwner={isOwner} />
               <OpisSection oglas={oglas} />
               <SpecificationSection oglas={oglas} />
@@ -160,7 +162,7 @@ export default function OglasInfo({
           </div>
       </div>
 
-      {userType !== UserType.Korisnik && (
+      {(userType !== UserType.Korisnik && oglas.status === StatusOglasa.Otvoren) && (
         <footer className={classes.footer}>
           <button onClick={goBackHandler} className="secondaryButtonSmall">
             Nazad
@@ -173,7 +175,7 @@ export default function OglasInfo({
           )}
         </footer>
       )}
-      {userType === UserType.Korisnik && isOwner && (
+      {(userType === UserType.Korisnik && isOwner && oglas.status === StatusOglasa.Otvoren) && (
         <footer className={classes.footer}>
           <button onClick={openModal} className="secondaryButtonSmall">
             Zatvori Oglas
@@ -230,7 +232,7 @@ type AsideProps = {
 };
 
 function AsideSection({
-  oglas: { korisnikId },
+  oglas: { korisnikId, status },
   isOwner,
   setEdit,
   openModal,
@@ -308,7 +310,7 @@ function AsideSection({
       <section className={classes.asideSec}>
         {!isOwner && auth.userType !== UserType.Korisnik && (
           <>
-            {!isPrijavljen && (
+            {(!isPrijavljen && status === StatusOglasa.Otvoren) && (
               <>
                 <button onClick={openPrijava} className={`mainButtonSmall ${classes.prijaviBtn}`}>
                   Prijavi se na oglas
@@ -323,7 +325,7 @@ function AsideSection({
                 </div>
               </>
             )}
-            {isPrijavljen && (
+            {(isPrijavljen && status === StatusOglasa.Otvoren) && (
               <>
                 <div className={classes.smallNoMargin}>
                   <p>Već ste se prijavili na ovaj oglas</p>
@@ -346,7 +348,7 @@ function AsideSection({
             </button>
           </div>
         )}
-        {isOwner && (
+        {(isOwner && status === StatusOglasa.Otvoren) && (
           <div className={classes.ownerOptions}>
             <div className={classes.btnContainer}>
               <LuPencil />

@@ -8,6 +8,7 @@ import WarningBoxAnimated from "../components/Theme/Boxes/WarningBoxAnimated";
 export type PopUpMessage = {
     type: "success" | "error" | "warning" | "info";
     message: string;
+    dontClose?: boolean;
 }
 
 
@@ -24,7 +25,7 @@ export default function usePopUpMessage() {
     const PopUpComponent = () => {
         if (!popUpMessage) return null;
 
-        const { message, type } = popUpMessage;
+        const { message, type, dontClose } = popUpMessage;
 
         return (
          <>
@@ -32,22 +33,22 @@ export default function usePopUpMessage() {
                 return show ? (
                     <>
                         {type === 'success' && (
-                            <SuccessBoxAnimated closeMessage={closeMessage} style={style}>
+                            <SuccessBoxAnimated closeMessage={closeMessage} style={style} dontClose={dontClose}>
                                 <p>{message}</p>
                             </SuccessBoxAnimated>
                         )}
                         {type === 'info' && (
-                            <InfoBoxAnimated closeMessage={closeMessage} style={style}>
+                            <InfoBoxAnimated closeMessage={closeMessage} style={style} dontClose={dontClose}>
                                 <p>{message}</p>
                             </InfoBoxAnimated>
                         )}
                         {type === 'error' && (
-                            <ErrorBoxAnimated closeMessage={closeMessage} style={style}>
+                            <ErrorBoxAnimated closeMessage={closeMessage} style={style} dontClose={dontClose}>
                                 <p>{message}</p>
                             </ErrorBoxAnimated>
                         )}
                         {type === 'warning' && (
-                            <WarningBoxAnimated closeMessage={closeMessage} style={style}>
+                            <WarningBoxAnimated closeMessage={closeMessage} style={style} dontClose={dontClose}>
                                 <p>{message}</p>
                             </WarningBoxAnimated>
                         )}

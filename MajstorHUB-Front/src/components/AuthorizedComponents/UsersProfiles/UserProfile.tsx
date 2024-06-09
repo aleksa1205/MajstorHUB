@@ -102,7 +102,7 @@ function UserProfile({ typeFromUrl }: PropsValues) {
     <main className={`${classes.main}`}>
       {notFound ? (
         <div className='container'>
-            <div className={`${classes.center}`}>
+            <div className={`${classes.centerMaxC}`}>
             <img src={NotFoundImageUrl} alt="Not Found" />
             <h1>Nismo pronašli nalog koji tražite :(</h1>
             </div>
@@ -115,7 +115,7 @@ function UserProfile({ typeFromUrl }: PropsValues) {
         </div>
       ) : forbidden ? (
         <div className='container'>
-            <div className={`${classes.center}`}>
+            <div className={`${classes.centerMaxC}`}>
                 <img src={PrivateAccountUrl} alt="Private Account" />
                 <h1>Ovaj nalog je privatan</h1>
             </div>

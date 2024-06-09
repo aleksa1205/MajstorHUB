@@ -26,7 +26,7 @@ export default function OpisForm() {
             <div className={classes.inputs}>
                 <label className={classes.label} htmlFor="opis">Opišite šta vam je potrebno</label>
                 <textarea
-                    className={errors.naslov ? `${classes.error}` : ""}
+                    className={errors.opis ? `${classes.error}` : ""}
                     id="opis"
                     placeholder="Već imate spreman opis? Nalepite ga ovde!"
                     rows={10}

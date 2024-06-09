@@ -1,8 +1,4 @@
-﻿using MajstorHUB.Models.Poslovi;
-using MajstorHUB.Models.Users;
-using MajstorHUB.Responses.Posao;
-
-namespace MajstorHUB.Controllers.Poslovi;
+﻿namespace MajstorHUB.Controllers.Poslovi;
 
 [ApiController]
 [Route("[controller]")]
@@ -74,15 +70,18 @@ public class PosaoController : ControllerBase
         }
     }
 
-    [HttpGet("GetByUserZapoceti/{id}/{userType}")]
+    [Authorize]
+    [HttpGet("GetByUserZapoceti")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetByUserZapoceti(string id, Roles userType)
+    public async Task<IActionResult> GetByUserZapoceti()
     {
         try
         {
-            var lista = await _posaoService.GetByUserZapoceti(id, userType);
+            var ownerId = HttpContext.User.Identity?.Name;
+            var userType = UtilityCheck.GetRole(HttpContext);
+            var lista = await _posaoService.GetByUserZapoceti(ownerId!, userType);
             if (lista.Count == 0)
                 return NotFound("Nema poslova za datog user-a");
             return Ok(lista);
@@ -93,24 +92,25 @@ public class PosaoController : ControllerBase
         }
     }
 
-    //[HttpGet("GetByUserZavrseni/{id}/{userType}")]
-    //[ProducesResponseType(StatusCodes.Status200OK)]
-    //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-    //[ProducesResponseType(StatusCodes.Status404NotFound)]
-    //public async Task<IActionResult> GetByUserZavrseni(string id, Roles userType)
-    //{
-    //    try
-    //    {
-    //        var posao = await _posaoService.GetById(id);
-    //        if (posao is null)
-    //            return NotFound($"Posao sa ID-em {id} ne postoji!");
-    //        return Ok(posao);
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        return BadRequest(e.Message);
-    //    }
-    //}
+    [Authorize]
+    [HttpGet("GetByUserZavrseni/{id}/{userType}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetByUserZavrseni(string id, Roles userType)
+    {
+        try
+        {
+            var lista = await _posaoService.GetByUserZavrseni(id, userType);
+            if (lista.Count == 0)
+                return NotFound("Nema poslova za datog user-a");
+            return Ok(lista);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
 
     [Authorize]
     [RequiresClaim(Roles.Korisnik)]
@@ -164,7 +164,8 @@ public class PosaoController : ControllerBase
                 DetaljiPosla = new DetaljiPosla
                 {
                     Cena = posaoDTO.Cena,
-                    Opis = posaoDTO.Opis
+                    Opis = posaoDTO.Opis,
+                    Naslov = posaoDTO.Naslov
                 },
                 Oglas = posaoDTO.Oglas,
                 ZavrsetakRadova = posaoDTO.ZavrsetakRadova
@@ -200,6 +201,8 @@ public class PosaoController : ControllerBase
                 return BadRequest("Posao je vec zavrsen");
             if (posao.Korisnik != korisnikId)
                 return BadRequest("Ne smete da zavrsite tudji oglas");
+            if (posao.Recenzije.RecenzijaKorisnika is not null)
+                return BadRequest("Vec ste zavrsili posao sa vase strane");
             //if (posao.ZavrsetakRadova > DateTime.Now)
             //    return BadRequest("Vreme zavrsetka posla jos nije isteklo");
 
@@ -234,6 +237,8 @@ public class PosaoController : ControllerBase
                 return BadRequest("Posao je vec zavrsen");
             if (posao.Izvodjac.IzvodjacId != izvodjacId)
                 return BadRequest("Ne smete da zavrsite tudji oglas");
+            if (posao.Recenzije.RecenzijaIzvodjaca is not null)
+                return BadRequest("Vec ste zavrsili posao sa vase strane");
             //if (posao.ZavrsetakRadova > DateTime.Now)
             //    return BadRequest("Vreme zavrsetka posla jos nije isteklo");
 

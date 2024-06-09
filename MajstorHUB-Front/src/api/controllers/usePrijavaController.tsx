@@ -5,7 +5,7 @@ import UserType from "../../lib/UserType";
 import { CreatePrijavaDTO, PrijavaWithIzvodjacDTO } from "../DTO-s/Prijave/PrijaveDTO";
 import { SessionEndedError } from "./useUserControllerAuth";
 
-export const bidBoostedThreshold: number = 50;
+export const bidBoostedThreshold: number = 100;
 export const goodMatchThreshold: number = 60;
 export const bestMatchThreshold: number = 90;
 

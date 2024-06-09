@@ -8,6 +8,7 @@ public class GetOglasDTO
     public required string Ime { get; set; }
     public required string Prezime { get; set; }
     public required double Potroseno { get; set; }
+    public required double Ocena { get; set; }
     public required string Naslov { get; set; }
     public Iskustvo Iskustvo { get; set; }
     public List<Struka>? Struke { get; set; }
@@ -17,4 +18,5 @@ public class GetOglasDTO
     public string? Lokacija { get; set; }
     public required DateTime DatumKreiranja { get; set; }
     public required int BrojPrijava { get; set; }
+    public required StatusOglasa Status { get; set; }
 }

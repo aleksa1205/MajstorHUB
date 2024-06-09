@@ -4,7 +4,7 @@ import useOglasController, { ForbiddenError } from "../../api/controllers/useOgl
 import useLogout from "../../hooks/useLogout";
 import { useErrorBoundary } from "react-error-boundary";
 import { useEffect, useState } from "react";
-import { GetOglasDTO } from "../../api/DTO-s/Oglasi/OglasiDTO";
+import { GetOglasDTO, StatusOglasa } from "../../api/DTO-s/Oglasi/OglasiDTO";
 import { isAxiosError } from "axios";
 import {
   SessionEndedError,
@@ -17,7 +17,9 @@ import PregledOglasa from "../../components/AuthorizedComponents/Oglas/Pregled/P
 import { GetKorisnikResponse } from "../../api/DTO-s/responseTypes";
 import { PrijavaWithIzvodjacDTO } from "../../api/DTO-s/Prijave/PrijaveDTO";
 import PrijaveWithIzv from "../../components/AuthorizedComponents/Prijava/PrijaveNaOglasu/PrijaveWithIzv";
-import ClosedSignUrl from "../../../pictures/closed_sign.jpg";
+import ClosedSignUrl from "../../../pictures/private_account.png";
+import InfoBox from "../../components/Theme/Boxes/InfoBox";
+import ErrorBox from "../../components/Theme/Boxes/ErrorBox";
 
 enum NavOptions {
   Prikaz,
@@ -106,7 +108,7 @@ export default function OglasPrikaz() {
         <>
           {notFound ? (
             <div className="container">
-              <div className={`${classes.center}`}>
+              <div className={`${classes.centerMaxC}`}>
                 <img src={NotFoundImageUrl} alt="Not found" />
                 <h1>Nismo pronašli oglas koji tražite :(</h1>
               </div>
@@ -119,14 +121,28 @@ export default function OglasPrikaz() {
             </div>
           ) : forbidden ? (
             <div className="container">
-              <div className={`${classes.center}`}>
+              <div className={`${classes.centerMaxC}`}>
                 <img src={ClosedSignUrl} alt="Closed" />
-                <h1>Oglas je zatvoren za prijave</h1>
+                <h1>Oglas je privatan</h1>
                 <Link to='/oglasi' className="secondaryButton">Nazad na pretragu oglasa</Link>
               </div>
             </div>
           ) : (
             <>
+              {oglas?.status === StatusOglasa.Zapocet && (
+                <div className="container">
+                  <InfoBox>
+                    <p>Posao je sklopljen za ovaj oglas ali radovi nisu još gotovi.</p>
+                  </InfoBox>
+                </div>
+              )}
+              {oglas?.status === StatusOglasa.Zavrsen && (
+                <div className="container">
+                  <ErrorBox>
+                    <p>Oglas više nije dostupan.</p>
+                  </ErrorBox>
+                </div>
+              )}
               {isOwner && <AuthorNavigation oglas={oglas!} navSelected={navSelected} setNavSelected={setNavSelected} />}
               {navSelected === NavOptions.Prikaz && (
                 <OglasInfo
@@ -148,6 +164,8 @@ export default function OglasPrikaz() {
                   oglasCena={oglas!.cena}
                   prijave={prijave}
                   setPrijave={setPrijave}
+                  oglasNaslov={oglas!.naslov}
+                  oglasStatus={oglas!.status}
                 />
               )}
             </>

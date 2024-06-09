@@ -8,7 +8,7 @@ public interface IPosaoService
     Task<Posao> GetById(string id);
     Task<Posao> GetByOglas(string oglasId);
     Task<List<GetByZapocetiDTO>> GetByUserZapoceti(string userId, Roles userType);
-    //Task<List<GetByZapocetiDTO>> GetByUserZavrseni(string userId, Roles userType);
+    Task<List<GetZavrseniPosloviDTO>> GetByUserZavrseni(string userId, Roles userType);
     Task ZavrsiByKorisnik(ZavrsiPosaoDTO zavrsi);
     Task ZavrsiByIzvodjac(ZavrsiPosaoDTO zavrsi);
     Task Create(Posao posao);

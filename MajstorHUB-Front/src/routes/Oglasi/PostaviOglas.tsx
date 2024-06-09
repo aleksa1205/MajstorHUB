@@ -2,6 +2,7 @@ import {
   FieldErrors,
   UseFormClearErrors,
   UseFormRegister,
+  UseFormReset,
   UseFormSetError,
   UseFormWatch,
   useForm,
@@ -37,6 +38,7 @@ export type FormContextType = {
   setError: UseFormSetError<CreateOglasFormValues>;
   struke: Struka[];
   setStruke: React.Dispatch<React.SetStateAction<Struka[]>>;
+  reset: UseFormReset<CreateOglasFormValues>
 };
 
 export type CreateOglasFormValues = {
@@ -62,6 +64,7 @@ export default function PostaviOglas() {
     clearErrors,
     setError,
     setValue,
+    reset
   } = useForm<CreateOglasFormValues>();
   const { errors } = formState;
   const [oglas, setOglas] = useState<CreateOglasDTO>();
@@ -90,6 +93,8 @@ export default function PostaviOglas() {
   async function onSubmit(oglas: CreateOglasFormValues) {
     const { cena, duzinaPosla, iskustvo, naslov, opis, struke : oglasStruke, lokacija } =
       oglas;
+
+      console.log(oglas);
 
     if (currentStep === Steps.Vestine) {
       if (struke.length === 0) {
@@ -136,6 +141,7 @@ export default function PostaviOglas() {
                 setError,
                 setStruke,
                 struke,
+                reset
               }}
             >
               {currentStep === Steps.Naslov && <NaslovForm />}
