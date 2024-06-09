@@ -79,9 +79,9 @@ export default function usePosaoController() {
                 }
             }
         },
-        getByUserZavrseni: async function (userId: string, userType: UserType): Promise<GetZavrseniPosloviDTO[]> {
+        getByUserZavrseni: async function (userId: string, userType: UserType, controller: AbortController): Promise<GetZavrseniPosloviDTO[]> {
             try {
-                const response = await axiosPrivate.get(`/Posao/GetByUserZavrseni/${userId}/${userType}`);
+                const response = await axiosPrivate.get(`/Posao/GetByUserZavrseni/${userId}/${userType}`, { signal: controller.signal });
 
                 const data: GetZavrseniPosloviDTO[] = response.data;
                 for (let el of data) {

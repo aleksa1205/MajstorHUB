@@ -241,6 +241,7 @@ img {
 }
 
 .secondLink {
+  text-decoration: none;
   background-color: transparent;
   font-size: inherit;
   font-family: inherit;
@@ -254,6 +255,7 @@ img {
 
 .secondLink:hover {
   color: #ca560c;
+  text-decoration: underline;
 }
 
 .secondLink:active {

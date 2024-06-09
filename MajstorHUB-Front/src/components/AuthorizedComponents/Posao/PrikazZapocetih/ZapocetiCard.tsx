@@ -8,7 +8,6 @@ import BrickLaying from '../../../../../pictures/animations/suitCase.json';
 import Lottie from "react-lottie";
 import InfoMessage from "../../../Theme/Messages/InfoMessage";
 import { useEffect, useState } from "react";
-import InfoBox from "../../../Theme/Boxes/InfoBox";
 
 type PropsTypes = {
     posao: GetByZapocetiDTO;

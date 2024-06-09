@@ -26,6 +26,10 @@ import useModalAnimation from "../../../hooks/useModalAnimation";
 import { Link } from "react-router-dom";
 import { requiresRole } from "../../../api/RequiresRole";
 import ShowMore from "../../Theme/ShowMoreContainer/ShowMore";
+import ZavrseniPoslovi from "../Posao/PrikazZavrsenih/ZavrseniPoslovi";
+import { Rating } from "@mui/material";
+import ZavsenPopUp from "../Posao/PrikazZavrsenih/ZavrsenPopUp";
+import { GetZavrseniPosloviDTO } from "../../../api/DTO-s/Posao/PosloviDTO";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -130,7 +134,7 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
                                 {userData.userType !== UserType.Korisnik && 
                                     <Skills />
                                 }
-                            {/* <Poslovi userData={userData} isCurrUser={isCurrUser} /> */}
+                            <Poslovi />
                         </div>
                     </div>
                 </SectionContext.Provider>
@@ -467,10 +471,41 @@ function Skills() {
     )
 }
 
-// function Poslovi({ userData, isCurrUser } : BasicInforProps) {
-//     return (
-//         <section>
-//             <h3>Prethodni Poslovi</h3>
-//         </section>
-//     )
-// }
+function Poslovi() {
+    const { userDataPriv: { userType, ocena } } = useContext(SectionContext)!;
+    const { closeModal, openModal, transition } = useModalAnimation();
+    const [posao, setPosao] = useState<GetZavrseniPosloviDTO | null>(null);
+
+    function openPopUp(posao: GetZavrseniPosloviDTO) {
+        setPosao(posao);
+        openModal();
+    }
+
+    return (
+        <>
+            {transition((style, show) => {
+                return show ? (
+                    <ZavsenPopUp close={closeModal} style={style} posao={posao!} />
+                ) : null;
+            })}
+            <section className={classes.posloviSec}>
+                <div>
+                    <h3>Prethodni Poslovi</h3>
+                    <div>
+                        <span>Prosečna ocena</span>
+                        <Rating
+                            name="ocena"
+                            size="medium"
+                            precision={0.1}
+                            value={ocena}
+                            readOnly={true}
+                            sx={{ gap: '0' }}
+                        />
+                        <span>{ocena}</span>
+                    </div>
+                </div>
+                <ZavrseniPoslovi userType={userType} openPopUp={openPopUp} />
+            </section>
+        </>
+    )
+}

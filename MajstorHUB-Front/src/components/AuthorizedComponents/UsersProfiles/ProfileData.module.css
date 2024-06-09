@@ -200,6 +200,24 @@
     background-color: var(--color-main-200);
 }
 
+.posloviSec {
+    padding: 2rem 0;
+    border-top:  1px solid var(--color-neutral-200);
+}
+.posloviSec > div:first-child {
+    padding-inline: 2rem;
+    margin-bottom: 2rem;
+}
+.posloviSec > div:first-child > div {
+    display: flex;
+    column-gap: 1rem;
+    align-items: center;
+}
+.posloviSec > div:first-child > h3 {
+    margin-top: 0;
+    margin-bottom: 3rem;
+}
+
 @media (width <= 1200px) {
 
     .imePrezime {
