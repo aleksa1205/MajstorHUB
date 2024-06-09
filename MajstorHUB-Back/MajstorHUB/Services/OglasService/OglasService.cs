@@ -39,7 +39,9 @@ public class OglasService : IOglasService
             Ime = korisnik.Ime!,
             Prezime = korisnik.Prezime!,
             KorisnikId = oglas.KorisnikId,
-            Potroseno = korisnik.Potroseno
+            Potroseno = korisnik.Potroseno,
+            Status = oglas.Status,
+            Ocena = korisnik.Ocena
         };
     }
 
@@ -58,7 +60,7 @@ public class OglasService : IOglasService
         var oglas = await _oglasi.Find(oglas => oglas.Id == id).FirstOrDefaultAsync();
         if (oglas is null)
             return null;
-        if (oglas.Private || !oglas.Active)
+        if (oglas.Status == StatusOglasa.Privatan)
             throw new PrivateOrInactiveOglasException();
         var korisnik = await _korisnici.Find(k => k.Id == oglas.KorisnikId).FirstOrDefaultAsync();
 
@@ -179,9 +181,7 @@ public class OglasService : IOglasService
             filterBuilder.Lte(x => x.Cena, oglas.Cena.Do)
             );
 
-        var activeFilter = filterBuilder.And(
-            filterBuilder.Eq(o => o.Active, true),
-            filterBuilder.Eq(o => o.Private, false));
+        var activeFilter = filterBuilder.In(o => o.Status, [StatusOglasa.Otvoren]);
 
         var finalFilter = filterBuilder.And(queryFinalFilter,
                                             opisFinalFilter,

@@ -9,5 +9,6 @@ public class CreatePosaoDTO
     public required string Prijava { get; set; }
     public required double Cena { get; set; }
     public required string Opis { get; set; }
+    public required string Naslov { get; set; }
     public required DateTime ZavrsetakRadova { get; set; }
 }

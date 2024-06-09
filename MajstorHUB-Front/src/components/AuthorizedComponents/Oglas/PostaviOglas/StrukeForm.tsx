@@ -13,34 +13,36 @@ import DropDown from "../../../Theme/DropDown/DDSelect";
 import { IoClose } from "react-icons/io5";
 
 export default function StrukeForm() {
-  const { currentStep, register, errors, watch, clearErrors, setError, struke, setStruke } =
-    useContext(FormContext)!;
-
-  const [increment, setIncrement] = useState<number>(0);
+  const {
+    currentStep,
+    register,
+    errors,
+    watch,
+    clearErrors,
+    setError,
+    struke,
+    setStruke,
+    reset
+  } = useContext(FormContext)!;
 
   const sveStruke = Object.keys(Struka).filter((v) => !isNaN(Number(v)));
 
   const inputValue = watch("value");
 
   useEffect(() => {
-    if (
-      struke.includes(inputValue) ||
-      typeof inputValue === "undefined" ||
-      inputValue === 0
-    )
-    return;
-    
-    if (struke.length < 10) {
-      clearErrors();
-      setStruke((prev) => [...prev, inputValue]);
-      //setError(null);
-    } else {
-      setError("value", {
-        type: "manual",
-        message: "Maksimalan broj struka je 10",
-      });
+    if (inputValue && inputValue !== 0 && !struke.includes(inputValue)) {
+      if (struke.length < 10) {
+        clearErrors();
+        setStruke((prev) => [...prev, inputValue]);
+        // reset({ value: 0 }); // Reset the select input after adding
+      } else {
+        setError("value", {
+          type: "manual",
+          message: "Maksimalan broj struka je 10",
+        });
+      }
     }
-  }, [increment]);
+  }, [inputValue, struke, clearErrors, setError, reset]);
 
   function deleteHandler(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     const struka: Struka = parseInt(e.currentTarget.value);
@@ -67,7 +69,7 @@ export default function StrukeForm() {
         <DropDown>
           <select
             className={errors.value ? `${classes.error}` : ""}
-            id="vestine"
+            id="struka"
             {...register("value", {
               valueAsNumber: true,
               required: "Ovo je obavezno polje",
@@ -77,14 +79,8 @@ export default function StrukeForm() {
             {sveStruke.map((e) => {
               const el = parseInt(e, 10);
               if (el !== Struka.Nedefinisano) {
-                const isIncluded = struke.includes(el);
                 return (
-                  <option
-                    onClick={() => setIncrement((prev) => prev + 1)}
-                    disabled={isIncluded}
-                    key={el}
-                    value={el}
-                  >
+                  <option key={el} value={el} disabled={struke.includes(el)}>
                     {getStrukaDisplayName(el)}
                   </option>
                 );

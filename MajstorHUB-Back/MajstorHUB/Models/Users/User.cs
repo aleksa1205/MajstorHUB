@@ -44,6 +44,10 @@ public abstract class User
     [BsonRepresentation(BsonType.ObjectId)]
     public List<string> Poslovi { get; set; } = [];
 
+    [BsonElement("ocena")]
+    [Range(0, 5)]
+    public double Ocena { get; set; } = 0;
+
     [BsonElement("admin")]
     public AdminRoles Admin { get; set; } = AdminRoles.Nedefinisano;
 

@@ -7,6 +7,7 @@ import { useLoaderData } from "react-router-dom";
 import UplatiNovac from "../components/AuthorizedComponents/Novac/UplatiNovac";
 import IsplatiNovac from "../components/AuthorizedComponents/Novac/IsplatiNovac";
 import SuccessBox from "../components/Theme/Boxes/SuccessBox";
+import { formatDoubleWithWhite } from "../lib/utils";
 
 export function loader({ request }: any) {
   const url = new URL(request.url);
@@ -52,7 +53,7 @@ function Novac() {
             <span className={classes.bold}>Trenutno novca</span>
           </p>
           <p className={classes.gray}>
-            {Math.round(userData!.novacNaSajtu)} dinara
+            {formatDoubleWithWhite(userData!.novacNaSajtu)} dinara
           </p>
 
           <div className={classes.section}>

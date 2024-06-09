@@ -7,12 +7,15 @@ import { IoIosWarning } from 'react-icons/io';
 type PropsVales = {
     children : React.ReactNode;
     style: any;
-    closeMessage: () => void
+    closeMessage: () => void;
+    dontClose?: boolean;
 }
 
-function WarningBoxAnimated({ children, style, closeMessage } : PropsVales) {
+function WarningBoxAnimated({ children, style, closeMessage, dontClose = false } : PropsVales) {
     
     useEffect(() => {
+        if (dontClose) return
+
         const id = setTimeout(closeMessage, 5000);
 
         return () => clearTimeout(id);

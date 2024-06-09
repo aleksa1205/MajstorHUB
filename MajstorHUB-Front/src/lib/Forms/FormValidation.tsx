@@ -88,6 +88,17 @@ export const OpisOglasaValidation = {
   },
 };
 
+export const OpisRecenyijeValidation = {
+  minLength: {
+    value: 10,
+    message: "Mora barem 10 karaktera",
+  },
+  maxLength: {
+    value: 5000,
+    message: "Maksimum 5000 karaktera",
+  },
+};
+
 export const CenaOglasaValidation = {
   required: "Ovo je obavezno polje",
   valueAsNumber: true,

@@ -8,7 +8,7 @@ import DropDown from "../../../Theme/DropDown/DDSelect";
 import { useEffect, useState } from "react";
 import UserType from "../../../../lib/UserType";
 
-type FromValues = {
+type FormValues = {
     value: number;
 };
 
@@ -19,17 +19,15 @@ type PropsValues = {
 }
 
 function EditStruke({ close, updateUser, userData }: PropsValues) {
-    const form = useForm<FromValues>();
-    const { register, handleSubmit, formState, watch, setError, clearErrors } = form;
+    const form = useForm<FormValues>();
+    const { register, handleSubmit, formState, watch, setError, clearErrors, reset } = form;
     const { errors, isSubmitting, isSubmitSuccessful } = formState;
 
-    const [increment, setIncrement] = useState<number>(0);
-
     const [selectedFields, setSelectedFields] = useState<Array<Struka>>(
-        userData.userType === UserType.Firma && userData.struke && userData.struke.length > 0 && userData.struke[0] !== Struka.Nedefinisano ? userData.struke : new Array()
-    )
+        userData.userType === UserType.Firma && userData.struke && userData.struke.length > 0 && userData.struke[0] !== Struka.Nedefinisano ? userData.struke : []
+    );
 
-    if(isSubmitSuccessful) setTimeout(() => close(), 0);
+    if (isSubmitSuccessful) setTimeout(() => close(), 0);
 
     const sveStruke = Object.keys(Struka)
                             .filter(v => !isNaN(Number(v)));
@@ -37,37 +35,35 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
     const inputValue = watch('value');
 
     useEffect(() => {
-        if(selectedFields.includes(inputValue) || typeof inputValue === 'undefined' || inputValue === 0)
-            return;
-
-        if(selectedFields.length < 15) {
-            clearErrors();
-            setSelectedFields(prev => [...prev, inputValue]);
-            //setError(null);
+        if (inputValue && inputValue !== 0 && !selectedFields.includes(inputValue)) {
+            if (selectedFields.length < 15) {
+                clearErrors();
+                setSelectedFields(prev => [...prev, inputValue]);
+                reset({ value: 0 }); // Reset the select input after adding
+            } else {
+                setError('value', {
+                    type: 'manual',
+                    message: 'Maksimalan broj struka je 15'
+                });
+            }
         }
-        else{
-            setError('value', {
-                type: 'manual',
-                message: 'Maksimalan broj struka je 15'
-            });
-        }
+    }, [inputValue]);
 
-    }, [increment]);
-
-    function deleteHandler(e : React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        const struka : Struka = parseInt(e.currentTarget.value);
+    function deleteHandler(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        const struka: Struka = parseInt(e.currentTarget.value);
         setSelectedFields(prev => prev.filter(el => el !== struka));
         clearErrors();
     }
 
     function onSubmit() {
-        if(selectedFields.length === 0) {
+        if (selectedFields.length === 0) {
             setError('value', {
                 type: 'manual',
                 message: 'Molimo vas izaberite struku'
-            })
-        } else
-            updateUser(prev => ({...prev!, struke: selectedFields}));
+            });
+        } else {
+            updateUser(prev => ({ ...prev!, struke: selectedFields }));
+        }
     }
 
     return (
@@ -77,63 +73,60 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
-            <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
-            <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
-            <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
-            
-            <label htmlFor="struka">Struke</label>
-            <DropDown>
-                <select
-                    className={errors.value ? `${classes.error}` : ""}
-                    id="struka"
-                    {...register("value", {
-                        valueAsNumber: true,
-                        required: 'Ovo je obavezno polje',
-                    })}
-                >
-                    <option value="0">Izaberite Struku</option>
-                    {sveStruke.map((e) => {
-                        const el = parseInt(e, 10);
-                        if(el !== Struka.Nedefinisano) {
-                            const isIncluded = selectedFields.includes(el)
+            <div style={{ overflowY: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto' }}>
+                <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
+                <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
+
+                <label htmlFor="struka">Struke</label>
+                <DropDown>
+                    <select
+                        className={errors.value ? `${classes.error}` : ""}
+                        id="struka"
+                        {...register("value", {
+                            valueAsNumber: true,
+                            required: 'Ovo je obavezno polje',
+                        })}
+                    >
+                        <option value="0">Izaberite Struku</option>
+                        {sveStruke.map((e) => {
+                            const el = parseInt(e, 10);
+                            if (el !== Struka.Nedefinisano) {
+                                return (
+                                    <option key={el} value={el} disabled={selectedFields.includes(el)}>
+                                        {getStrukaDisplayName(el)}
+                                    </option>
+                                );
+                            }
+                        })}
+                    </select>
+                </DropDown>
+                <p>Maksimalno 15 struka</p>
+                <p className={classes.pError}>
+                    {errors.value?.message && <MdErrorOutline />}
+                    {errors.value?.message}
+                </p>
+
+                <div className={classes.vestine}>
+                    {
+                        selectedFields.map(el => {
                             return (
-                                <option onClick={() => setIncrement(prev => prev + 1)} disabled={isIncluded} key={el} value={el}>{getStrukaDisplayName(el)}</option>
-                            )
-                        }
+                                <div key={el} className={classes.vestina}>
+                                    {getStrukaDisplayName(el)}
+                                    <button type="button" onClick={deleteHandler} value={el}>
+                                        <IoClose size='1.3rem' />
+                                    </button>
+                                </div>)
+                        })
                     }
-                    )}
-                </select>
-            </DropDown>
-            <p>Maksimalno 15 struka</p>
-            <p className={classes.pError}>
-                {errors.value?.message && <MdErrorOutline />}
-                {errors.value?.message}
-            </p>
-
-            <div className={classes.vestine}>
-            {
-                selectedFields.map(el => {
-                    return (
-                    <div key={el} className={classes.vestina}>
-                        {getStrukaDisplayName(el)}
-                        <button type="button" onClick={deleteHandler} value={el}>
-                            <IoClose size='1.3rem' />
-                        </button>
-                    </div>)
-                })
-            }
+                </div>
             </div>
 
-            </div>
-            
             <div className={classes.btnContainer}>
                 <button className='secondLink' onClick={close} type='button'>Cancel</button>
                 <button
                     disabled={isSubmitting}
-                    className={
-                    "mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`
-                    }
-                    >
+                    className={"mainButtonSmall" + " " + `${isSubmitting ? "button--loading" : ""}`}
+                >
                     <span className="button__text">Save</span>
                 </button>
             </div>

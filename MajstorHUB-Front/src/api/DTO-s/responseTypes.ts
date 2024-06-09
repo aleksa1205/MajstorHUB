@@ -10,6 +10,7 @@ type GetUserResponse = {
     novacNaSajtu: number;
     opis: string;
     oglasi: string[]
+    ocena: number;
 }
 
 export type GetKorisnikResponse  = GetUserResponse & {
@@ -58,7 +59,12 @@ export enum Struka {
     Putevi,
     Betoniranje,
     Asfaltiranje,
-    Vutricionista
+    Vutricionista,
+    Ograde,
+    Rusenje,
+    PripremaTerena,
+    Stubovi,
+    Nivelacija,
 }
 
 const strukaDisplayNames: { [key in Struka]: string } = {
@@ -98,7 +104,12 @@ const strukaDisplayNames: { [key in Struka]: string } = {
     [Struka.Putevi]: "Putevi",
     [Struka.Betoniranje]: "Betoniranje",
     [Struka.Asfaltiranje]: "Asfaltiranje",
-    [Struka.Vutricionista]: "Vutricionista"
+    [Struka.Vutricionista]: "Vutricionista",
+    [Struka.Ograde]: "Ograde",
+    [Struka.Rusenje]: "Rusenje",
+    [Struka.PripremaTerena]: "Priprema Terena",
+    [Struka.Stubovi]: "Stubovi",
+    [Struka.Nivelacija]: "Nivelacija"
 };
 
 export const maxStrukeLength = 15;

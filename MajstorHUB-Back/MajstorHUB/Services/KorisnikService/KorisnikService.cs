@@ -27,7 +27,8 @@ public class KorisnikService : IKorisnikService
             Potroseno = x.Potroseno,
             Oglasi = x.OglasiId,
             Blocked = x.Blocked,
-            Private = x.Private
+            Private = x.Private,
+            Ocena = x.Ocena
         });
     }
 

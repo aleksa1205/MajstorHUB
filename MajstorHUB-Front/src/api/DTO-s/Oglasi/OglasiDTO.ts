@@ -57,7 +57,16 @@ export type GetOglasDTO = {
   lokacija?: string;
   datumKreiranja: Date;
   brojPrijava: number;
+  status: StatusOglasa;
+  ocena: number;
 };
+
+export enum StatusOglasa {
+  Otvoren,
+  Zapocet,
+  Zavrsen,
+  Privatan
+}
 
 export type OglasUpdateSelfDTO = CreateOglasDTO & {
   id: string;

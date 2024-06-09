@@ -152,14 +152,14 @@ public class PrijavaController : ControllerBase
             var oglas = await _oglasService.GetById(prijava.OglasId);
             if (oglas is null)
                 return NotFound("Oglas sa prosledjenim ID-em nije pronadjen");
-            if (!oglas.Active || oglas.Private)
+            if (oglas.Status != StatusOglasa.Otvoren)
                 return BadRequest("Posao je zatvoren za prijave");
 
             if (izvodjac.OglasiId.Contains(oglas.Id!))
                 return BadRequest("Imate pravo na samo jednu prijavu po poslu");
 
             // ogranici broj prijava na 30
-            if (oglas.PrijaveIds.Count == 3)
+            if (oglas.PrijaveIds.Count == 30)
                 return StatusCode(409, "Maksimalan broj prijava postignut, nemate pravo da se prijavite");
 
             var novaPrijava = new Prijava

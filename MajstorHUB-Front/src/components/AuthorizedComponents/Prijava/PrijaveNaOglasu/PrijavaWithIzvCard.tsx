@@ -1,7 +1,7 @@
 import { AiOutlineThunderbolt } from "react-icons/ai";
 import { PrijavaWithIzvodjacDTO } from "../../../../api/DTO-s/Prijave/PrijaveDTO"
 import { Matching, bidBoostedThreshold, checkMatchingScore } from "../../../../api/controllers/usePrijavaController";
-import { base64ToUrl, formatDate, formatDouble, formatDoubleWithWhite, getProfileUrl } from "../../../../lib/utils";
+import { base64ToUrl, formatDate, formatDateBefore, formatDouble, formatDoubleWithWhite, getProfileUrl } from "../../../../lib/utils";
 import classes from './PrijavaWithIzvCard.module.css';
 import UserType from "../../../../lib/UserType";
 import { LuHardHat } from "react-icons/lu";
@@ -15,14 +15,17 @@ import ShowMore from "../../../Theme/ShowMoreContainer/ShowMore";
 import { CiMail } from "react-icons/ci";
 import { BsTelephone } from "react-icons/bs";
 import { IzvodjacOnPrijava } from "./PrijaveWithIzv";
+import { Iskustvo } from "../../../../api/DTO-s/responseTypes";
+import { StatusOglasa } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
 
 type PropsValues = {
     prijava: PrijavaWithIzvodjacDTO;
     openModal: () => void;
     setIzvodjac: React.Dispatch<React.SetStateAction<IzvodjacOnPrijava | null>>;
+    oglasStatus: StatusOglasa;
 }
 
-export default function PrijavaWIthIzvCard({ prijava, openModal, setIzvodjac }: PropsValues) {
+export default function PrijavaWIthIzvCard({ prijava, openModal, setIzvodjac, oglasStatus }: PropsValues) {
 
     const [isSmallSize, setIsSmallSize] = useState<boolean>(window.innerWidth <= 800);
 
@@ -43,13 +46,13 @@ export default function PrijavaWIthIzvCard({ prijava, openModal, setIzvodjac }: 
                         <LeftSection prijava={prijava} />
                     </div>
                 )}
-                <AbsoluteButtons openModal={openModal} prijava={prijava} setIzvodjac={setIzvodjac} />
+                <AbsoluteButtons openModal={openModal} prijava={prijava} setIzvodjac={setIzvodjac} status={oglasStatus} />
                 <AbsoluteMatch prijava={prijava} />
                 <div>
                     <FirstRow prijava={prijava} isSmallSize={isSmallSize} />
                     <SecondRow prijava={prijava} />
                     <ThirdRow prijava={prijava} />
-                    <IskustvoRow prijava={prijava} />
+                    {/* <IskustvoRow prijava={prijava} /> */}
                     <OpisRow prijava={prijava} />
                     <MatchingStrukeRow prijava={prijava} />
                     <KontaktRow prijava={prijava} />
@@ -67,6 +70,7 @@ type RowProps = {
 type AbsoluteButtonsProps = RowProps & {
     openModal: () => void;
     setIzvodjac: React.Dispatch<React.SetStateAction<IzvodjacOnPrijava | null>>;
+    status: StatusOglasa;
 }
 
 function AbsoluteMatch({ prijava }: RowProps) {
@@ -85,7 +89,7 @@ function AbsoluteMatch({ prijava }: RowProps) {
     )
 }
 
-function AbsoluteButtons({ prijava, openModal, setIzvodjac }: AbsoluteButtonsProps) {
+function AbsoluteButtons({ prijava, openModal, setIzvodjac, status }: AbsoluteButtonsProps) {
     const { tipIzvodjaca, izvodjacId, naziv, ponuda, id } = prijava;
 
     function openForm() {
@@ -102,7 +106,9 @@ function AbsoluteButtons({ prijava, openModal, setIzvodjac }: AbsoluteButtonsPro
     return (
         <div className={classes.absoluteButtons}>
             <Link to={getProfileUrl(tipIzvodjaca, izvodjacId)} className="secondaryButtonSmall">Pogledaj Profil</Link>
-            <button onClick={openForm} className="mainButtonSmall">Zaposli</button>
+            {status === StatusOglasa.Otvoren && (
+                <button onClick={openForm} className="mainButtonSmall">Zaposli</button>
+            )}
         </div>
     )
 }
@@ -124,21 +130,25 @@ function LeftSection({ prijava }: RowProps) {
 }
 
 function FirstRow({ prijava, isSmallSize }: RowProps) {
-    const { naziv, bid, slika } = prijava
+    const { naziv, bid, slika, datumKreiranja } = prijava
     
     return (
         <div className={classes.firstRow}>
             {isSmallSize && (
                 <img src={base64ToUrl(slika)} alt="Profilna Slika" />
             )}
-            <div>
-                <h4>{naziv}</h4>
-                {bid > bidBoostedThreshold && (
-                    <span>
-                        <AiOutlineThunderbolt />
-                        Boosted 
-                    </span>
-                )}
+                <div>
+                    <p className={classes.small}>Prijavio se {formatDateBefore(datumKreiranja)}</p>
+                    
+                    <div className={classes.nazivBoostedContainer}>
+                        <h4>{naziv}</h4>
+                        {bid > bidBoostedThreshold && (
+                            <span>
+                                <AiOutlineThunderbolt />
+                                Boosted 
+                            </span>
+                        )}
+                </div>
             </div>
             {/* <div>
                 <button className="secondaryButtonSmall">Pogledaj Profil</button>
@@ -175,13 +185,14 @@ function SecondRow({ prijava }: RowProps) {
 }
 
 function ThirdRow({ prijava }: RowProps) {
-    const { ponuda, zaradjeno, cenaPoSatu } = prijava;
+    const { ponuda, zaradjeno, cenaPoSatu, iskustvo } = prijava;
 
     return (
         <div className={classes.thirdRow}>
             <p>Ponuda: {formatDoubleWithWhite(ponuda)} RSD</p>
             <p>{formatDouble(zaradjeno, 'zarađeno')}</p>
             <p>{formatDoubleWithWhite(cenaPoSatu)} RSD/sat</p>
+            <p>{Iskustvo[iskustvo]}</p>
         </div>
     )
 }
@@ -213,7 +224,7 @@ function MatchingStrukeRow({ prijava }: RowProps) {
         <>
             {matchingStruke.length !== 0 && (
                 <div className={classes.strukeRow}>
-                    <p>Veštine izvođača koje se poklapaju sa vašim oglasem:</p>
+                    <p>Veštine izvođača koje se poklapaju sa vašim oglasom:</p>
                     <Vestine struke={matchingStruke} />
                 </div>
             )}
@@ -242,11 +253,10 @@ function KontaktRow({ prijava }: RowProps) {
 }
 
 function LastRow({ prijava }: RowProps) {
-    const { bid, datumKreiranja } = prijava;
+    const { bid } = prijava;
 
     return (
         <div className={classes.lastRow}>
-            <p>Prajavio se: {formatDate(datumKreiranja)}</p>
             <p>Bid za poziciju: {bid} RSD</p>
         </div>
     )

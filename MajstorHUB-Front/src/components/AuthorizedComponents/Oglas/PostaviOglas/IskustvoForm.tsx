@@ -45,7 +45,7 @@ export default function IskustvoForm() {
               opis="Tražim nekog ko je relativno nov u ovoj oblasti"
             >
               <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.iskustvo ? `${classes.error}` : ""}
                 type="radio"
                 id="pocetnik"
                 value={Iskustvo.Pocetnik}
@@ -62,7 +62,7 @@ export default function IskustvoForm() {
               opis="Tražim nekog ko ima značajno iskustvo u ovoj oblasti"
             >
               <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.iskustvo ? `${classes.error}` : ""}
                 type="radio"
                 id="iskusan"
                 value={Iskustvo.Iskusan}
@@ -79,7 +79,7 @@ export default function IskustvoForm() {
               opis="Tražim nekog ko ima duboko znanje iz ove oblasti"
             >
               <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.iskustvo ? `${classes.error}` : ""}
                 type="radio"
                 id="profi"
                 value={Iskustvo.Profesionalac}
@@ -99,7 +99,7 @@ export default function IskustvoForm() {
           <DDSliderItem>
             <RadioButton htmlFor="manjeMesec" tekst="Manje od mesec dana">
             <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.duzinaPosla ? `${classes.error}` : ""}
                 type="radio"
                 id="manjeMesec"
                 value={DuzinaPosla.ManjeOdMesec}
@@ -112,7 +112,7 @@ export default function IskustvoForm() {
           <DDSliderItem>
             <RadioButton htmlFor="mesecTri" tekst="1 do 3 meseci">
             <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.duzinaPosla ? `${classes.error}` : ""}
                 type="radio"
                 id="mesecTri"
                 value={DuzinaPosla.JedanDoTriMeseca}
@@ -125,7 +125,7 @@ export default function IskustvoForm() {
           <DDSliderItem>
             <RadioButton htmlFor="triSest" tekst="3 do 6 meseci">
             <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.duzinaPosla ? `${classes.error}` : ""}
                 type="radio"
                 id="triSest"
                 value={DuzinaPosla.TriDoSestMeseci}
@@ -138,7 +138,7 @@ export default function IskustvoForm() {
           <DDSliderItem>
             <RadioButton htmlFor="viseSest" tekst="Više od 6 meseci">
             <input
-                className={errors.naslov ? `${classes.error}` : ""}
+                className={errors.duzinaPosla ? `${classes.error}` : ""}
                 type="radio"
                 id="viseSest"
                 value={DuzinaPosla.ViseOdSestMeseci}

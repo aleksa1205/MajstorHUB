@@ -2,13 +2,13 @@ import { createContext, useContext } from 'react';
 import { GetFirmaResponse, GetMajstorResponse, Iskustvo, Struka, getStrukaDisplayName, userDataType } from '../../../api/DTO-s/responseTypes';
 import classes from './UserCard.module.css'
 import { base64ToUrl, formatDouble, getProfileUrl } from '../../../lib/utils';
-import {  FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import UserType from '../../../lib/UserType';
 import { Link } from 'react-router-dom';
 import { IoLocationOutline } from 'react-icons/io5';
-import { GiRank1, GiRank2, GiRank3 } from "react-icons/gi";
 import { FaCircleInfo } from 'react-icons/fa6';
 import ShowIskustvo from '../../Theme/Users/Struke/ShowIskustvo';
+import { Rating } from '@mui/material';
 
 type PropsValues = {
     userData: userDataType;
@@ -82,10 +82,16 @@ function FirstRow() {
 function SecondRow() {
     const { userData } = useContext(CardContext)!;
 
-
-
     return (
         <div className={`${classes.secRow} ${classes.row}`}>
+            <Rating
+                name="ocena"
+                size="small"
+                precision={0.2}
+                value={userData.ocena}
+                readOnly={true}
+                sx={{ gap: '0', marginTop: '1rem', marginBottom: '1rem' }}
+            />
             {userData.userType === UserType.Korisnik && (
                 <p>{formatDouble(userData.potroseno, 'potrošeno')}</p>
             )}

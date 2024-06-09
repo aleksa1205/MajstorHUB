@@ -14,13 +14,16 @@ import useModalAnimation from "../../../../hooks/useModalAnimation";
 import UserType from "../../../../lib/UserType";
 import usePopUpAnimation from "../../../../hooks/usePopUpAnimation";
 import SuccessBoxAnimated from "../../../Theme/Boxes/SuccessBoxAnimated";
+import { StatusOglasa } from "../../../../api/DTO-s/Oglasi/OglasiDTO";
 
 type PropsValues = {
     oglasId: string;
     oglasOpis: string;
     prijave: PrijavaWithIzvodjacDTO[] | null;
     setPrijave: React.Dispatch<React.SetStateAction<PrijavaWithIzvodjacDTO[] | null>>;
-    oglasCena: number
+    oglasCena: number;
+    oglasNaslov: string;
+    oglasStatus: StatusOglasa
 }
 
 export type IzvodjacOnPrijava = {
@@ -32,7 +35,7 @@ export type IzvodjacOnPrijava = {
 }
 
 export default function PrijaveWithIzv(props: PropsValues) {
-    const { oglasId, setPrijave, prijave, oglasOpis, oglasCena } = props;
+    const { oglasId, setPrijave, prijave, oglasOpis, oglasCena, oglasNaslov, oglasStatus } = props;
 
     const [isFetching, setIsFetching] = useState<boolean>(prijave === null);
     const [notFound, setNotFound] = useState<boolean>(false)
@@ -104,7 +107,7 @@ export default function PrijaveWithIzv(props: PropsValues) {
 
             {transition((style, show) => {
                 return show ? (
-                    <ZapocniPosaoForm close={closeModal} style={style} izvodjac={izvodjac!} oglasId={oglasId} oglasOpis={oglasOpis} cenaOglasa={oglasCena} setSuccess={setSuccess} />
+                    <ZapocniPosaoForm close={closeModal} style={style} izvodjac={izvodjac!} oglasId={oglasId} oglasOpis={oglasOpis} oglasNaslov={oglasNaslov} cenaOglasa={oglasCena} setSuccess={setSuccess} />
                 ) : null;
             })}
 
@@ -125,7 +128,7 @@ export default function PrijaveWithIzv(props: PropsValues) {
                             <p>Broj Prijava: <span className={classes.bold}>{prijave?.length}</span></p>
                             {prijave?.map(prijava => {
                                 return (
-                                    <PrijavaWIthIzvCard key={prijava.id} prijava={prijava} openModal={openModal} setIzvodjac={setIzvodjac} />
+                                    <PrijavaWIthIzvCard key={prijava.id} prijava={prijava} openModal={openModal} setIzvodjac={setIzvodjac} oglasStatus={oglasStatus} />
                                 )
                             })}                
                         </>

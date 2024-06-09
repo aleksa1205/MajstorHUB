@@ -7,15 +7,20 @@ import { useEffect } from "react";
 type PropsVales = {
     children : React.ReactNode;
     style: any;
-    closeMessage: () => void
+    closeMessage: () => void;
+    dontClose?: boolean;
 }
 
-function SuccessBoxAnimated({ children, style, closeMessage } : PropsVales) {
+function SuccessBoxAnimated({ children, style, closeMessage, dontClose = false } : PropsVales) {
     
     useEffect(() => {
+        if (dontClose) return;
+
         const id = setTimeout(closeMessage, 5000);
 
-        return () => clearTimeout(id);
+        return () => {
+            clearTimeout(id);
+        }
     }, [])
 
     return (

@@ -41,7 +41,7 @@ export default function EditIskustvoVreme() {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
-            <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
+            <div style={{overflowY: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
             <DropDownSlider
           text="Koji nivo iskustva posao zahteva?"
           isOpen={true}

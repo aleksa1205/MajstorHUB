@@ -11,6 +11,7 @@ import formCl from "../../FormStyles/Form.module.css";
 import ModalAnimated from "../../Theme/Modal/ModalAnimated";
 import { CiMoneyBill } from "react-icons/ci";
 import { MdErrorOutline } from "react-icons/md";
+import { formatDoubleWithWhite } from "../../../lib/utils";
 
 type FormValues = {
   value: number;
@@ -40,7 +41,7 @@ export default function IsplatiNovac({ currAmount, refetch, setSuccMessage }: Pr
     async function onSend() {
       try {
         await withdraw(amount);
-        setSuccMessage(`Uspešno isplaćeno ${amount} dinara`);
+        setSuccMessage(`Uspešno isplaćeno ${formatDoubleWithWhite(amount)} dinara`);
         window.scrollTo(0, 0);
         closeModal();
         refetch();
@@ -68,10 +69,10 @@ export default function IsplatiNovac({ currAmount, refetch, setSuccMessage }: Pr
                 <div className={classes.confirm}>
                   <h3>Potvrda</h3>
                   <p>Da li ste sigurni da želite da podignete 
-                    <span className={classes.bold}> {Math.round(amount)} dinara</span>
+                    <span className={classes.bold}> {formatDoubleWithWhite(amount)} dinara</span>
                   </p>
                   <p>Tada će vaše novo stanje biti
-                    <span className={classes.bold}> {Math.round(currAmount - amount)} dinara</span>
+                    <span className={classes.bold}> {formatDoubleWithWhite(currAmount - amount)} dinara</span>
                   </p>
                   <div className={formCl.btnContainer}>
                     <button type="button" onClick={onSend} className="mainButtonSmall">Potvrdi</button>
@@ -136,8 +137,8 @@ export default function IsplatiNovac({ currAmount, refetch, setSuccMessage }: Pr
           </p>
           <p className={classes.gray}>
             {isValid
-              ? `${Math.round(currAmount - amount)} dinara`
-              : `${Math.round(currAmount)} dinara`}
+              ? `${formatDoubleWithWhite(currAmount - amount)} dinara`
+              : `${formatDoubleWithWhite(currAmount)} dinara`}
           </p>
   
           <div className={formCl.btnContainer}>

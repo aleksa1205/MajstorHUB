@@ -38,5 +38,10 @@ public enum Struka
     Putevi,
     Betoniranje,
     Asfaltiranje,
-    Vutricionista
+    Vutricionista,
+    Ograde,
+    Rusenje,
+    PripremaTerena,
+    Stubovi,
+    Nivelacija,
 }

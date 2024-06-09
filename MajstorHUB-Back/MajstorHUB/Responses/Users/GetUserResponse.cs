@@ -11,4 +11,5 @@ public class GetUserResponse
     public double NovacNaSajtu { get; set; }
     public string? Opis { get; set; }
     public required List<string> Oglasi { get; set; }
+    public required double Ocena { get; set; }
 }

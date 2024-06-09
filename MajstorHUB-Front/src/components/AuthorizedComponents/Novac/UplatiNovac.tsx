@@ -11,6 +11,7 @@ import formCl from "../../FormStyles/Form.module.css";
 import ModalAnimated from "../../Theme/Modal/ModalAnimated";
 import { CiMoneyBill } from "react-icons/ci";
 import { MdErrorOutline } from "react-icons/md";
+import { formatDoubleWithWhite } from "../../../lib/utils";
 
 type FormValues = {
   value: number;
@@ -40,7 +41,7 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
   async function onSend() {
     try {
       await deposit(amount);
-      setSuccMessage(`Uspešno uplaćeno ${amount} dinara`);
+      setSuccMessage(`Uspešno uplaćeno ${formatDoubleWithWhite(amount)} dinara`);
       window.scrollTo(0, 0);
       closeModal();
       refetch();
@@ -70,14 +71,14 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
                   Da li ste sigurni da želite da uplatite
                   <span className={classes.bold}>
                     {" "}
-                    {Math.round(amount)} dinara
+                    {formatDoubleWithWhite(amount)} dinara
                   </span>
                 </p>
                 <p>
                   Tada će vaše novo stanje biti
                   <span className={classes.bold}>
                     {" "}
-                    {Math.round(currAmount + amount)} dinara
+                    {formatDoubleWithWhite(currAmount + amount)} dinara
                   </span>
                 </p>
                 <div className={formCl.btnContainer}>
@@ -142,7 +143,7 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
           <span className={classes.bold}>Biće vam naplaćeno</span>
         </p>
         <p className={classes.gray}>
-          {isValid ? `${Math.round(amount)} dinara + Taksa` : "0 dinara"}
+          {isValid ? `${formatDoubleWithWhite(amount)} dinara + Taksa` : "0 dinara"}
         </p>
 
         <p>
@@ -150,8 +151,8 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
         </p>
         <p className={classes.gray}>
           {isValid
-            ? `${Math.round(amount + currAmount)} dinara`
-            : `${Math.round(currAmount)} dinara`}
+            ? `${formatDoubleWithWhite(amount + currAmount)} dinara`
+            : `${formatDoubleWithWhite(currAmount)} dinara`}
         </p>
 
         <div className={formCl.btnContainer}>

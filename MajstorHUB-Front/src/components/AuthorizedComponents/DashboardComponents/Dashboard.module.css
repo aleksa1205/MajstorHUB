@@ -1,4 +1,9 @@
-.firstBlock {
+.firstBlock > div:first-child,
+.actions {
+    padding-inline: 20px !important;
+}
+
+.firstBlock > div:first-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -19,10 +24,15 @@
     flex-shrink: 0;
 }
 
-.main {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+.poslovi h3 {
+    margin: 0;
+}
+.poslovi {
+    padding: 2rem 0;
+}
+
+.actions {
+    max-width: 900px;
 }
 
 .sectionCard {

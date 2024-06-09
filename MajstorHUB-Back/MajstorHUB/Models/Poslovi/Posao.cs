@@ -37,6 +37,7 @@ public class Posao
 public class DetaljiPosla
 {
     public required double Cena { get; set; }
+    public required string Naslov { get; set; }
     public required string Opis { get; set; }
 }
 

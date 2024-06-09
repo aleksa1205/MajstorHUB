@@ -8,6 +8,7 @@ import { Iskustvo, Struka, getStrukaDisplayName } from '../../../../api/DTO-s/re
 import { FaCircleInfo } from 'react-icons/fa6';
 import useAuth from '../../../../hooks/useAuth';
 import UserType from '../../../../lib/UserType';
+import { Rating } from '@mui/material';
 
 type PropsValues = {
     oglasData: GetOglasDTO;
@@ -71,9 +72,17 @@ function FirstRow() {
 }
 
 function SecondRow() {
-    const { oglasData: { lokacija, ime, prezime, potroseno } } = useContext(CardContext)!;
+    const { oglasData: { lokacija, ime, prezime, potroseno, ocena } } = useContext(CardContext)!;
     return (
         <div className={`${classes.secRow} ${classes.row}`}>
+            <Rating
+                name="ocena"
+                size="small"
+                precision={0.2}
+                value={ocena}
+                readOnly={true}
+                sx={{ gap: '0'}}
+            />
             <p>{ime} {prezime}</p>
             <p>{formatDouble(potroseno, 'potrošeno')}</p>
             {lokacija && (

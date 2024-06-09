@@ -22,7 +22,7 @@ export default function CenaForm() {
                 <label className={classes.labelBold} htmlFor="cena">Koja je vaša procena cene ovog posla?</label>
                 <p>Možete za cenu da se dogovarate sa izvođačem radova kasnije prilikom sklapanja posla.</p>
                 <input
-                    className={errors.naslov ? `${classes.error}` : ""}
+                    className={errors.cena ? `${classes.error}` : ""}
                     type="text"
                     id="cena"
                     placeholder='5000'

@@ -14,8 +14,16 @@
   /* top: 2rem; */
   left: 50%;
   /* transform: translate(-50%, -50%); */
-  z-index: 999;
+  z-index: 9990;
   padding-right: 3.2rem;
+}
+
+.infoBox svg,
+.warrningBox svg,
+.errorBox svg,
+.succBox svg {
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .close {
