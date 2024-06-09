@@ -47,6 +47,10 @@
     background-color: var(--color-main-25);
     border-color: var(--color-main-500);
 }
+.sectionCard svg {
+    flex-shrink: 0;
+    flex-grow: 0;
+}
 .sectionCard h3 {
     margin: 0;
 }

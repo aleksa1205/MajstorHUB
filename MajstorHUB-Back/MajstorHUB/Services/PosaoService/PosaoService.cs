@@ -229,7 +229,9 @@ public class PosaoService : IPosaoService
         else
             throw new NotSupportedException("Prosledjen tip korisnika nije podrzan");
 
-        return await _poslovi.Find(filter).Project(_getZavrseniProjection).ToListAsync();
+        var sort = Builders<Posao>.Sort.Descending(p => p.ZavrsetakRadova);
+
+        return await _poslovi.Find(filter).Sort(sort).Project(_getZavrseniProjection).ToListAsync();
     }
 
     public async Task Create(Posao posao)

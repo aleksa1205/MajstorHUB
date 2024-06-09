@@ -211,11 +211,14 @@ public class MajstorController : ControllerBase
             var token = new JwtProvider(_configuration).Generate(majstor);
 
             Roles role = Roles.Nedefinisano;
+            AdminRoles admin = AdminRoles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
                     role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+                if (claim.Type == "Admin")
+                    admin = (AdminRoles)Enum.Parse(typeof(AdminRoles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -234,7 +237,8 @@ public class MajstorController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 RefreshToken = refresh,
-                Role = role
+                Role = role,
+                Admin = admin
             });
         }
         catch (Exception e)
@@ -284,11 +288,14 @@ public class MajstorController : ControllerBase
             var token = jwtProvider.Generate(majstor);
 
             Roles role = Roles.Nedefinisano;
+            AdminRoles admin = AdminRoles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
                     role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+                if (claim.Type == "Admin")
+                    admin = (AdminRoles)Enum.Parse(typeof(AdminRoles), claim.Value);
             }
 
             var newRefreshToken = new RefreshToken
@@ -306,7 +313,9 @@ public class MajstorController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = newRefreshToken,
                 Expiration = token.ValidTo,
-                Role = role
+                Role = role,
+                Admin = admin,
+                UserId = majstor.Id!
             });
         }
         catch (Exception e)

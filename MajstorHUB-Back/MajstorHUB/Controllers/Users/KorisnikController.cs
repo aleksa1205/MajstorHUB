@@ -210,11 +210,14 @@ public class KorisnikController : ControllerBase
             var token = new JwtProvider(_configuration).Generate(korisnik);
 
             Roles role = Roles.Nedefinisano;
+            AdminRoles admin = AdminRoles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
                     role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+                if (claim.Type == "Admin")
+                    admin = (AdminRoles)Enum.Parse(typeof(AdminRoles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -233,7 +236,8 @@ public class KorisnikController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo,
                 RefreshToken = refresh,
-                Role = role
+                Role = role,
+                Admin = admin
             });
         }
         catch (Exception e)
@@ -285,11 +289,14 @@ public class KorisnikController : ControllerBase
             var token = new JwtProvider(_configuration).Generate(korisnik);
 
             Roles role = Roles.Nedefinisano;
+            AdminRoles admin = AdminRoles.Nedefinisano;
 
             foreach (var claim in token.Claims)
             {
                 if (claim.Type == "Role")
                     role = (Roles)Enum.Parse(typeof(Roles), claim.Value);
+                if (claim.Type == "Admin")
+                    admin = (AdminRoles)Enum.Parse(typeof(AdminRoles), claim.Value);
             }
 
             var refresh = new RefreshToken
@@ -307,7 +314,9 @@ public class KorisnikController : ControllerBase
                 JwtToken = new JwtSecurityTokenHandler().WriteToken(token),
                 RefreshToken = refresh,
                 Expiration = token.ValidTo,
-                Role = role
+                Role = role,
+                Admin = admin,
+                UserId = korisnik.Id!
             });
         }
         catch (Exception e)

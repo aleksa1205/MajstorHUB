@@ -9,10 +9,14 @@ import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Theme/Loaders/DottedLoader';
 import logo from '../../../../pictures/Logo/LogoTransparent2.png';
 import useNavSidebarAnim from '../../../hooks/useNavSidebarAnim';
+import useAuth from '../../../hooks/useAuth';
+import { AdminRoles } from '../../../context/AuthProvider';
 
 function AuthNavBar() {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
+
+    const { auth: { admin}} = useAuth();
 
     const { transition, hideSidebar, toggleSidebar,  showSidebar } = useNavSidebarAnim();
     const { pictureUrl, isFetching } = useCurrUser();
@@ -58,6 +62,9 @@ function AuthNavBar() {
                     <img className={classes.logo} src={logo} alt="MajstorHUB" />
                 </Link>
                 <div className={classes.optionsContainer}>
+                    {admin !== AdminRoles.Nedefinisano && (
+                        <Link to='/admin-dashboard' onClick={hideSidebar} className='link'>Admin Dashboard</Link>
+                    )}
                     <Link to='/dashboard' onClick={hideSidebar} className='link'>Dashboard</Link>
                     <Link to='/klijenti' onClick={hideSidebar} className='link'>Pretraži Klijente</Link>
                     <Link to='/majstori' onClick={hideSidebar} className='link'>Pretraži Majstore</Link>

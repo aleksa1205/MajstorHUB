@@ -65,7 +65,7 @@ export default function ZavrseniPoslovi({  userType, openPopUp }: PropsValues) {
         return () => controller.abort();
     }, []);
 
-    useEffect(() => console.log(poslovi), [poslovi]);
+    // useEffect(() => console.log(poslovi), [poslovi]);
 
     return (
         <>
@@ -81,7 +81,7 @@ export default function ZavrseniPoslovi({  userType, openPopUp }: PropsValues) {
                 <>
                     {poslovi?.map(el => {
                         return (
-                            <ZavrsenCard key={el.detaljiPosla.naslov} posao={el} openPopUp={openPopUp} />
+                            <ZavrsenCard key={el.detaljiPosla.naslov} posao={el} openPopUp={openPopUp} userType={userType} />
                         )
                     })}
                 </>
