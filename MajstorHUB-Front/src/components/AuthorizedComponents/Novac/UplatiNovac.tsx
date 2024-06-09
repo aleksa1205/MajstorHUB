@@ -122,8 +122,8 @@ export default function UplatiNovac({ currAmount, refetch, setSuccMessage }: Pro
                 let msg: string = "";
                 let valid = false;
 
-                if (fieldValue < 500 || fieldValue > 200000)
-                  msg = "Iznos mora da bude između 500 i 200 000 dinara";
+                if (fieldValue < 2000 || fieldValue > 100000000)
+                  msg = "Iznos mora da bude između 2000 i 100 000 000 dinara";
                 else if (Number.isNaN(fieldValue))
                   msg = "Dozvoljeni su samo brojevi";
                 else valid = true;

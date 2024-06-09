@@ -70,9 +70,9 @@ export function formatDouble(broj : number, append : string) : string {
     if(broj === 0)
         msg = '0 RSD';
     else if(broj > 1000)
-        msg = `${Math.floor(broj / 1000)}K+ din`;
+        msg = `${Math.floor(broj / 1000)}K+ RSD`;
     else
-        msg = `${Math.floor((broj / 100)) * 100}+ din`
+        msg = `${Math.floor((broj / 100)) * 100}+ RSD`
     
     return msg + ' ' + append;
 }
@@ -182,7 +182,7 @@ export function formatDate(date : Date) : string {
     const monthString: string = month < 10 ? '0' + month : month.toString();
 
     // Format the date as dd.mm.yyyy
-    const formattedDate: string = `${dayString}.${monthString}.${year}`;
+    const formattedDate: string = `${dayString}.${monthString}.${year}.`;
 
     return formattedDate;
 }

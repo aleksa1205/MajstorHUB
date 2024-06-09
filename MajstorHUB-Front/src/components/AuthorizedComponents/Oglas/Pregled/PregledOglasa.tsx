@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import EditOglasMain, { EditOglasFormType } from '../IzmeniOglas/EditOglasMain';
 import { useState } from 'react';
 import useModalAnimation from '../../../../hooks/useModalAnimation';
+import { formatDoubleWithWhite } from '../../../../lib/utils';
 
 type PropsValues = {
     oglasData: CreateOglasDTO;
@@ -190,7 +191,7 @@ export default function PregledOglasa({ oglasData, preview, prev, setOglas, upda
                         <EditButton onClick={() => openOption(EditOglasFormType.Budzet)} />
                     </div>
                     <div>
-                        {oglasData.cena} dinara
+                        {formatDoubleWithWhite(oglasData.cena)} dinara
                     </div>
                 </section>
 

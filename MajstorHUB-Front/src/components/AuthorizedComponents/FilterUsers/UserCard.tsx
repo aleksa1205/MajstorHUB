@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { IoLocationOutline } from 'react-icons/io5';
 import { GiRank1, GiRank2, GiRank3 } from "react-icons/gi";
 import { FaCircleInfo } from 'react-icons/fa6';
+import ShowIskustvo from '../../Theme/Users/Struke/ShowIskustvo';
 
 type PropsValues = {
     userData: userDataType;
@@ -105,23 +106,10 @@ function SecondRow() {
 function IskustvoRow() {
     const { userData } = useContext(CardContext)!;
 
-    let icon;
-    if(userData.userType !== UserType.Korisnik) {
-        if(userData.iskustvo === Iskustvo.Nedefinisano)
-            icon = <></>;
-        else if(userData.iskustvo === Iskustvo.Pocetnik)
-            icon = <GiRank1 size='1.5rem' />
-        else if(userData.iskustvo === Iskustvo.Iskusan)
-            icon = <GiRank2 size='1.5rem' />
-        else
-            icon = <GiRank3 size='1.5rem' />
-    }
-
     if (userData.userType !== UserType.Korisnik && userData.iskustvo !== Iskustvo.Nedefinisano) {
         return (
             <div className={`${classes.iskustvoRow} ${classes.row}`}>
-                {icon}
-                <p>{Iskustvo[userData.iskustvo]}</p>
+                <ShowIskustvo iskustvo={userData.iskustvo} userType={userData.userType} />
             </div>
         )
     }

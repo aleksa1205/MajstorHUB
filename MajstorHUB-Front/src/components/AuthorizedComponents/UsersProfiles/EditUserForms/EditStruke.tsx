@@ -77,7 +77,7 @@ function EditStruke({ close, updateUser, userData }: PropsValues) {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
-            <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
+            <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
             <p>Izaberite struku iz liste ponuđenih struka. Ovo polje vam pomaže da bi vas klijenti lakše pronašli prilikom pretraživanja.</p>
             <p>Ukoliko ne možete da pronađete vašu struku kontaktirajte nas da bi smo je dodali</p>
             

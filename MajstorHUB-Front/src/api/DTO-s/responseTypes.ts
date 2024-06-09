@@ -7,8 +7,9 @@ type GetUserResponse = {
     adresa?: string;
     brojTelefona?: string;
     datumKreiranjaNaloga: Date;
-    novacNaSajtu : number;
-    opis : string;
+    novacNaSajtu: number;
+    opis: string;
+    oglasi: string[]
 }
 
 export type GetKorisnikResponse  = GetUserResponse & {
@@ -53,7 +54,11 @@ export enum Struka {
     Staklorezac,
     Stolar,
     Vodoinstalater,
-    Zidar
+    Zidar,
+    Putevi,
+    Betoniranje,
+    Asfaltiranje,
+    Vutricionista
 }
 
 const strukaDisplayNames: { [key in Struka]: string } = {
@@ -89,7 +94,11 @@ const strukaDisplayNames: { [key in Struka]: string } = {
     [Struka.Staklorezac]: "Staklorezac",
     [Struka.Stolar]: "Stolar",
     [Struka.Vodoinstalater]: "Vodoinstalater",
-    [Struka.Zidar]: "Zidar"
+    [Struka.Zidar]: "Zidar",
+    [Struka.Putevi]: "Putevi",
+    [Struka.Betoniranje]: "Betoniranje",
+    [Struka.Asfaltiranje]: "Asfaltiranje",
+    [Struka.Vutricionista]: "Vutricionista"
 };
 
 export const maxStrukeLength = 15;
@@ -108,7 +117,7 @@ export enum Iskustvo {
 }
 
 export type GetMajstorResponse = GetUserResponse & {
-    jmbg?: string;
+    jmbg: string;
     ime?: string;
     prezime?: string;
     datumRodjenja?: Date;

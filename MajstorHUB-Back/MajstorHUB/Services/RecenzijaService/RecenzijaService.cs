@@ -2,42 +2,42 @@
 
 public class RecenzijaService : IRecenzijaService
 {
-    private readonly IMongoCollection<Recenzija> _recenzije;
+    private readonly IMongoCollection<RecenzijaOld> _recenzije;
 
     public RecenzijaService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient)
     {
         var db = mongoClient.GetDatabase(settings.DatabaseName);
-        _recenzije = db.GetCollection<Recenzija>(settings.RecenzijeCollectionName);
+        _recenzije = db.GetCollection<RecenzijaOld>(settings.RecenzijeCollectionName);
     }
 
-    public async Task<List<Recenzija>> GetAll()
+    public async Task<List<RecenzijaOld>> GetAll()
     {
         return await _recenzije.Find(recenzija => true).ToListAsync();
     }
 
-    public async Task<Recenzija> GetById(string id)
+    public async Task<RecenzijaOld> GetById(string id)
     {
         return await _recenzije.Find(recenzija => recenzija.Id == id).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Recenzija>> GetByRecenzent(string recenzent)
+    public async Task<List<RecenzijaOld>> GetByRecenzent(string recenzent)
     {
         return await _recenzije.Find(recenzija => recenzija.Recenzent == recenzent).ToListAsync();
     }
-    public async Task<List<Recenzija>> GetByRecenzirani(string recenzirani)
+    public async Task<List<RecenzijaOld>> GetByRecenzirani(string recenzirani)
     {
         return await _recenzije.Find(recenzija => recenzija.Recenzirani == recenzirani).ToListAsync();
     }
 
-    public async Task Create(Recenzija recenzija)
+    public async Task Create(RecenzijaOld recenzija)
     {
         await _recenzije.InsertOneAsync(recenzija);
     }
 
-    public async Task Update(string id, Recenzija recenzija)
+    public async Task Update(string id, RecenzijaOld recenzija)
     {
-        var filter = Builders<Recenzija>.Filter.Eq(recenzija => recenzija.Id, id);
-        var update = Builders<Recenzija>.Update
+        var filter = Builders<RecenzijaOld>.Filter.Eq(recenzija => recenzija.Id, id);
+        var update = Builders<RecenzijaOld>.Update
                     .Set("ocena", recenzija.Ocena)
                     .Set("opis", recenzija.Opis);
         await _recenzije.UpdateOneAsync(filter, update);

@@ -74,7 +74,7 @@ export default function EditVestine() {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
-            <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
+            <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
             <p>Koje su glavne veštine potrebne za vaš posao?</p>
             
             <label htmlFor="struka">Struke</label>

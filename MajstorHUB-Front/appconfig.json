@@ -1,0 +1,9 @@
+{
+    "storeSessionInLocalStorage": true,
+    "logTestUser": false,
+    "testUserLoginInfo": {
+        "email": "milosmilosevic@gmail.com",
+        "password": "sifra123",
+        "type": 0
+    }
+}

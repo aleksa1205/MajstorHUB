@@ -7,6 +7,7 @@ import LoginPasswordForm from "../../components/AuthComponents/LoginComponents/L
 import { Navigate, redirect } from 'react-router-dom';
 import { isLoggedIn } from '../../lib/utils';
 import useAuth from '../../hooks/useAuth';
+import usePopUpMessage from '../../hooks/usePopUpMessage';
 
 export function loader({ request } : any) {
     // Proveriti da li je korisnik logovan, ako jeste ne rendereuj ovu komponentu
@@ -22,16 +23,21 @@ function Login() {
     const [email, setEmail] = useState('');
     const { auth } = useAuth();
     const isLoggedIn = auth.userId !== '';
+    
+    const { PopUpComponent, setPopUpMessage } = usePopUpMessage();
 
     if(isLoggedIn)
         return <Navigate to='/dashboard' replace />
     else
         return (
-            <main className={`container ${classes.main}`}>
-                {userTypesFound.length == 0 && <LoginEmailForm setUserTypesFound={setUserTypesFound} setEmail={setEmail} />}
-                {userTypesFound.length > 1 && <LoginSelectUser setUserTypesFound={setUserTypesFound} userTypesFound={userTypesFound} />}
-                {userTypesFound.length === 1 && <LoginPasswordForm email={email} userType={userTypesFound[0]} reset={setUserTypesFound} />}
-            </main>
+            <>
+                <PopUpComponent />
+                <main className={`container ${classes.main}`}>
+                    {userTypesFound.length == 0 && <LoginEmailForm setUserTypesFound={setUserTypesFound} setEmail={setEmail} setPopUpMessage={setPopUpMessage} />}
+                    {userTypesFound.length > 1 && <LoginSelectUser setUserTypesFound={setUserTypesFound} userTypesFound={userTypesFound} />}
+                    {userTypesFound.length === 1 && <LoginPasswordForm email={email} userType={userTypesFound[0]} reset={setUserTypesFound} setPopUpMessage={setPopUpMessage} />}
+                </main>
+            </>
         )
 }
 

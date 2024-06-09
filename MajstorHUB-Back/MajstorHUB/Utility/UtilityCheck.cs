@@ -63,6 +63,19 @@ public class UtilityCheck
         return role;
     }
 
+    public static string GetEmail(HttpContext context)
+    {
+        string email = "";
+
+        foreach (var claim in context.User.Claims)
+        {
+            if (claim.Type == JwtRegisteredClaimNames.Email)
+                email = claim.Value;
+        }
+
+        return email;
+    }
+
     public static bool IsValidJmbg(string jmbg)
     {
         return jmbg.Length == 13 && jmbg.All(Char.IsNumber);
@@ -93,6 +106,71 @@ public class UtilityCheck
     public static bool IsValidStruke(List<Struka> struke)
     {
         return struke.Count <= 15;
+    }
+
+    public static bool CheckPonudaThreshold(double cena, double ponuda)
+    {
+        double lowerThreshold = cena * 0.85;
+        double upperThreshold = cena * 1.15;
+        return ponuda >= lowerThreshold && ponuda <= upperThreshold;
+    }
+
+    public static double CalculateStrukeScore(List<Struka> oglasStruke, List<Struka> firmaStruke, out List<Struka> matchingStruke)
+    {
+        int matchCount = 0;
+        matchingStruke = [];
+        foreach(var struka in oglasStruke)
+        {
+            if(firmaStruke.Contains(struka))
+            {
+                matchCount++;
+                matchingStruke.Add(struka);
+            }
+        }
+        //int matchCount = oglasStruke.Count(firmaStruke.Contains);
+        return (double)matchCount / oglasStruke.Count * 100;
+    }
+
+    public static int CalculateMatchingScore(Oglas oglas, User user, double ponuda, Roles userType, out List<Struka> matchingStruke)
+    {
+        double score = 0;
+        const double ponudaWeight = 0.33;
+        const double strukeWeight = 0.34;
+        const double iskustvoWeight = 0.33;
+
+        matchingStruke = [];
+        if (userType == Roles.Firma)
+        {
+            var firma = user as Firma;
+            if (firma is not null)
+            {
+                score += (oglas.Iskustvo == firma.Iskustvo ? 100 : 0) * iskustvoWeight;
+                score += CalculateStrukeScore(oglas.Struke, firma.Struke, out matchingStruke) * strukeWeight;
+                score += (CheckPonudaThreshold(oglas.Cena, ponuda) ? 100 : 0) * ponudaWeight;
+            }
+            else
+                throw new Exception("Greska pri kastovanju user-a u firmu");
+        }
+        else if (userType == Roles.Majstor)
+        {
+            var majstor = user as Majstor;
+            if (majstor is not null)
+            {
+                score += (oglas.Iskustvo == majstor.Iskustvo ? 100 : 0) * iskustvoWeight;
+                if(oglas.Struke.Contains(majstor.Struka))
+                {
+                    score += 100 * strukeWeight;
+                    matchingStruke.Add(majstor.Struka);
+                }
+                score += (CheckPonudaThreshold(oglas.Cena, ponuda) ? 100 : 0) * ponudaWeight;
+            }
+            else
+                throw new Exception("Greska pri kastovanju user-a u majstora");
+        }
+        else
+            throw new NotSupportedException("Tip user-a mora da bude majstor ili firma");
+
+        return (int)Math.Round(score);
     }
 
     // NE KORISTI SE OVA FUNKCIJA, jer ako se unosi korisnik FromBody automatski se proverava kao sto stoji u models

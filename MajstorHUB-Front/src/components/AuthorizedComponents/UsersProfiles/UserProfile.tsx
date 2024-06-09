@@ -16,6 +16,8 @@ import { userDataUpdateType } from "../../../api/DTO-s/updateSelfTypes";
 import { getUpdateUserFromUserData } from "../../../lib/utils";
 import ProfileData from "./ProfileData";
 import NotFoundImageUrl from '../../../../pictures/not-found.png';
+import { ForbiddenError } from "../../../api/controllers/useOglasController";
+import PrivateAccountUrl from "../../../../pictures/private_account.png";
 
 type PropsValues = {
   typeFromUrl: UserType;
@@ -33,11 +35,11 @@ function UserProfile({ typeFromUrl }: PropsValues) {
   const currUserData = useCurrUser();
   const [success, setSuccess] = useState<boolean>(false);
   const [userData, setUserData] = useState<userDataType | null>(null);
-  const [userDataUpdate, setUserDataUpdate] =
-    useState<userDataUpdateType | null>(null);
+  const [userDataUpdate, setUserDataUpdate] = useState<userDataUpdateType | null>(null);
   const [isFetching, setIsFetching] = useState(false);
   const [notFound, setNotFound] = useState(id?.length !== 24);
   const [isCurrUser, setIsCurrUser] = useState<boolean>(id === auth.userId);
+  const [forbidden, setForbidden] = useState<boolean>(false);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -62,6 +64,9 @@ function UserProfile({ typeFromUrl }: PropsValues) {
               console.log("GetById zahtev canceled");
             } else if (error instanceof SessionEndedError) {
               logoutUser();
+              setIsFetching(false);
+            } else if (error instanceof ForbiddenError) {
+              setForbidden(true);
               setIsFetching(false);
             } else {
               setIsFetching(false);
@@ -99,13 +104,20 @@ function UserProfile({ typeFromUrl }: PropsValues) {
         <div className='container'>
             <div className={`${classes.center}`}>
             <img src={NotFoundImageUrl} alt="Not Found" />
-            <h1>Nismo pronašli user-a kog tražite :(</h1>
+            <h1>Nismo pronašli nalog koji tražite :(</h1>
             </div>
         </div>
       ) : isFetching ? (
         <div className='container'>
             <div className={`${classes.center}`}>
                 <Hamster />
+            </div>
+        </div>
+      ) : forbidden ? (
+        <div className='container'>
+            <div className={`${classes.center}`}>
+                <img src={PrivateAccountUrl} alt="Private Account" />
+                <h1>Ovaj nalog je privatan</h1>
             </div>
         </div>
       ) : (

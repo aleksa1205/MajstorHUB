@@ -56,6 +56,7 @@ export type GetOglasDTO = {
   duzinaPosla: DuzinaPosla;
   lokacija?: string;
   datumKreiranja: Date;
+  brojPrijava: number;
 };
 
 export type OglasUpdateSelfDTO = CreateOglasDTO & {

@@ -1,0 +1,18 @@
+.text {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    display: block;
+    
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5; 
+    max-height: 6em; 
+    transition: max-height 0.5s ease; 
+}
+
+
+
+.main button {
+    margin-top: 1rem;
+    padding: 0;
+}

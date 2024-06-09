@@ -1,6 +1,7 @@
 import UserType, { userToPath } from "../../lib/UserType";
 import { isAxiosError } from "axios";
 import axios from "../axios";
+import { ForbiddenError } from "./useOglasController";
 
 export type RefreshToken = {
     tokenValue : string;
@@ -31,6 +32,13 @@ type RegiserKorisnikDto = {
     Email : string,
     Sifra : string
   }
+
+export class WrongPasswordError extends Error {
+    constructor(message?: string) {
+        super(message || 'Wrong Password');
+        this.name = 'WrongPassword'
+    }
+}
 
 function useUserController() {
     const UserController = {
@@ -88,7 +96,7 @@ function useUserController() {
             }
         },
 
-        login: async function (type : UserType, email : string, password : string) : Promise<LoginResponse | false> {
+        login: async function (type : UserType, email : string, password : string) : Promise<LoginResponse> {
             const dataToSend = {Email: email, Password: password};
             
             try {
@@ -108,7 +116,9 @@ function useUserController() {
                     console.log(error.response.status);
                     switch(error.response.status) {
                         case 401:
-                            return false;
+                            throw new WrongPasswordError();
+                        case 403:
+                            throw new ForbiddenError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

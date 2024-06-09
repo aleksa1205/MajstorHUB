@@ -1,4 +1,6 @@
-﻿namespace MajstorHUB.Controllers.Poslovi;
+﻿using static MajstorHUB.Services.OglasService.OglasService;
+
+namespace MajstorHUB.Controllers.Poslovi;
 
 [ApiController]
 [Route("[controller]")]
@@ -56,6 +58,7 @@ public class OglasController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetByIdDto(string id)
     {
         try
@@ -64,6 +67,10 @@ public class OglasController : ControllerBase
             if (oglas == null)
                 return NotFound($"Oglas sa ID-em {id} ne postoji!\n");
             return Ok(oglas);
+        }
+        catch (PrivateOrInactiveOglasException)
+        {
+            return Forbid();
         }
         catch (Exception ex)
         {
@@ -140,8 +147,8 @@ public class OglasController : ControllerBase
             if (oglasDto.Struke.Count == 0)
                 return BadRequest("Lista struka ne moze da bude prazna");
 
-            if (oglasDto.Cena < 1000 || oglasDto.Cena > 1000000)
-                return BadRequest("Cena oglasa mora da bude izmedju 1000 i 1000000 dinara");
+            if (oglasDto.Cena < 1000 || oglasDto.Cena > 100000000)
+                return BadRequest("Cena oglasa mora da bude izmedju 1000 i 100000000 dinara");
 
             var oglas = new Oglas
             {

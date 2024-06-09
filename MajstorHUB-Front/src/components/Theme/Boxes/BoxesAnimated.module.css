@@ -73,15 +73,13 @@
 }
 
 .warrningBox {
-  background-color: #f0efd2;
-  color: #beb706;
-  border-inline-color: #beb706;
+  background-color: var(--color-yellow-600);
+  color: white;
 }
 
 .errorBox {
-  background-color: var(--color-red-100);
-  color: var(--color-red-500);
-  border-inline-color: var(--color-red-500);
+  background-color: var(--color-red-500);
+  color: white;
 }
 
 @media (width <= 700px) {

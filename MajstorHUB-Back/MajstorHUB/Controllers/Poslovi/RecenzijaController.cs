@@ -135,7 +135,7 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Dodaj([FromBody] Recenzija recenzija)
+        public async Task<IActionResult> Dodaj([FromBody] RecenzijaOld recenzija)
         {
             try
             {
@@ -163,7 +163,7 @@
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Izmeni(string id, [FromBody] Recenzija recenzija)
+        public async Task<IActionResult> Izmeni(string id, [FromBody] RecenzijaOld recenzija)
         {
             try
             {

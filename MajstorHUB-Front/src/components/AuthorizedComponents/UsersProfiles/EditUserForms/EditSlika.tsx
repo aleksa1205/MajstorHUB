@@ -83,7 +83,7 @@ function EditSlika({ close, updateUser, userData }: PropsValues) {
         <IoClose onClick={close} size="2rem" />
       </div>
 
-      <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
+      <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
         <div className={classes.imageContentContainer}>
           {isCropping ? (
             <div className={classes.marginBot}>

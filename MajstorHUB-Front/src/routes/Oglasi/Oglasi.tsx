@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import classes from '../../components/AuthorizedComponents/FilterUsers/FilterUser.module.css';
 import Hand from "../../components/Theme/Loaders/Hand";
@@ -6,12 +6,19 @@ import NotFound from '../../../pictures/serach no data.jpg';
 import { GetOglasDTO } from "../../api/DTO-s/Oglasi/OglasiDTO";
 import FilerOglasForm from "../../components/AuthorizedComponents/Oglas/Filter/FilterOglasForm";
 import OglasCard from "../../components/AuthorizedComponents/Oglas/Filter/OglasCard";
+import useCurrUser from "../../hooks/useCurrUser";
 
 export default function Oglasi() {
     const [oglasi, setOglasi] = useState<GetOglasDTO[]>([]);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const { auth } = useAuth();
 
+    const { userData } = useCurrUser();
+    const [userOglasi, setUserOglasi] = useState<string[]>(userData ? userData.oglasi : [])
+    
+    useEffect(() => {
+        setUserOglasi(userData ? userData.oglasi : []);
+    }, [userData])
 
     return (
         <main className={`${classes.main} container`}>
@@ -30,7 +37,7 @@ export default function Oglasi() {
             )}
             <div className={classes.userCards}>
                 {!isFetching && oglasi.map(oglas => {
-                    return <OglasCard key={oglas.id} oglasData={oglas} currUserId={auth.userId} />
+                    return <OglasCard key={oglas.id} oglasData={oglas} currUserId={auth.userId} userOglasi={userOglasi} />
                 })}
             </div>
         </main>

@@ -4,6 +4,7 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { GetFirmaResponse, GetKorisnikResponse, GetMajstorResponse, userDataType } from '../DTO-s/responseTypes';
 import { userDataUpdateType } from "../DTO-s/updateSelfTypes";
 import { FilterDTO } from "../DTO-s/FilterRequest";
+import { ForbiddenError } from "./useOglasController";
 
 export class SessionEndedError extends Error {
     constructor(message?: string) {
@@ -45,7 +46,6 @@ function useUserControllerAuth(type : UserType) {
                 }
             }
         },
-
         getById: async function(userId : string, abortController : AbortController) : Promise<false | GetKorisnikResponse | GetFirmaResponse | GetMajstorResponse> {
             try {
                 const response = await axiosPrivate.get(`${userToPath(type)}/GetById/${userId}`, {signal: abortController.signal});
@@ -80,6 +80,8 @@ function useUserControllerAuth(type : UserType) {
                     switch(error.response.status) {
                         case 404:
                             return false;
+                        case 403:
+                            throw new ForbiddenError();
                         case 401:
                             throw new SessionEndedError();
                         default:
@@ -94,7 +96,6 @@ function useUserControllerAuth(type : UserType) {
                 }
             }
         },
-
         updateSelf: async function(userData : userDataUpdateType) : Promise<true> {
             try {
                 await axiosPrivate.put(`${userToPath(type)}/UpdateSelf`,
@@ -123,7 +124,6 @@ function useUserControllerAuth(type : UserType) {
                 }
             }
         },
-
         filter: async function(filter : FilterDTO) : Promise<false | userDataType[]>  {
             try {
                 const response = await axiosPrivate.post(`${UserType[type]}/Filter`,

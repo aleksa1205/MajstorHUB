@@ -24,7 +24,10 @@ public class KorisnikService : IKorisnikService
             DatumRodjenja = x.DatumRodjenja,
             Ime = x.Ime,
             Prezime = x.Prezime,
-            Potroseno = x.Potroseno
+            Potroseno = x.Potroseno,
+            Oglasi = x.OglasiId,
+            Blocked = x.Blocked,
+            Private = x.Private
         });
     }
 
@@ -171,7 +174,11 @@ public class KorisnikService : IKorisnikService
             ? filterBuilder.Gte(x => x.Potroseno, korisnik.Potroseno)
             : filterBuilder.Eq(x => x.Potroseno, 0);
 
-        var finalFilter = filterBuilder.And(queryFinalFilter, opisFinalFilter, zaradjenoFilter);
+        var privateFilter = filterBuilder.And(
+            filterBuilder.Eq(x => x.Private, false),
+            filterBuilder.Eq(x => x.Blocked, false));
+
+        var finalFilter = filterBuilder.And(queryFinalFilter, opisFinalFilter, zaradjenoFilter, privateFilter);
 
         var sortBuilder = Builders<Korisnik>.Sort;
         var potroseno = sortBuilder.Descending(x => x.Potroseno);

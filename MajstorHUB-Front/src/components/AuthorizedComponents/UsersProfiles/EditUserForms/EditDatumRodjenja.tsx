@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { userDataUpdateType } from "../../../../api/DTO-s/updateSelfTypes";
 import { IoClose } from "react-icons/io5";
 import UserType from "../../../../lib/UserType";
+import { DatumRodjenjaValidation } from "../../../../lib/Forms/FormValidation";
 
 type FromValues = {
     value: Date;
@@ -44,17 +45,7 @@ function EditDatumRodjenja({ close, updateUser, userData }: PropsValues) {
                 className={errors.value ? `${classes.error}` : ""}
                 type="date"
                 id="datumRodjenja"
-                {...register("value", {
-                    required: 'Ovo polje je obavezno',
-                    valueAsDate: true,
-                    validate: (fieldValue) => {
-                        const date = new Date(fieldValue);
-                    
-                        const isValid = date < new Date();
-                    
-                        return isValid || 'Izabran datum je veci od danasnjeg'
-                    }
-                })}
+                {...register("value", DatumRodjenjaValidation)}
             />
             <p className={classes.pError}>
                 {errors.value?.message && <MdErrorOutline />}

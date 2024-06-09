@@ -35,7 +35,7 @@ export default function EditOpis() {
                 <IoClose onClick={close} size='2rem' />
             </div>
 
-            <div style={{overflow: 'scroll', height: window.innerHeight < 900 ? '400px' : 'auto'}}>
+            <div style={{overflow: 'scroll', height: window.innerWidth < 1000 ? '400px' : 'auto'}}>
                 <p>Izvođači traže:</p>
                 <ul>
                     <li>Veštine potrebne za vaš posao</li>

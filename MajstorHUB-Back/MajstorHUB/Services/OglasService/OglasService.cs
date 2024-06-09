@@ -5,7 +5,6 @@ public class OglasService : IOglasService
     private readonly IMongoCollection<Oglas> _oglasi;
     private readonly IMongoCollection<Korisnik> _korisnici;
     private readonly IMongoCollection<Prijava> _prijave;
-    private readonly ProjectionDefinition<Oglas, GetOglasDTO> _getProjection;
     private readonly IPrijavaService _prijavaService;
 
     public OglasService(MajstorHUBDatabaseSettings settings, IMongoClient mongoClient, IPrijavaService prijavaService)
@@ -15,20 +14,11 @@ public class OglasService : IOglasService
         _korisnici = db.GetCollection<Korisnik>(settings.KorisniciCollectionName);
         _prijave = db.GetCollection<Prijava>(settings.PrijaveCollectionName);
         _prijavaService = prijavaService;
+    }
 
-        //_getProjection = Builders<Oglas>.Projection.Expression(o => new GetOglasDTO
-        //{
-        //    Cena = o.Cena,
-        //    DatumKreiranja = o.DatumKreiranja,
-        //    KorisnikId = o.KorisnikId,
-        //    Naslov = o.Naslov,
-        //    Opis = o.Opis,
-        //    DuzinaPosla = o.DuzinaPosla,
-        //    Id = o.Id,
-        //    Iskustvo = o.Iskustvo,
-        //    Lokacija = o.Lokacija,
-        //    Struke = o.Struke
-        //});
+    public class PrivateOrInactiveOglasException : Exception
+    {
+        public PrivateOrInactiveOglasException() : base() { }
     }
 
     // Imitacija projekcije kao u mongoDB driver-u, samo za obican .net linq
@@ -45,6 +35,7 @@ public class OglasService : IOglasService
             Naslov = oglas.Naslov,
             Struke = oglas.Struke,
             Opis = oglas.Opis,
+            BrojPrijava = oglas.PrijaveIds.Count,
             Ime = korisnik.Ime!,
             Prezime = korisnik.Prezime!,
             KorisnikId = oglas.KorisnikId,
@@ -67,6 +58,8 @@ public class OglasService : IOglasService
         var oglas = await _oglasi.Find(oglas => oglas.Id == id).FirstOrDefaultAsync();
         if (oglas is null)
             return null;
+        if (oglas.Private || !oglas.Active)
+            throw new PrivateOrInactiveOglasException();
         var korisnik = await _korisnici.Find(k => k.Id == oglas.KorisnikId).FirstOrDefaultAsync();
 
         return ProjectToGetDto(oglas, korisnik);
@@ -186,11 +179,16 @@ public class OglasService : IOglasService
             filterBuilder.Lte(x => x.Cena, oglas.Cena.Do)
             );
 
+        var activeFilter = filterBuilder.And(
+            filterBuilder.Eq(o => o.Active, true),
+            filterBuilder.Eq(o => o.Private, false));
+
         var finalFilter = filterBuilder.And(queryFinalFilter,
                                             opisFinalFilter,
                                             iskustvoFilter,
                                             duzinaFilter,
-                                            cenaFilter
+                                            cenaFilter,
+                                            activeFilter
                                             );
 
         var sortBuilder = Builders<Oglas>.Sort;

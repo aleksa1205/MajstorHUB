@@ -135,6 +135,11 @@
     display: inline-block;
 }
 
+.headingWithInfo {
+    display: flex;
+    gap: 0.2rem;
+}
+
 .textWithInfo {
     display: flex;
     gap: 0.2rem;

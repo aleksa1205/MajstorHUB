@@ -1,0 +1,33 @@
+.main {
+    padding-inline: 2rem;
+    /* margin-top: 2rem; */
+}
+.center,
+.centerMax {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding-inline: 2rem;
+}
+.centerMax {
+    height: max-content;
+    margin-top: 2rem;
+}
+.center {
+    height: calc(100vh - 230px);
+}
+.center img,
+.centerMax img {
+    max-width: 600px;
+    margin-bottom: 1rem;
+}
+.center h3,
+.centerMax h3 {
+    margin: 1rem 0;
+}
+
+.bold {
+    display: inline-block;
+    font-weight: bold;
+}

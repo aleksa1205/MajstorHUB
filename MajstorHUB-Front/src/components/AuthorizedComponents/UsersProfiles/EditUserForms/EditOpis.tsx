@@ -80,7 +80,7 @@ function EditOpis({ close, updateUser, userData }: PropsValues) {
       <div
         style={{
           overflow: "scroll",
-          height: window.innerHeight < 900 ? "400px" : "auto",
+          height: window.innerWidth < 1000 ? "400px" : "auto",
         }}
       >
         {res}

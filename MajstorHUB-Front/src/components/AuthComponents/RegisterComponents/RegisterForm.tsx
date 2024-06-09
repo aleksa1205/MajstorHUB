@@ -7,6 +7,7 @@ import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import UserType, { userToPath } from "../../../lib/UserType";
 import useUserController from "../../../api/controllers/useUserController";
 import { useErrorBoundary } from "react-error-boundary";
+import { ImeUseraValidation } from "../../../lib/Forms/FormValidation";
 
 type FormValues = {
   ime?: string;
@@ -81,7 +82,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
       showBoundary(error);
     }
     
-    navigate('/success?message=Uspešno ste se registrovali na platformu&to=login');
+    navigate('/success?message=Uspešno ste se registrovali na platformu&to=login', { replace: true});
   };
 
   // Specificne form control-e za svakog vrsta usera
@@ -101,21 +102,7 @@ function RegisterForm({ formType, setSelected }: PropsValue) {
             className={errors.ime ? `${classes.error}` : ""}
             type="text"
             id="ime"
-            {...register("ime", {
-              required: "Ime je obavezno polje",
-              minLength: {
-                value: 4,
-                message: 'Mora barem 4 karaktera'
-              },
-              maxLength: {
-                value: 15,
-                message: 'Maksimum 15 karaktera'
-              },
-              pattern: {
-                value: /^[a-zA-Z]+$/,
-                message: "Ime mora da zadrzi samo slova",
-              },
-            })}
+            {...register("ime", ImeUseraValidation)}
           />
           <p>
             {errors.ime?.message && <MdErrorOutline />}
