@@ -30,6 +30,12 @@ import ZavrseniPoslovi from "../Posao/PrikazZavrsenih/ZavrseniPoslovi";
 import { Rating } from "@mui/material";
 import ZavsenPopUp from "../Posao/PrikazZavrsenih/ZavrsenPopUp";
 import { GetZavrseniPosloviDTO } from "../../../api/DTO-s/Posao/PosloviDTO";
+import useAuth from "../../../hooks/useAuth";
+import { AdminRoles } from "../../../context/AuthProvider";
+import useAdminController from "../../../api/controllers/useAdminController";
+import usePopUpMessage from "../../../hooks/usePopUpMessage";
+import ConfirmBan from "./EditUserForms/ConfirmBan";
+import { NotFoundError } from "../../../api/controllers/usePosaoController";
 
 type PropsValues = {
     userData : KorisnikDataUpdate | MajstorDataUpdate | FirmaDataUpdate;
@@ -58,6 +64,8 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
     const logoutUser = useLogout();
     const { showBoundary } = useErrorBoundary();
     const { updateSelf } = useUserControllerAuth(userData.userType);
+
+    const {auth} = useAuth();
     
     const { closeModal, openModal, transition } = useModalAnimation();
 
@@ -71,6 +79,49 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
         userData: userData,
         userDataPriv: userDataPriv,
         setFormSelected: setFormSelected
+    }
+
+    const { PopUpComponent, setPopUpMessage } = usePopUpMessage();
+    const { blockUser, signUpforAdmin } = useAdminController();
+
+    const { closeModal: closeBan, openModal: openBan, transition: ban } = useModalAnimation();
+
+    async function blockHandler() {
+        try {
+            await blockUser(userDataPriv.id, userDataPriv.userType);
+            setPopUpMessage({
+                message: "Uspešno ste blokirali ovog korisnika",
+                type: 'success'
+            });
+        } catch (error) {
+            if(error instanceof SessionEndedError) {
+                logoutUser();
+            }
+            else
+                showBoundary(error);
+        }
+    }
+
+    async function prijavaHandler() {
+        try {
+            await signUpforAdmin();
+            setPopUpMessage({
+                message: "Uspešno ste poslali prijavu za admina",
+                type: 'success'
+            })
+        } catch (error) {
+            if (error instanceof NotFoundError) {
+                setPopUpMessage({
+                    message: "Već ste poslali prijavu za admina",
+                    type: 'error'
+                })
+            }
+            else if(error instanceof SessionEndedError) {
+                logoutUser();
+            }
+            else
+                showBoundary(error);
+        }
     }
 
     useEffect(() => {
@@ -108,9 +159,16 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
     
     return (
         <>
+            <PopUpComponent />
             {transition((style, showModal) => {
                 return showModal ? (
                     <EditUserFormContext style={style} formType={formSelected} close={closeModal} updateUser={setUserData} userData={userData} />
+                ) : null;
+            })}
+
+            {ban((style, show) => {
+                return show ? (
+                    <ConfirmBan callback={blockHandler} close={closeBan} style={style} />
                 ) : null;
             })}
 
@@ -150,6 +208,21 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
                             <span className="button__text">Sačuvaj promene</span>
                         </button>
                         <button onClick={resetHandler} className="secondLink">Vrati Stare Vrednosti</button>
+                    </div>
+                )}
+                {(isCurrUser && auth.admin === AdminRoles.Nedefinisano) && (
+                    <div className={classes.saveContainer}>
+                        <button onClick={prijavaHandler} className="secondLink">Zahtevaj admin privilegije</button>
+                    </div>
+                )}
+                {(auth.admin !== AdminRoles.Nedefinisano && !isCurrUser) && (
+                    <div className={classes.saveContainer}>
+                        <button
+                            className="mainButtonSmall"
+                            onClick={openBan}
+                        >
+                            Blokiraj Korisnika
+                        </button>
                     </div>
                 )}
             </div>

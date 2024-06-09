@@ -5,12 +5,14 @@
 public class AdminController : ControllerBase
 {
     private readonly IAdminService _adminService;
+    private readonly IKorisnikService _korisnikService;
     private IConfiguration _configuration;
 
-    public AdminController(IAdminService adminService, IConfiguration configuration)
+    public AdminController(IAdminService adminService, IConfiguration configuration, IKorisnikService korisnikService)
     {
         _adminService = adminService;
         _configuration = configuration;
+        _korisnikService = korisnikService;
     }
 
     [Authorize]
@@ -68,7 +70,7 @@ public class AdminController : ControllerBase
             var user = HttpContext.User.Identity?.Name;
             if (!(await _adminService.SignUpAsAdmin(user!)))
             {
-                return BadRequest("Već ste prijavljeni i čekate odgovor!");
+                return NotFound("Već ste prijavljeni i čekate odgovor!");
             }
             return Ok($"Uspešno prosleđena prijava sudo-adminu!");
         }
@@ -80,7 +82,7 @@ public class AdminController : ControllerBase
 
     [Authorize]
     [RequiresClaim(AdminRoles.SudoAdmin)]
-    [HttpPost("EnrolAsAdmin/{userId}/{role}")]
+    [HttpPatch("EnrolAsAdmin/{userId}/{role}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> EnrolAsAdmin(string userId, Roles role)
@@ -113,6 +115,31 @@ public class AdminController : ControllerBase
                 return BadRequest("Greška pri odbijanju admina!");
             }
             return Ok("Uspešno obrisana prijava!");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
+    [HttpGet("GetPrijaveZaAdmina")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> GetPrijaveZaAdmina()
+    {
+        try
+        {
+            var prijave = await _adminService.GetPrijave();
+            if (prijave.Count() == 0)
+                return NotFound("Nema prijava za admina");
+
+            return Ok(prijave);
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return NotFound("Nema prijava");
         }
         catch (Exception ex)
         {

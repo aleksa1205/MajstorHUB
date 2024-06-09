@@ -1,21 +1,19 @@
-import { Link } from 'react-router-dom';
 import { GetZavrseniPosloviDTO, Recenzija } from '../../../../api/DTO-s/Posao/PosloviDTO';
 import classes from './Zavrseni.module.css';
 import ShowMore from '../../../Theme/ShowMoreContainer/ShowMore';
 import { Rating } from '@mui/material';
-import useAuth from '../../../../hooks/useAuth';
 import UserType from '../../../../lib/UserType';
-import { formatDate, formatDateBefore, formatDoubleWithWhite } from '../../../../lib/utils';
+import { formatDate, formatDoubleWithWhite } from '../../../../lib/utils';
 
 type PropsValues = {
     posao: GetZavrseniPosloviDTO;
     openPopUp(posao: GetZavrseniPosloviDTO): void;
+    userType: UserType
 }
 
-export default function ZavrsenCard({ posao, openPopUp }: PropsValues) {
-    const { auth: { userType } } = useAuth();
+export default function ZavrsenCard({ posao, openPopUp, userType }: PropsValues) {
     const { 
-        detaljiPosla: { naslov, opis, cena }, 
+        detaljiPosla: { naslov, cena }, 
         recenzije: { recenzijaIzvodjaca, recenzijaKorisnika} ,
         pocetakRadova,
         zavrsetakRadova,

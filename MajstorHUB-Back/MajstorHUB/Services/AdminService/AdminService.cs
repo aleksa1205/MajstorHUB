@@ -1,6 +1,8 @@
 ﻿using DnsClient.Protocol;
 using MajstorHUB.Models.Users;
+using MajstorHUB.Responses.Admin;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System;
 
 namespace MajstorHUB.Services.AdminService;
 
@@ -20,12 +22,47 @@ public class AdminService : IAdminService
         _oglasi = db.GetCollection<Oglas>(settings.OglasiCollectionName);
     }
 
-    public async Task<List<User>> GetAllBlockedUsers()
+    public async Task<List<PrijavaZaAdminaDTO>> GetAllBlockedUsers()
     {
         List<User> usersKorisnici = (await _korisnici.Find(korisnik => korisnik.Blocked==true).ToListAsync()).Cast<User>().ToList();
         List<User> usersFirma = (await _firme.Find(firma => firma.Blocked == true).ToListAsync()).Cast<User>().ToList();
         List<User> usersMajstor = (await _majstori.Find(majstor => majstor.Blocked == true).ToListAsync()).Cast<User>().ToList();
-        return usersKorisnici.Concat(usersFirma).Concat(usersMajstor).ToList();
+        var useri = usersKorisnici.Concat(usersFirma).Concat(usersMajstor).ToList();
+
+        List<PrijavaZaAdminaDTO> result = new List<PrijavaZaAdminaDTO>();
+        foreach (var user in useri)
+        {
+            string naziv;
+            Roles userType;
+            if (user is Korisnik korisnik)
+            {
+                naziv = korisnik.Ime + " " + korisnik.Prezime;
+                userType = Roles.Korisnik;
+            }
+            else if (user is Majstor majstor)
+            {
+                naziv = majstor.Ime + " " + majstor.Prezime;
+                userType = Roles.Majstor;
+            }
+            else if (user is Firma firma)
+            {
+                naziv = firma.Naziv;
+                userType = Roles.Firma;
+            }
+            else
+            {
+                throw new Exception("Unknown user type");
+            }
+
+            result.Add(new PrijavaZaAdminaDTO
+            {
+                Naziv = naziv,
+                userId = user.Id!,
+                userType = userType
+            });
+        }
+
+        return result;
     }
 
     public async Task<bool> BlockUser(string adminId, string userId, Roles role)
@@ -126,5 +163,55 @@ public class AdminService : IAdminService
         var update = Builders<Korisnik>.Update.Set(x => x.Prijave, admin.Prijave);
         await _korisnici.UpdateOneAsync(filter, update);
         return true;
+    }
+
+    public async Task<List<PrijavaZaAdminaDTO>> GetPrijave()
+    {
+        var sudo = await _korisnici.Find(k => k.Id == "66619dfa1b6685603e9b89a9").FirstOrDefaultAsync();
+        if (sudo == null)
+            throw new DirectoryNotFoundException("Nema ga sudo");
+        if (sudo.Prijave.Count == 0)
+            throw new DirectoryNotFoundException("Nema prijava");
+
+        List<User> usersKorisnici = (await _korisnici.Find(k => sudo.Prijave.Contains(k.Id!)).ToListAsync()).Cast<User>().ToList();
+        List<User> usersFirma = (await _firme.Find(k => sudo.Prijave.Contains(k.Id!)).ToListAsync()).Cast<User>().ToList();
+        List<User> usersMajstor = (await _majstori.Find(k => sudo.Prijave.Contains(k.Id!)).ToListAsync()).Cast<User>().ToList();
+        var useri = usersKorisnici.Concat(usersFirma).Concat(usersMajstor).ToList();
+
+
+        List<PrijavaZaAdminaDTO> result = new List<PrijavaZaAdminaDTO>();
+        foreach (var user in useri)
+        {
+            string naziv;
+            Roles userType;
+            if (user is Korisnik korisnik)
+            {
+                naziv = korisnik.Ime + " " + korisnik.Prezime;
+                userType = Roles.Korisnik;
+            }
+            else if (user is Majstor majstor)
+            {
+                naziv = majstor.Ime + " " + majstor.Prezime;
+                userType = Roles.Majstor;
+            }
+            else if (user is Firma firma)
+            {
+                naziv = firma.Naziv;
+                userType = Roles.Firma;
+            }
+            else
+            {
+                throw new Exception("Unknown user type");
+            }
+
+            result.Add(new PrijavaZaAdminaDTO
+            {
+                Naziv = naziv,
+                userId = user.Id!,
+                userType = userType
+            });
+        }
+
+        return result;
     }
 }

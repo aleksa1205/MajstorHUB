@@ -1,6 +1,6 @@
 import UserType from "../../lib/UserType";
 
-type GetUserResponse = {
+export type GetUserResponse = {
     id: string;
     email: string;
     slika?: string;
