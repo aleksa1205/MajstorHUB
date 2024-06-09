@@ -2,6 +2,7 @@ import UserType, { userToPath } from "../../lib/UserType";
 import { isAxiosError } from "axios";
 import axios from "../axios";
 import { ForbiddenError } from "./useOglasController";
+import { AdminRoles } from "../../context/AuthProvider";
 
 export type RefreshToken = {
     tokenValue : string;
@@ -16,6 +17,7 @@ export type LoginResponse = {
     refreshToken : RefreshToken;
     expiration : Date;
     role : UserType;
+    admin: AdminRoles 
 }
 
 type RegiserKorisnikDto = {

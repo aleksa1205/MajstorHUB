@@ -22,6 +22,8 @@ import Oglasi from "./routes/Oglasi/Oglasi.tsx";
 import OglasPrikaz from "./routes/Oglasi/OglasPrikaz.tsx";
 import AsideLayout from "./components/Layouts/AsideLayout.tsx";
 import Forbidden from "./components/ErrorBoundary/ErrorPages/Forbidden.tsx";
+import AdminRequiredLayout from "./components/Layouts/AdminRequiredLayout.tsx";
+import AdminDashboard from "./routes/Admin/AdminDashboard.tsx";
 
 
 export const router = createBrowserRouter([
@@ -175,6 +177,20 @@ export const router = createBrowserRouter([
               },
             ],
           },
+
+          {
+            element: <AdminRequiredLayout />,
+            children: [
+              {
+                path: "/admin-dashboard",
+                element: (
+                  <ErrorBoundaryProvider>
+                    <AdminDashboard />
+                  </ErrorBoundaryProvider>
+                )
+              }
+            ]
+          }
         ],
       },
     ],

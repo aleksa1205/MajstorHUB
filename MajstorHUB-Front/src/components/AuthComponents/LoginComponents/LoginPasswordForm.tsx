@@ -51,7 +51,8 @@ function LoginPasswordForm({ email, userType, reset, setPopUpMessage }: PropsVal
         expiration: data.expiration,
         refreshToken: data.refreshToken,
         userType,
-        role: data.role
+        role: data.role,
+        admin: data.admin
       });
 
       // Nesto ne radi kada nema setTimeout

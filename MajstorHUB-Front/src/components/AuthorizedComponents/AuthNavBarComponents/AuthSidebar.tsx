@@ -12,6 +12,7 @@ import useCurrUser from '../../../hooks/useCurrUser';
 import DottedLoader from '../../Theme/Loaders/DottedLoader';
 import { getProfileUrl } from '../../../lib/utils';
 import { SpringValue, animated } from '@react-spring/web';
+import { AdminRoles } from '../../../context/AuthProvider';
 
 type PropsValue = {
     hideSidebar(): void;
@@ -89,6 +90,9 @@ function AuthSidebar({ hideSidebar, style } : PropsValue) {
                             </div> 
                         </li>
                     </ul>
+                )}
+                {auth.admin !== AdminRoles.Nedefinisano && (
+                    <Link to='/admin-dashboard' onClick={hideSidebar} className='link sidebar-item'>Admin Dashboard</Link>
                 )}
                 <Link to='/dashboard' onClick={hideSidebar} className='link sidebar-item'>Dashboard</Link>
                 <Link to='/klijenti' onClick={hideSidebar} className='link sidebar-item'>Pretraži Klijente</Link>

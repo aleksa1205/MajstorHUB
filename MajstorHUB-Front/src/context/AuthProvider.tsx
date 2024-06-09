@@ -13,6 +13,12 @@ type ContextValues = {
   setAuth: React.Dispatch<React.SetStateAction<AuthValues>>;
 };
 
+export enum AdminRoles {
+  Nedefinisano = -1,
+  Admin,
+  SudoAdmin
+}
+
 export type AuthValues = {
   naziv: string;
   email: string;
@@ -22,6 +28,7 @@ export type AuthValues = {
   refreshToken: RefreshToken;
   userType: UserType;
   role: UserType;
+  admin: AdminRoles
 };
 
 export const emptyAuthValue: AuthValues = {
@@ -37,6 +44,7 @@ export const emptyAuthValue: AuthValues = {
   },
   role: UserType.Nedefinisano,
   userType: UserType.Nedefinisano,
+  admin: AdminRoles.Nedefinisano
 };
 
 const AuthContext = createContext<ContextValues>({
@@ -109,6 +117,7 @@ async function getData(setAuth : React.Dispatch<React.SetStateAction<AuthValues>
         role: data.role,
         userId: data.userId,
         userType: type,
+        admin: data.admin
       });
 
     } catch (error) {

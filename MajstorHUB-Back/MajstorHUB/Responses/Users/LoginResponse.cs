@@ -8,4 +8,5 @@ public class LoginResponse
     public required RefreshToken RefreshToken { get; set; }
     public DateTime Expiration { get; set; }
     public required Roles Role { get; set; }
+    public required AdminRoles Admin { get; set; }
 }
