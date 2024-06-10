@@ -1,72 +1,18 @@
 import { isAxiosError } from "axios";
 import useAuth from "../../hooks/useAuth"
-import useAxiosPrivate from "../../hooks/useAxiosPrivate"
-import UserType from "../../lib/UserType";
-import { CreatePrijavaDTO, PrijavaWithIzvodjacDTO } from "../DTO-s/Prijave/PrijaveDTO";
-import { SessionEndedError } from "./useUserControllerAuth";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { CreateReportDTO, ReportDto } from "../DTO-s/Report/ReportDTOs";
+import { NotFoundError } from "./usePosaoController";
 
-export const bidBoostedThreshold: number = 100;
-export const goodMatchThreshold: number = 60;
-export const bestMatchThreshold: number = 90;
-
-export enum Matching {
-    Nothing,
-    GoodMatch,
-    BestMatch
-}
-
-export const minCenaPrijave = 30;
-export const maxNumberOfPrijave = 3;
-
-export function checkMatchingScore(matchingScore: number) {
-    if(matchingScore >= bestMatchThreshold)
-        return Matching.BestMatch;
-    if(matchingScore >= goodMatchThreshold)
-        return Matching.GoodMatch;
-    else
-        return Matching.Nothing;
-}
-
-export default function usePrijavaController() {
+export default function useReportController() {
     const { auth: { userType } } = useAuth();
     const axiosPrivate = useAxiosPrivate(userType);
-    
-    const PrijavaController = {
-        getByOglas: async function (oglasId: string, controller: AbortController): Promise<false | PrijavaWithIzvodjacDTO[]> {
-            if(userType !== UserType.Korisnik)
-                throw new Error("Nemas pravo da zoves getByOglas iz prijava kontroler ako nisi korisnik");
-            try {
-                const response = await axiosPrivate.get("Prijava/GetByOglas/" + oglasId, {signal: controller.signal});
 
-                let data: PrijavaWithIzvodjacDTO[] = response.data;
-                data.forEach(el => el.datumKreiranja = new Date(el.datumKreiranja));
-
-                return data;
-            } catch (error) {
-                if(isAxiosError(error) && error.name === 'CanceledError') {
-                    throw error;
-                }
-                else if(isAxiosError(error) && error.response != null) {
-                    console.log(error.response.status);
-                    switch(error.response.status) {
-                        case 404:
-                            return false;
-                        default:
-                            throw Error('Axios Error - ' + error.message);
-                    }
-                }
-                else if(error instanceof Error) {
-                    throw Error('General Error - ' + error.message);
-                }
-                else {
-                    throw Error('Unexpected Error - ' + error);
-                }
-            }
-        },
-        prijaviSe: async function (prijava: CreatePrijavaDTO): Promise<boolean> {
+    const ReportController = {
+        report: async function (report: CreateReportDTO): Promise<boolean> {
             try {
-                await axiosPrivate.post('/Prijava/Prijavi-se',
-                    JSON.stringify(prijava),
+                await axiosPrivate.post('Report/Report',
+                    JSON.stringify(report),
                     { headers: { 'Content-Type': 'application/json' } }
                 );
 
@@ -78,8 +24,6 @@ export default function usePrijavaController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 404:
-                            return false;
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -92,9 +36,40 @@ export default function usePrijavaController() {
                 }
             }
         },
-        deleteSelf: async function (oglasId: string): Promise<boolean> {
+        getAll: async function (): Promise<ReportDto[]> {
             try {
-                await axiosPrivate.delete('Prijava/DeleteSelf/' + oglasId);
+                const response = await axiosPrivate.get("Report/GetAll");
+                const data: ReportDto[] = response.data;
+
+                for(let el of data) {
+                    el.datumPrijave = new Date(el.datumPrijave);
+                }
+
+                return data;
+            } catch (error) {
+                if(isAxiosError(error) && error.name === 'CanceledError') {
+                    throw error;
+                }
+                else if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 404:
+                            throw new NotFoundError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }   
+        },
+        deleteReport: async function (id: string): Promise<boolean> {
+            try {
+                await axiosPrivate.delete("Report/DeleteReport/" + id);
                 return true;
             } catch (error) {
                 if(isAxiosError(error) && error.name === 'CanceledError') {
@@ -104,7 +79,7 @@ export default function usePrijavaController() {
                     console.log(error.response.status);
                     switch(error.response.status) {
                         case 404:
-                            return false;
+                            throw new NotFoundError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -119,5 +94,5 @@ export default function usePrijavaController() {
         }
     }
 
-    return PrijavaController;
+    return ReportController;
 }

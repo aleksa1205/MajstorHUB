@@ -32,8 +32,6 @@ export default function usePosaoController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -65,8 +63,6 @@ export default function usePosaoController() {
                     switch(error.response.status) {
                         case 404:
                             throw new NotFoundError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -97,8 +93,6 @@ export default function usePosaoController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         case 404:
                             throw new NotFoundError();
                         default:
@@ -128,8 +122,6 @@ export default function usePosaoController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -157,8 +149,6 @@ export default function usePosaoController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

@@ -11,13 +11,19 @@ import EditCenaPoSatu from "./EditCenaPoSatu";
 import EditIskustvo from "./EditIskustvo";
 import EditStruke from "./EditStruke";
 import EditImeFirme from "./EditNaziv";
+import ReportForm from "../../Reports/ReportFrom";
+import { PopUpMessage } from "../../../../hooks/usePopUpMessage";
+import UserType from "../../../../lib/UserType";
 
 type PropsValues = {
     formType: EditUserFormType,
     close: () => void,
     updateUser: React.Dispatch<React.SetStateAction<userDataUpdateType | null>>,
     userData: userDataUpdateType;
-    style: any
+    style: any;
+    setMessage: React.Dispatch<React.SetStateAction<PopUpMessage | null>>
+    userId: string;
+    userType: UserType
 }
 
 export enum EditUserFormType {
@@ -32,10 +38,11 @@ export enum EditUserFormType {
     BrojTelefona,
     DatumRodjenja,
     Iskustvo,
-    CenaPoSatu
+    CenaPoSatu,
+    Report
 }
 
-function EditUserFormContext({ formType, close, updateUser, userData, style } : PropsValues) {
+function EditUserFormContext({ formType, close, updateUser, userData, style, setMessage, userId, userType } : PropsValues) {
     
     let res;
     switch (formType) {
@@ -71,6 +78,9 @@ function EditUserFormContext({ formType, close, updateUser, userData, style } : 
             break;
         case EditUserFormType.ImeFirme:
             res = <EditImeFirme close={close} updateUser={updateUser} userData={userData} />
+            break;
+        case EditUserFormType.Report:
+            res = <ReportForm close={close} setMessage={setMessage} userId={userId} userType={userType}/>
             break;
         default:
             break;

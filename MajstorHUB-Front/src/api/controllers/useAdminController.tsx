@@ -25,8 +25,6 @@ export default function useAdminController() {
                     switch(error.response.status) {
                         case 404:
                             throw new NotFoundError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -52,8 +50,6 @@ export default function useAdminController() {
                     switch(error.response.status) {
                         case 404:
                             throw new NotFoundError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -81,8 +77,6 @@ export default function useAdminController() {
                     switch(error.response.status) {
                         case 404:
                             throw new NotFoundError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -106,8 +100,6 @@ export default function useAdminController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -131,8 +123,6 @@ export default function useAdminController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -160,8 +150,6 @@ export default function useAdminController() {
                     switch(error.response.status) {
                         case 404:
                             throw new NotFoundError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

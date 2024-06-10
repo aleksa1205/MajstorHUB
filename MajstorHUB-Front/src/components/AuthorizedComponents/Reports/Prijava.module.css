@@ -1,0 +1,33 @@
+.card {
+    border-top: 1px solid var(--color-neutral-400);
+    padding: 2rem;
+}
+.card:hover {
+    background-color: var(--color-main-25);
+}
+
+.card > p:first-child {
+    color: var(--color-neutral-500);
+    font-size: .9rem;
+}
+.card h4 {
+    margin-top: 0;
+}
+
+.users {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    gap: .5rem;
+    column-gap: 10rem;
+}
+.users p {
+    color: var(--color-neutral-500);
+}
+
+.buttons {
+    margin-top: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}

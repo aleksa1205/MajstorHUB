@@ -36,8 +36,6 @@ function useOglasController() {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -70,8 +68,6 @@ function useOglasController() {
                     switch(error.response.status) {
                         case 404:
                             return false;
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -100,8 +96,6 @@ function useOglasController() {
                     switch(error.response.status) {
                         case 404:
                             return false;
-                        case 401:
-                            throw new SessionEndedError();
                         case 403:
                             throw new ForbiddenError();
                         default:
@@ -129,8 +123,6 @@ function useOglasController() {
                     switch(error.response.status) {
                         case 403:
                             throw new ForbiddenError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -160,8 +152,6 @@ function useOglasController() {
                     switch(error.response.status) {
                         case 403:
                             throw new ForbiddenError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }

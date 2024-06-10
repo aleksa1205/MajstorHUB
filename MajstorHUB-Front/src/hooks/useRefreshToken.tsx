@@ -7,24 +7,30 @@ function useRefreshToken() {
     const { auth, setAuth } = useAuth();
 
     async function refresh(type : UserType) {
-        console.log('Refreshing...');
-        const response = await axios.post(`${userToPath(type)}/Refresh`, 
-        JSON.stringify({jwtToken: auth.jwtToken, refreshToken: auth.refreshToken.tokenValue}),
-        {
-            headers: {'Content-Type': 'application/json'},
-            withCredentials: true
-        });
-        const data : LoginResponse = response.data;
-        data.expiration = new Date(data.expiration);
-        data.refreshToken.expiry = new Date(data.refreshToken.expiry);
-
-        setAuth(prev => {
-            // console.log(JSON.stringify(prev.jwtToken));
-            // console.log(data.jwtToken);
-            return {...prev, jwtToken: data.jwtToken, refreshToken: data.refreshToken, expiration: data.expiration}
-        });
-
-        return data;
+        try {
+            console.log('Refreshing...');
+            const response = await axios.post(`${userToPath(type)}/Refresh`, 
+            JSON.stringify({jwtToken: auth.jwtToken, refreshToken: auth.refreshToken.tokenValue}),
+            {
+                headers: {'Content-Type': 'application/json'},
+                withCredentials: true
+            });
+            const data : LoginResponse = response.data;
+            data.expiration = new Date(data.expiration);
+            data.refreshToken.expiry = new Date(data.refreshToken.expiry);
+    
+            setAuth(prev => {
+                // console.log(JSON.stringify(prev.jwtToken));
+                // console.log(data.jwtToken);
+                return {...prev, jwtToken: data.jwtToken, refreshToken: data.refreshToken, expiration: data.expiration}
+            });
+    
+            return data;
+            
+        } catch (error) {
+            console.log("...ode refresh token");
+            throw error;
+        }
     }
 
     return refresh;

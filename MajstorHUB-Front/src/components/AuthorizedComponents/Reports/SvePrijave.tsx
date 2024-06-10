@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
-import useAdminController from "../../../api/controllers/useAdminController";
-import useLogout from "../../../hooks/useLogout";
+import useReportController from "../../../api/controllers/useReportController";
 import { useErrorBoundary } from "react-error-boundary";
+import { ReportDto } from "../../../api/DTO-s/Report/ReportDTOs";
 import { NotFoundError } from "../../../api/controllers/usePosaoController";
-import { SessionEndedError } from "../../../api/controllers/useUserControllerAuth";
 import Cog from "../../Theme/Loaders/Cog";
-import BlokiranCard from "./BlokiranCard";
-import { PrijavaZaAdminaDTO } from "../../../api/DTO-s/Admin/AdminDTOs";
+import PrijavaCard from "./PrijavaCard";
+import usePopUpMessage from "../../../hooks/usePopUpMessage";
 
-export default function Blokirani() {
-    const [blokirani, setBlokirani] = useState<PrijavaZaAdminaDTO[] | null>(null);
+export default function SvePrijave() {
+    const [reports, setReports] = useState<ReportDto[] | null>(null);
     const [isFetching, setIsFetching] = useState<boolean>(true);
     const [notFound, setNotFound] = useState<boolean>(false);
+    const [increment, setIncrement] = useState<number>(0);
 
-    const { getAllBlockedUsers } = useAdminController();
-    const logoutUser = useLogout();
+    function refetch() {
+        setIncrement(prev => prev + 1);
+    }
+
+    const { getAll } = useReportController();
     const { showBoundary } = useErrorBoundary();
 
     useEffect(() => {
@@ -22,14 +25,11 @@ export default function Blokirani() {
             try {
                 setIsFetching(true);
 
-                const data = await getAllBlockedUsers();
-                setBlokirani(data);
+                const data = await getAll();
+                setReports(data);
             } catch (error) {
                 if(error instanceof NotFoundError)
                     setNotFound(true);
-                else if(error instanceof SessionEndedError) {
-                    logoutUser();
-                }
                 else
                     showBoundary(error);
             }
@@ -39,14 +39,17 @@ export default function Blokirani() {
         }
 
         start();
-    }, []);
+    }, [increment]);
+
+    const { PopUpComponent, setPopUpMessage } = usePopUpMessage();
 
     return (
         <>
-            <h3>Blokirani korisnici</h3>
+            <PopUpComponent />
+            <h3>Prijava korisnika</h3>
             {notFound ? (
                 <div>
-                    <p>Nema blokiranih korisnika</p>
+                    <p>Nema prijava</p>
                 </div>
             ) : isFetching ? (
                 <div>
@@ -54,9 +57,9 @@ export default function Blokirani() {
                 </div>
             ): (
                 <div>
-                    {blokirani?.map(el => {
+                    {reports?.map(el => {
                         return (
-                            <BlokiranCard key={el.userId} user={el} />
+                            <PrijavaCard key={el.inicijator + el.prijavljeni + el.opis} refetch={refetch} prijava={el} setPopUpMessage={setPopUpMessage} />
                         )
                     })}
                 </div>

@@ -240,17 +240,32 @@ img {
   color: #ca560c;
 }
 
-.secondLink {
+.secondLink,
+.redLink {
   text-decoration: none;
   background-color: transparent;
   font-size: inherit;
   font-family: inherit;
-  color: #f57624;
   cursor: pointer;
   transition: color 0.1s ease-in-out;
   font-weight: 400;
   /* margin: auto; */
   border: none;
+}
+
+.redLink {
+  color: var(--color-red-500);
+}
+.redLink:hover {
+  color: var(--color-red-600);
+  text-decoration: underline;
+}
+.redLink:active {
+  color: var(--color-red-700);
+}
+
+.secondLink {
+  color: #f57624;
 }
 
 .secondLink:hover {

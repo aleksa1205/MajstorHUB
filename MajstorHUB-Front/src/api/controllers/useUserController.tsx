@@ -3,6 +3,8 @@ import { isAxiosError } from "axios";
 import axios from "../axios";
 import { ForbiddenError } from "./useOglasController";
 import { AdminRoles } from "../../context/AuthProvider";
+import useAuth from "../../hooks/useAuth";
+import { WrongAuthDataError } from "./useUserControllerAuth";
 
 export type RefreshToken = {
     tokenValue : string;
@@ -43,7 +45,35 @@ export class WrongPasswordError extends Error {
 }
 
 function useUserController() {
+    const { auth: { userType, jwtToken }} = useAuth();
+
     const UserController = {
+        logout: async function logout() : Promise<true> {
+            try {
+                await axios.delete(`${userToPath(userType)}/Logout`, {
+                    headers: { 'Content-Type': 'application/json', 'Authorization':  `Bearer ${jwtToken}`},
+                    withCredentials: true,
+                });
+                
+                return true;
+            } catch (error) {
+                if(isAxiosError(error) && error.response != null) {
+                    console.log(error.response.status);
+                    switch(error.response.status) {
+                        case 401:
+                            throw new WrongAuthDataError();
+                        default:
+                            throw Error('Axios Error - ' + error.message);
+                    }
+                }
+                else if(error instanceof Error) {
+                    throw Error('General Error - ' + error.message);
+                }
+                else {
+                    throw Error('Unexpected Error - ' + error);
+                }
+            }
+        },
         emailExists: async function(type : UserType, email : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/EmailExists/${email}`);
@@ -61,7 +91,6 @@ function useUserController() {
                 }
             }
         },
-
         jmbgExists: async function(type : UserType.Korisnik | UserType.Majstor, jmbg : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/JmbgExists/${jmbg}`);
@@ -79,7 +108,6 @@ function useUserController() {
                 }
             }
         },
-
         pibExists: async function(type : UserType.Firma, pib : string) : Promise<boolean> {
             try {
                 const response = await axios.get(`${userToPath(type)}/PibExists/${pib}`);
@@ -97,7 +125,6 @@ function useUserController() {
                 }
             }
         },
-
         login: async function (type : UserType, email : string, password : string) : Promise<LoginResponse> {
             const dataToSend = {Email: email, Password: password};
             
@@ -133,7 +160,6 @@ function useUserController() {
                 }
             }
         },
-
         register: async function (type : UserType, registerDto : RegiserKorisnikDto | RegisterFirmaDto) : Promise<object> {
             // Proverava da li je tip korisnik ili majstor, sto znaci da registerDto mora da bude RegiserKorisnikDto
             // odnosno ako registerDto zadrzi property 'PIB' moramo da bacimo gresku
