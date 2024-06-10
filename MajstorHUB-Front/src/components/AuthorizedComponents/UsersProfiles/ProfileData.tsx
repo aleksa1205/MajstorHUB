@@ -5,7 +5,7 @@ import { base64ToUrl, formatDate, formatDouble, formatDoubleWithWhite } from "..
 import { FaUserAlt } from "react-icons/fa";
 import { IoLocationOutline, IoLink  } from "react-icons/io5";
 import Tooltip from "../../Theme/Tooltip";
-import { MdOutlineVerifiedUser } from "react-icons/md";
+import { MdOutlineReport, MdOutlineVerifiedUser } from "react-icons/md";
 import EditButton from "../../Theme/Buttons/EditButton";
 import { GetFirmaResponse, Iskustvo, getStrukaDisplayName, userDataType } from "../../../api/DTO-s/responseTypes";
 import { IoIosContact } from "react-icons/io";
@@ -156,13 +156,18 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
     function resetHandler() {
         setUserData(initialUserData);
     }
+
+    function handleReport() {
+        setFormSelected(EditUserFormType.Report);
+        openModal();
+    }
     
     return (
         <>
             <PopUpComponent />
             {transition((style, showModal) => {
                 return showModal ? (
-                    <EditUserFormContext style={style} formType={formSelected} close={closeModal} updateUser={setUserData} userData={userData} />
+                    <EditUserFormContext style={style} formType={formSelected} close={closeModal} updateUser={setUserData} userData={userData} setMessage={setPopUpMessage} userId={userDataPriv.id} userType={userDataPriv.userType} />
                 ) : null;
             })}
 
@@ -223,6 +228,19 @@ function ProfileData({ userData, isCurrUser, setUserData, userDataPriv, setSucce
                         >
                             Blokiraj Korisnika
                         </button>
+                    </div>
+                )}
+                {(!isCurrUser && auth.admin === AdminRoles.Nedefinisano) && (
+                    <div className={classes.saveContainer}>
+                        <div className={`${classes.iconContainer} redLink`}>
+                            <MdOutlineReport />
+                            <button
+                                className="redLink"
+                                onClick={handleReport} 
+                            >
+                                Prijavi korisnika
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
@@ -486,9 +504,6 @@ function Opis() {
                 </div>
             </div>
             <ShowMore text={userData.opis}></ShowMore>
-            {/* <div className={classes.divOpis}>
-                {userData.opis}
-            </div> */}
         </section>
     )
 }

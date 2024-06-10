@@ -3,13 +3,15 @@ import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
 import UserType from "../lib/UserType";
-
+import useLogout2 from "./useLogout2";
 
 // Ovo je react hook, kada se pozove on procita context iz auth i na osnovu njega 
 // konfigurise axiosPrivate instancu
 function useAxiosPrivate(type : UserType) {
     const refresh = useRefreshToken();
     const { auth } = useAuth();
+
+    const logout = useLogout2();
 
     useEffect(() => {
  
@@ -34,9 +36,15 @@ function useAxiosPrivate(type : UserType) {
                 const prevRequest = error?.config;
                 if(error?.response?.status === 401 && !prevRequest?.sent) {
                     prevRequest.sent = true;
-                    const { jwtToken } = await refresh(type);
-                    prevRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
-                    return axiosPrivate(prevRequest);
+                    try {
+                        const { jwtToken } = await refresh(type);
+                        prevRequest.headers['Authorization'] = `Bearer ${jwtToken}`;
+                        return axiosPrivate(prevRequest);
+                        
+                    } catch (refreshError) {
+                        logout();
+                        return Promise.reject(refreshError)
+                    }
                 }
                 
                 return Promise.reject(error);
@@ -47,7 +55,7 @@ function useAxiosPrivate(type : UserType) {
             axiosPrivate.interceptors.request.eject(requestIntercept);
             axiosPrivate.interceptors.response.eject(responseIntercept);
         }
-    },[auth, refresh]);
+    },[auth, refresh, logout]);
 
     return axiosPrivate;
 }

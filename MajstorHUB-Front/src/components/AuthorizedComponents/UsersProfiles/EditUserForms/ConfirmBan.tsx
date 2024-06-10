@@ -9,9 +9,6 @@ type PropsValues = {
 }
 
 function ConfirmBan({ close, callback, style }: PropsValues) {
-
-
-
     return (
         <ModalAnimated onClose={close} style={style}>
             <div className={classes.form} >

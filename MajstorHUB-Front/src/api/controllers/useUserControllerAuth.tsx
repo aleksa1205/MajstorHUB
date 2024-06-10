@@ -82,8 +82,6 @@ function useUserControllerAuth(type : UserType) {
                             return false;
                         case 403:
                             throw new ForbiddenError();
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -110,8 +108,6 @@ function useUserControllerAuth(type : UserType) {
                 if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -155,8 +151,6 @@ function useUserControllerAuth(type : UserType) {
                     switch(error.response.status) {
                         case 404:
                             return false;
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -184,8 +178,6 @@ function useUserControllerAuth(type : UserType) {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         default:
                             throw Error('Axios Error - ' + error.message);
                     }
@@ -213,8 +205,6 @@ function useUserControllerAuth(type : UserType) {
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
                     switch(error.response.status) {
-                        case 401:
-                            throw new SessionEndedError();
                         case 406:
                             throw new Error('Nemate pravo da skinete vise novca sa racuna nego sto imate');
                         default:

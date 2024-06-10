@@ -86,7 +86,8 @@ public class ReportController : ControllerBase
     {
         try
         {
-            report.Inicijator = HttpContext.User.Identity.Name;
+            report.Inicijator = HttpContext.User.Identity?.Name;
+            report.TipInicijatora = UtilityCheck.GetRole(HttpContext);
             await _reportService.Create(report);
             return Ok($"Prijava sa ID-em {report.Id} uspesno dodata!");
         }
@@ -98,7 +99,7 @@ public class ReportController : ControllerBase
 
     [Authorize]
     [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
-    [HttpDelete("DeleteReport")]
+    [HttpDelete("DeleteReport/{reportId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Delete(string reportId)
