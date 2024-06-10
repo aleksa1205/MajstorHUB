@@ -34,6 +34,8 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetById/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -100,6 +102,8 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpPost("Add")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -176,10 +180,12 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
+    [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpPut("Update/{id}")]
     public async Task<IActionResult> Put(string id, [FromBody] Oglas oglas)
     {
         try
@@ -274,10 +280,12 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
+    [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [HttpDelete("Delete/{id}")]
     public async Task<IActionResult> Delete(string id)
     {
         try

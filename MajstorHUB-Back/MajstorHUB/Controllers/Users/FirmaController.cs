@@ -51,6 +51,8 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,6 +74,7 @@ public class FirmaController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -96,6 +99,8 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByPib/{pib}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -116,6 +121,8 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -346,6 +353,8 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -497,6 +506,8 @@ public class FirmaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

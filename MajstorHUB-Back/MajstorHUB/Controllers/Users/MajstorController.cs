@@ -52,7 +52,7 @@ public class MajstorController : ControllerBase
     }
 
     [Authorize]
-    [RequiresClaim(Roles.Majstor)]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -75,6 +75,7 @@ public class MajstorController : ControllerBase
     }
 
     [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -101,6 +102,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByJmbg/{jmbg}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,6 +125,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -354,6 +359,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpPut("Update/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -459,6 +466,7 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
     [RequiresClaim(Roles.Majstor)]
     [HttpPatch("Withdraw")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -501,6 +509,8 @@ public class MajstorController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpDelete("Delete/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
