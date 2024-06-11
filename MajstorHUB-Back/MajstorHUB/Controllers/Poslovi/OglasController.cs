@@ -15,6 +15,8 @@ public class OglasController : ControllerBase
         _korisnikService = korisnikService;
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetAll")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,8 +36,6 @@ public class OglasController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetById/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -80,6 +80,7 @@ public class OglasController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByUser/{korisnikiId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -316,7 +317,8 @@ public class OglasController : ControllerBase
             if (!UtilityCheck.IsValidQuery(filter.Query))
                 return BadRequest("Duzina query-ja je prevelika ili broj reci je prevelik");
             if (!UtilityCheck.IsValidQuery(filter.Opis))
-                return BadRequest("Duzina opisa je prevelika ili broj reci je prevelik");
+                return BadRequest("Duzina opisa je prevelika i" +
+                    "li broj reci je prevelik");
 
             var filterList = await _oglasService.Filter(filter);
             if (filterList.Count == 0)

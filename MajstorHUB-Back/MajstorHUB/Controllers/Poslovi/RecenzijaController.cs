@@ -74,8 +74,8 @@ public class RecenzijaController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
+    //[Authorize]
+    //[RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -95,6 +95,7 @@ public class RecenzijaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByRecenzent/{recenzent}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -115,6 +116,7 @@ public class RecenzijaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("GetByRecenzirani/{recenzirani}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -135,6 +137,7 @@ public class RecenzijaController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("Dodaj")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -163,6 +166,8 @@ public class RecenzijaController : ControllerBase
         }
     }
 
+    [Authorize]
+    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpPut("Izmeni/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -114,22 +114,4 @@ public class ReportController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
-
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
-    [HttpGet("GetNameIdentification/{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetNameIdentification(string id, Roles role)
-    {
-        try
-        {
-            string res = await _reportService.GetNameId(id, role);
-            return Ok(res);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
 }

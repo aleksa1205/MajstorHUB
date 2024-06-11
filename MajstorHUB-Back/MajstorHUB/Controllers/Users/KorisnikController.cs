@@ -74,8 +74,6 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -100,8 +98,6 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByJmbg/{jmbg}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -123,8 +119,6 @@ public class KorisnikController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByEmail/{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

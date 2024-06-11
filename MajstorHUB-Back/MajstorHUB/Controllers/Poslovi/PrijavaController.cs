@@ -70,8 +70,6 @@ public class PrijavaController : ControllerBase
         }
     }
 
-    [Authorize]
-    [RequiresClaim(AdminRoles.Admin, AdminRoles.SudoAdmin)]
     [HttpGet("GetByID/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
