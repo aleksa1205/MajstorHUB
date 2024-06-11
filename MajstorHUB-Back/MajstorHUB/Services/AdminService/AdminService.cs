@@ -94,7 +94,7 @@ public class AdminService : IAdminService
 
             var oglasFilter = Builders<Oglas>.Filter.In(o => o.Id, korisnik.OglasiId);
 
-            var updateOglasi = Builders<Oglas>.Update.Set("private", true);
+            var updateOglasi = Builders<Oglas>.Update.Set(o => o.Status, StatusOglasa.Privatan);
 
             await _oglasi.UpdateManyAsync(oglasFilter, updateOglasi);
             return true;
