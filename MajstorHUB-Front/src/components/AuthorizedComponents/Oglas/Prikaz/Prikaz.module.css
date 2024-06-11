@@ -15,7 +15,8 @@
     height: max-content;
     padding: 2rem 0;
 }
-.center img {
+.center img,
+.centerMaxC img {
     max-width: 600px;
 }
 .center h1 {
