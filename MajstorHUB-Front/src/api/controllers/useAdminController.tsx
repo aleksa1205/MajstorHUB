@@ -22,7 +22,7 @@ export default function useAdminController() {
                 }
                 else if(isAxiosError(error) && error.response != null) {
                     console.log(error.response.status);
-                    switch(error.response.status) {
+                    switch(error.res.status) {
                         case 404:
                             throw new NotFoundError();
                         default:
