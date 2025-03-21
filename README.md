@@ -14,6 +14,12 @@ MajstorHUB was built using
 
 The reason for it being graded 95 out of 100 is that platform lacked some other functionalities, like having real paymant, chat system, not merging companies search with constructor workes, and some other minor functionalities. The platform was built by a team of two people, and we didn't have enough time to implement those things.
 
+## Demo: Posting a job as a client
+https://github.com/user-attachments/assets/68ce4d6b-2fb7-4f82-8e2f-fc9bdbe8ce82
+
+## Demo: accepting and finishing a job
+https://github.com/user-attachments/assets/bac7ff89-c227-4783-9d78-8ecb44eeabfc
+
 ## Key Features MajstorHUB Have
 
 Before using the platform user needs to register. During registration user chooses which user type it wants to be (client, contractor or construction company) and depending on user type he can do different things on the platform. Note that one person can have multiple account types, one person can have client as well as constructions account as well.
